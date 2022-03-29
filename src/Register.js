@@ -3,21 +3,17 @@ import { Button, Card, Col, Container, Form, Row, Alert } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
 import { 
-  validateFName, 
-  validateLName, 
-  validateAddress, 
-  validateCity, 
+  validateName,  
   validatePostal,
-  checkNullEmail, 
   validateEmail, 
-  checkNullPassword, 
   validatePassword, 
-  validatePasswordConfirm 
+  validatePasswordConfirm, 
+  validateMinMaxLength
 } from "./formValidation";
 
 export function Register() {
-  const [formFields, setFormFields] = useState({ firstName: "", lastName: "", address: "", city: "", postal: "", email: "", password: "", password2: "" });
-  const [formErrors, setFormErrors] = useState({ isValid: true, firstName: "", lastName: "", email: "", address: "", city: "", postal: "", password: "", passwordConfirm: "" }); 
+  const [formFields, setFormFields] = useState({ name: "", street: "", city: "", province: "", postal: "", email: "", password: "", password2: "" });
+  const [formErrors, setFormErrors] = useState({ isValid: true, name: "", email: "", street: "", city: "", province: "", postal: "", password: "", passwordConfirm: "" }); 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionError, setSubmissionError] = useState("");
   const navigate = useNavigate();
@@ -31,25 +27,26 @@ export function Register() {
   const validateRegisterForm = (formData) => {
     let errors = {
       isValid: true, 
-      firstName: "", 
-      lastName: "", 
+      name: "", 
       email: "", 
-      address: "", 
+      street: "", 
       city: "", 
+      province: "",
       postal: "", 
       password: "", 
       passwordConfirm: ""
     };
-    errors.firstName += validateFName(formData.firstName);
-    errors.lastName += validateLName(formData.lastName);
-    errors.email += checkNullEmail(formData.email);
-    errors.email += validateEmail(formData.email);
-    errors.address += validateAddress(formData.address);
-    errors.city += validateCity(formData.city);
-    errors.postal += validatePostal(formData.postal);
-    errors.password += checkNullPassword(formData.password);
-    errors.password += validatePassword(formData.password);
-    errors.passwordConfirm += validatePasswordConfirm(formData.password, formData.password2);
+    errors.name = validateMinMaxLength(formData.name, 'Name', errors.name, 2, 50)
+    errors.name = validateName(formData.name, errors.name);
+    errors.email = validateMinMaxLength(formData.email, 'Email', errors.email, 2, 50);
+    errors.email = validateEmail(formData.email, errors.email);
+    errors.street = validateMinMaxLength(formData.street, 'Street', errors.street, 2, 50);
+    errors.city = validateMinMaxLength(formData.city, 'City', errors.city, 2, 50);
+    errors.province = validateMinMaxLength(formData.province, 'Province', errors.province, 2, 50);
+    errors.postal = validatePostal(formData.postal, errors.postal);
+    errors.password = validateMinMaxLength(formData.password, 'Password', errors.password, 6, 50);
+    errors.password = validatePassword(formData.password, errors.password);
+    errors.passwordConfirm = validatePasswordConfirm(formData.password, formData.password2, errors.password);
     for (let error in errors) {
       if (error !== "isValid" && errors[error] !== "" ) {
         errors.isValid = false;
@@ -96,38 +93,36 @@ export function Register() {
       </Card.Header>
       <Container className="p-3">
         <Form noValidate onSubmit={handleSubmit}>
-          <Row className="mb-3">
-            <Form.Group as={Col} md="6" controlId="formRegister.firstName">
-              <Form.Label>First Name:</Form.Label>
-              <Form.Control type="text" name="firstName" value={formFields.firstName} onChange={handleChange} isInvalid={formErrors.firstName !== ""} />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.firstName}
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group as={Col} md="6" controlId="formRegister.lastName">
-              <Form.Label>Last Name:</Form.Label>
-              <Form.Control type="text" name="lastName" value={formFields.lastName} onChange={handleChange} isInvalid={formErrors.lastName !== ""} />
-              <Form.Control.Feedback type="invalid">
-                {formErrors.lastName}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Row>
-          <Form.Group className="mb-3" controlId="formRegister.address">
-            <Form.Label>Address:</Form.Label>    
-            <Form.Control type="text" placeholder="Street name, number, Apt/Suite, ..." name="address" value={formFields.address} onChange={handleChange} isInvalid={formErrors.address !== ""} />
+          <Form.Group className="mb-3" controlId="formRegister.name">
+            <Form.Label>Full Name:</Form.Label>
+            <Form.Control type="text" name="name" value={formFields.name} onChange={handleChange} isInvalid={formErrors.name !== ""} />
             <Form.Control.Feedback type="invalid">
-              {formErrors.address}
+              {formErrors.name}
+            </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="formRegister.street">
+            <Form.Label>Street:</Form.Label>    
+            <Form.Control type="text" placeholder="Street name, number, Apt/Suite, ..." name="street" value={formFields.street} onChange={handleChange} isInvalid={formErrors.street !== ""} />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.street}
             </Form.Control.Feedback>
           </Form.Group>
           <Row className="mb-3">
-            <Form.Group as={Col} md="6" controlId="formRegister.city">
+            <Form.Group as={Col} md="4" controlId="formRegister.city">
               <Form.Label>City:</Form.Label>
               <Form.Control type="text" name="city" value={formFields.city} onChange={handleChange} isInvalid={formErrors.city !== ""} />
               <Form.Control.Feedback type="invalid">
                 {formErrors.city}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} md="6" controlId="formRegister.postal">
+            <Form.Group as={Col} md="4" controlId="formRegister.province">
+              <Form.Label>Province:</Form.Label>
+              <Form.Control type="text" name="province" value={formFields.province} onChange={handleChange} isInvalid={formErrors.province !== ""} />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.province}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group as={Col} md="4" controlId="formRegister.postal">
               <Form.Label>Postal Code:</Form.Label>
               <Form.Control type="text" placeholder="A1A 2B2" name="postal" value={formFields.postal} onChange={handleChange} isInvalid={formErrors.postal !== ""} />
               <Form.Control.Feedback type="invalid">
