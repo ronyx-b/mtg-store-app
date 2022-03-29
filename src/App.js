@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, Nav, Navbar, Form, FormControl, Row, Col } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
@@ -18,12 +18,22 @@ import { Dashboard } from './Dashboard';
 function App() {
   const [searchString, setSearchString] = useState('');
   const {token, setToken} = useToken();
-  const tokenObj = (token)?jwt_decode(token):null;
+  const decodedToken = (token)?jwt_decode(token):null;
   const navigate = useNavigate();
   const logout = () => {
     setToken();
     navigate('/');
   }
+
+  useEffect(() => {
+    if (decodedToken?.exp) {
+      let tokenExpires = decodedToken.exp * 1000;
+      let now = (new Date()).valueOf();
+      if (tokenExpires < now) {
+        setToken();
+      }
+    }
+  },[decodedToken?.exp, setToken]);
   
   const handleSubmit = function(e) {
     e.preventDefault();
@@ -47,7 +57,7 @@ function App() {
               {!token && <LinkContainer to="/Register"><Nav.Link>Register</Nav.Link></LinkContainer>}
               {!token && <LinkContainer to="/Login"><Nav.Link>Login</Nav.Link></LinkContainer>}
               {token && <LinkContainer to="/Account"><Nav.Link>Account</Nav.Link></LinkContainer>}
-              {token && tokenObj.isAdmin && <LinkContainer to="/Dashboard"><Nav.Link>Dashboard</Nav.Link></LinkContainer>}
+              {decodedToken?.isAdmin && <LinkContainer to="/Dashboard"><Nav.Link>Dashboard</Nav.Link></LinkContainer>}
               <LinkContainer to="/Cart"><Nav.Link>Shopping Cart</Nav.Link></LinkContainer>
               {token && <Nav.Link onClick={logout}>Log out</Nav.Link>}
             </Nav>
@@ -74,8 +84,8 @@ function App() {
               <Route path="/CardSearch" element={<CardSearch />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
-              <Route path="/Account" element={(token)?<Account token={token} />: <Navigate to="/Login" />} />
-              <Route path="/Dashboard" element={(token && tokenObj?.isAdmin)?<Dashboard token={token} />: <Navigate to="/" />} />
+              <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
+              <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

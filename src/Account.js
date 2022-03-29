@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import jwt_decode from 'jwt-decode';
 import { SERVER_URL } from "./config"
 
 export function Account(props) {
   const [accountInfo, setAccountInfo] = useState();
   const navigate = useNavigate();
-  const token = props.token;
-  const tokenObj = jwt_decode(token);
+  let token = props.token;
+  let decodedToken = props.decodedToken;
 
   const getAccountInfo = async () => {
     let requestString = `${SERVER_URL}/api/user/account`;
@@ -24,7 +23,7 @@ export function Account(props) {
       } else {
         let json = await response.json();
         setAccountInfo(json.message);
-        console.log(tokenObj.email);
+        console.log(decodedToken.email);
       }
     } catch (err) {
       console.log(err);

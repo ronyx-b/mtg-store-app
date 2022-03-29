@@ -1,1 +1,1 @@
-export const SERVER_URL = 'https://mtg-store-api.herokuapp.com'; // 'http://localhost:8080';
+export const SERVER_URL = (window.location.hostname === 'localhost')?'http://localhost:8080':'https://mtg-store-api.herokuapp.com';

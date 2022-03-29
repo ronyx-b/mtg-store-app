@@ -1,9 +1,14 @@
 import React from "react";
 
-export function Dashboard() {
+export function Dashboard(props) {
+  let token = props.token;
+  let decodedToken = props.decodedToken;
+
   return (
     <div className="Dashboard">
-      Admin Dashboard
+      <h1>Admin Dashboard</h1>
+      <p>{decodedToken?.email}</p>
+      {decodedToken.exp}
     </div>
   );
 }

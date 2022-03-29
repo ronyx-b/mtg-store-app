@@ -90,12 +90,11 @@ export function Register() {
   }
 
   return (<div className="Register">
-    <Card style={{ margin: '20px' }}>
-      
+    <Card className="m-4">
       <Card.Header>
         <h1 className="cardHeader">Register new user</h1>
       </Card.Header>
-      <Container style={{ padding: '10px' }}>
+      <Container className="p-3">
         <Form noValidate onSubmit={handleSubmit}>
           <Row className="mb-3">
             <Form.Group as={Col} md="6" controlId="formRegister.firstName">

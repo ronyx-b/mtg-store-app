@@ -6,7 +6,7 @@ export function useToken() {
   }
 
   const [token, setToken] = useState(getToken());
-  
+
   const saveToken = (token) => {
     if (!token) {
       localStorage.removeItem('token');
