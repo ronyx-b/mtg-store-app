@@ -45,7 +45,7 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar bg="primary" variant="dark" sticky="top" expand="lg">
+      <Navbar bg="dark" variant="dark" sticky="top" expand="lg">
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand>MTG Store</Navbar.Brand>
@@ -64,7 +64,7 @@ function App() {
               {token && <Nav.Link onClick={logout}>Log out</Nav.Link>}
             </Nav>
             <Form className="d-flex" onSubmit={handleSubmit}>
-              <FormControl
+              <Form.Control
                 type="search"
                 placeholder="Search"
                 className="me-2"
@@ -72,7 +72,7 @@ function App() {
                 onChange={(e) => {setSearchString(e.target.value)}}
                 aria-label="Search"
               />
-              <Button type="submit" variant="outline-dark">Search</Button>
+              <Button type="submit" variant="primary">Search</Button>
             </Form>
           </Navbar.Collapse>
         </Container>

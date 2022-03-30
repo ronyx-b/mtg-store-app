@@ -22,6 +22,7 @@ export function emptyCart() {
 };
 
 export function addOrRemoveToCart(item, qty) {
+  qty = parseInt(qty);
   let cart = getCart();
   if (!cart) {
     cart = [];
@@ -47,6 +48,7 @@ export function addOrRemoveToCart(item, qty) {
 };
 
 export function adjustCart(item, qty) {
+  qty = parseInt(qty);
   let cart = getCart();
   let index = cart.findIndex((cartItem) => {
     return cartItem.id === item.id && cartItem.type === item.type;
