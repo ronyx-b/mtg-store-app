@@ -23,14 +23,16 @@ export function CardSearch(props) {
   return (<div className="CardSearch">
     <Container>
       {cards && cards.map((card) => 
-        <Row key={card.id} id={card.id}>
+        <Row key={card.id} id={card.id} className="m-1 p-2 border-bottom">
           <Col className="col-lg-auto">{card.image_uris?(<img src={card.image_uris.normal} width="100" alt={card.name} />):(<img src={card.card_faces[0].image_uris.normal} width="100" alt={card.name} />)}</Col>
           <Col>{card.name}</Col>
-          <Col className="col-lg-auto">{card.prices.usd}$</Col>
+          <Col className="col-lg-auto">{card.prices.usd && <>{card.prices.usd}$</>}</Col>
           <Col className="col-lg-auto">
+            {(card.prices.usd)?
             <Form>
               <Button onClick={() => {shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, 1)}}>Add to Cart</Button>
             </Form>
+            :<>Out of Stock</>}
           </Col>
         </Row>
       )}
