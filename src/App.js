@@ -11,8 +11,10 @@ import { NotFound } from './NotFound';
 import { Products } from './Products';
 import { Register } from './Register';
 import { Account } from './Account';
-import { useToken } from './useToken';
 import { Dashboard } from './Dashboard';
+import { useToken } from './useToken';
+import shoppingCart from './shoppingCart'
+import { Cart } from './Cart';
 
 
 function App() {
@@ -81,11 +83,12 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/Products" element={<Products />} />
-              <Route path="/CardSearch" element={<CardSearch />} />
+              <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
               <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
               <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+              <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
