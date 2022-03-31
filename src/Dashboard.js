@@ -8,7 +8,8 @@ export function Dashboard(props) {
     <div className="Dashboard">
       <h1>Admin Dashboard</h1>
       <p>{decodedToken?.email}</p>
-      {decodedToken.exp}
+      <p>{decodedToken.exp}</p>
+      <p>{token}</p>
     </div>
   );
 }

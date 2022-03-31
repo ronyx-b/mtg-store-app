@@ -66,7 +66,7 @@ export function Login(props) {
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" name="keeplogged" value="true" label="Keep me logged in" checked={formFields.keeplogged} onChange={handleChange} />
             </Form.Group>
-            <Button variant="primary" type="submit" disabled={isSubmitted}>
+            <Button variant="primary" type="submit" className="d-block mx-auto" disabled={isSubmitted}>
               Submit
             </Button>
             {loginError !== "" && <Alert variant="danger" className="mt-3">{loginError}</Alert>}

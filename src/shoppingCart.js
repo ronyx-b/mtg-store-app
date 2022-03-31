@@ -10,15 +10,21 @@ let cart = [
 */
 
 export function getCart() {
-  return JSON.parse(localStorage.getItem('cart'));
+  let cart = JSON.parse(localStorage.getItem('cart'));
+  if (!cart) {
+    cart = [];
+  }
+  return cart;
 };
 
 export function saveCart(cart) {
   localStorage.setItem('cart', JSON.stringify(cart));
+  return getCart();
 };
 
 export function emptyCart() {
   localStorage.removeItem('cart');
+  return [];
 };
 
 export function addOrRemoveToCart(item, qty) {
@@ -45,6 +51,7 @@ export function addOrRemoveToCart(item, qty) {
     cart.push(newItem);
   }
   saveCart(cart);
+  return getCart();
 };
 
 export function adjustCart(item, qty) {
@@ -68,6 +75,7 @@ export function adjustCart(item, qty) {
     cart.push(newItem);
   }
   saveCart(cart);
+  return getCart();
 };
 
 const shoppingCart = { getCart, saveCart, emptyCart, addOrRemoveToCart, adjustCart };

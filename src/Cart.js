@@ -1,8 +1,13 @@
-import React from "react";
-import { Card, Container } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Card, Container } from "react-bootstrap";
 
 export function Cart(props) {
-  let shoppingCart = props.shoppingCart;
+  const shoppingCart = props.shoppingCart;
+  const [cart, setCart] = useState(shoppingCart.getCart())
+
+  const emptyCart = () => {
+    setCart(shoppingCart.emptyCart());
+  };
 
   return (<div className="Cart">
     <Card className="m-4">
@@ -10,8 +15,11 @@ export function Cart(props) {
         <h1 className="cardHeader">Shopping Cart</h1>
       </Card.Header>
       <Container className="p-3">
-      {(shoppingCart.getCart())?
-        <>{shoppingCart.getCart().map((card) => <div key={card.id}>x{card.qty} {card.name}</div>)}</>
+      {(cart && cart.length > 0)?
+        <>
+        {shoppingCart.getCart().map((card) => <div key={card.id}>x{card.qty} {card.name}</div>)}
+        <Button className="d-block mx-auto" onClick={emptyCart}>Empty Your Cart</Button>
+        </>
         :<div className="text-center">Your shopping cart is empty</div>
       }
       </Container>

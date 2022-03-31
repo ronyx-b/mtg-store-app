@@ -23,7 +23,6 @@ export function Account(props) {
       } else {
         let json = await response.json();
         setAccountInfo(json.message);
-        console.log(decodedToken.email);
       }
     } catch (err) {
       console.log(err);
@@ -36,7 +35,8 @@ export function Account(props) {
 
   return (
     <div className="Account">
-      Account Info: {accountInfo}
+      <p>Account Info: {accountInfo}</p>
+      <p>Welcome {decodedToken.email}</p>
     </div>
   );
 }
