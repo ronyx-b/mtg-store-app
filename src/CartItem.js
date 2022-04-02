@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import shoppingCart from "./shoppingCart";
 
 export function CartItem(props) {
-  const item = props.item; // shoppingCart.getItem(props.index);
+  const item = props.item;
+  const adjustCart = props.adjustCart;
   const [card, setCard] = useState();
   const [qty, setQty] = useState(item.qty);
 
@@ -20,7 +20,7 @@ export function CartItem(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    shoppingCart.adjustCart(item, qty);
+    adjustCart(item, qty);
   };
 
   useEffect(() => {
