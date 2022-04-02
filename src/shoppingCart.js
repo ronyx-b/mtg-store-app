@@ -27,6 +27,11 @@ export function emptyCart() {
   return [];
 };
 
+export function getItem(i) {
+  let cart = getCart();
+  return cart[i];
+}
+
 export function addOrRemoveToCart(item, qty) {
   qty = parseInt(qty);
   let cart = getCart();
