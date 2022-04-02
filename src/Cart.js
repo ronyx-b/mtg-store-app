@@ -10,6 +10,10 @@ export function Cart(props) {
     setCart(shoppingCart.emptyCart());
   };
 
+  const adjustCart = (item, qty) => {
+    setCart(shoppingCart.adjustCart(item, qty));
+  };
+
   return (<div className="Cart">
     <Card className="m-4">
       <Card.Header>
@@ -19,7 +23,7 @@ export function Cart(props) {
       {(cart && cart.length > 0)?
         <>
         {shoppingCart.getCart().map((item, i) => 
-          <CartItem key={i} item={item} index={i} />
+          <CartItem key={i} item={item} index={i} adjustCart={adjustCart} />
         )}
         <Button className="d-block mx-auto" onClick={emptyCart}>Empty Your Cart</Button>
         </>
