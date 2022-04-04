@@ -69,6 +69,8 @@ export function adjustCart(item, qty) {
     cart[index].qty = qty;
     if (cart[index].qty <= 0) {
       cart.splice(index, 1);
+    } else if (cart[index].qty > 20) {
+      cart[index].qty = 20;
     }
   } else {
     let newItem = {
@@ -83,6 +85,6 @@ export function adjustCart(item, qty) {
   return getCart();
 };
 
-const shoppingCart = { getCart, saveCart, emptyCart, addOrRemoveToCart, adjustCart };
+const shoppingCart = { getCart, saveCart, emptyCart, getItem, addOrRemoveToCart, adjustCart };
 
 export default shoppingCart;
