@@ -17,6 +17,12 @@ export function getCart() {
   return cart;
 };
 
+export function getCartQty() {
+  let cart = getCart();
+  let qty = cart.reduce((total, item) => total += item.qty, 0)
+  return qty;
+}
+
 export function saveCart(cart) {
   localStorage.setItem('cart', JSON.stringify(cart));
   return getCart();
@@ -85,6 +91,6 @@ export function adjustCart(item, qty) {
   return getCart();
 };
 
-const shoppingCart = { getCart, saveCart, emptyCart, getItem, addOrRemoveToCart, adjustCart };
+const shoppingCart = { getCart, getCartQty, saveCart, emptyCart, getItem, addOrRemoveToCart, adjustCart };
 
 export default shoppingCart;

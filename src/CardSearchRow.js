@@ -4,6 +4,8 @@ import shoppingCart from "./shoppingCart";
 
 export function CardSearchRow(props) {
   const card = props.card;
+  const setCart = props.setCart;
+  const setCartQty = props.setCartQty;
   const [qty, setQty] = useState(1);
 
   const handleChange = (e) => {
@@ -19,7 +21,8 @@ export function CardSearchRow(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, qty);
+    setCart(shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, qty));
+    setCartQty(shoppingCart.getCartQty());
     setQty(1);
   };
 

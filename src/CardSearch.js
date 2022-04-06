@@ -23,7 +23,7 @@ export function CardSearch(props) {
   return (<div className="CardSearch">
     <Container>
       {cards && cards.map((card) => 
-        <CardSearchRow key={card.id} card={card} />
+        <CardSearchRow key={card.id} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
       )}
     </Container>
   </div>);

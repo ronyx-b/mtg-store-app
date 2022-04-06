@@ -19,6 +19,8 @@ import { Cart } from './Cart';
 
 function App() {
   const [searchString, setSearchString] = useState('');
+  const [cart, setCart] = useState(shoppingCart.getCart());
+  const [CartQty, setCartQty] = useState(shoppingCart.getCartQty());
   const {token, setToken} = useToken();
   const decodedToken = (token)?jwt_decode(token):null;
   const navigate = useNavigate();
@@ -60,7 +62,15 @@ function App() {
               {!token && <LinkContainer to="/Login"><Nav.Link>Login</Nav.Link></LinkContainer>}
               {token && <LinkContainer to="/Account"><Nav.Link>Account</Nav.Link></LinkContainer>}
               {decodedToken?.isAdmin && <LinkContainer to="/Dashboard"><Nav.Link>Dashboard</Nav.Link></LinkContainer>}
-              <LinkContainer to="/Cart"><Nav.Link>Shopping Cart</Nav.Link></LinkContainer>
+              <LinkContainer to="/Cart">
+                <Nav.Link>
+                  Cart 
+                  <div className="position-relative d-inline-block">
+                    <i className="bi bi-cart3"></i>
+                    <div className="position-absolute rounded-circle bg-primary" style={{top: "-3px", right: "-5px", zIndex: "1", fontSize: "10px", width: "14px", height: "14px", textAlign: "center"}}>{CartQty}</div>
+                  </div>
+                </Nav.Link>
+              </LinkContainer>
               {token && <Nav.Link onClick={logout}>Log out</Nav.Link>}
             </Nav>
             <Form className="d-flex" onSubmit={handleSubmit}>
@@ -83,12 +93,12 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/Products" element={<Products />} />
-              <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} />} />
+              <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
               <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
               <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} />} />
+              <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
