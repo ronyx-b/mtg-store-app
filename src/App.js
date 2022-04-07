@@ -105,6 +105,42 @@ function App() {
           </Col>
         </Row>
       </Container>
+      <footer className="bg-dark text-center text-lg-start text-white p-4">
+        <Container>
+          <Row className="d-flex flex-row justify-content-center">
+            <div id="disclaimer" style={{color: "#999999", fontSize: "0.8em"}}>
+              <p>This site is made solely for demonstration purposes and is not intended to actually sell any product or service.</p>
+              <p>Portions of the site are unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. The literal and graphical information presented on this site about Magic: The Gathering, including card images, the mana symbols, and Oracle text, is copyright Wizards of the Coast, LLC, a subsidiary of Hasbro, Inc. The site is not produced by, endorsed by, supported by, or affiliated with Wizards of the Coast.</p>
+              <p>Card information is provided by Scryfall, LLC. Prices and promotional offers represent daily estimates and/or market values provided by their affiliates. Absolutely no guarantee is made for any price information. See stores for final prices and details.</p>
+              <p>All other content &copy;{(new Date()).getFullYear()} Rony Boscan.</p>
+            </div>
+          </Row>
+          <Row>
+            <ul className="list-unstyled d-flex flex-row justify-content-center" style={{ fontSize: "1.5em" }}>
+              <li>
+                <a className="text-white px-3" href="https://github.com/ronyx-b">
+                  <i className="bi bi-github"></i>
+                </a>
+              </li>
+              <li>
+                <a className="text-white px-3" href="https://www.linkedin.com/in/ronyboscan/">
+                  <i className="bi bi-linkedin"></i>
+                </a>
+              </li>
+              <li>
+                <a className="text-white px-3" href="https://twitter.com/ronyx">
+                  <i className="bi bi-twitter"></i>
+                </a>
+              </li>
+              <li>
+                <a className="text-white px-3" href="https://portfolio-ronyx-b.vercel.app/">
+                  <i className="bi bi-briefcase-fill"></i>
+                </a>
+              </li>
+            </ul>
+          </Row>
+        </Container>
+      </footer>
     </div>
   );
 }
