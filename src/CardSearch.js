@@ -1,35 +1,43 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Pagination } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { CardSearchRow } from "./CardSearchRow";
 
 export function CardSearch(props) {
   const [cards, setCards] = useState([]);
-  const [pageCards, setPageCards] = useState([]);
-  const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  // const [pageCards, setPageCards] = useState([]);
+  const [page, setPage] = useState({ num: 1, pageCards: []});
+  const [pages, setPages] = useState([1]);
+  // const [lastPage, setLastPage] = useState(1);
   const location = useLocation();
 
   const PER_PAGE = 25;
 
-  const updateCardsPerPage = (page) => {
-    setPageCards(cards.slice((page - 1) * PER_PAGE, page * PER_PAGE));
-  };
-
-  const previousPage = () => {
-    if (page > 1) {
-      let currentPage = page;
-      setPage(--currentPage);
-      updateCardsPerPage(--currentPage);
+  const updatePage = (goto) => {
+    console.log(goto)
+    let num, pageCards, first, last;
+    switch (goto) {
+      case "+1":
+        num = page.num + 1;
+        break;
+      case "-1":
+        num = page.num - 1;
+        break;
+      default:
+        num = parseInt(goto);
+        break;
     }
-  };
-
-  const nextPage = () => {
-    if (page < lastPage) {
-      let currentPage = page;
-      setPage(++currentPage);
-      updateCardsPerPage(++currentPage);
+    if (isNaN(num) || num < 1 || num > pages.length) {
+      num = page.num;
     }
+    console.log(num);
+    first = (num - 1) * PER_PAGE;
+    last = first + PER_PAGE;
+    if (last > cards.length) {
+      last = cards.length;
+    }
+    pageCards = cards.slice(first, last);
+    setPage({num, pageCards});
   };
 
   useEffect(() => {
@@ -43,11 +51,10 @@ export function CardSearch(props) {
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       cardData = data.data;
-      setPage(1);
       if (cardData.length > PER_PAGE) {
-        setPageCards(cardData.slice(0,PER_PAGE));
+        setPage({ num: 1, pageCards: cardData.slice(0,PER_PAGE)});
       } else {
-        setPageCards(cardData);
+        setPage({ num: 1, pageCards: cardData});
       }
       while (data.has_more) {
         console.log("hello from inside the loop");
@@ -57,7 +64,13 @@ export function CardSearch(props) {
         console.log(cardData.length);
       }
       setCards(cardData);
-      setLastPage(Math.ceil(cardData.length / PER_PAGE));
+      // setLastPage(Math.ceil(cardData.length / PER_PAGE));
+      let pagesArr = [];
+      let lastPage = Math.ceil(cardData.length / PER_PAGE);
+      for (let i = 1; i <= lastPage; i++) {
+        pagesArr.push(i);
+      }
+      setPages(pagesArr);
       return cardData
     };
 
@@ -72,13 +85,15 @@ export function CardSearch(props) {
 
   return (<div className="CardSearch">
     <Container>
-      {pageCards && pageCards.map((card, i) => 
+      {page.pageCards && page.pageCards.map((card, i) => 
         <CardSearchRow key={i} index={i} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
       )}
       <Pagination>
-        <Pagination.Prev onClick={previousPage} />
-        <Pagination.Item>{page}</Pagination.Item>
-        <Pagination.Next onClick={nextPage} />
+        <Pagination.Prev onClick={() => updatePage("-1")} disabled={page.num === 1} />  
+        {pages && pages.map((pageNum) => 
+          <Pagination.Item active={pageNum === page.num} onClick={() => updatePage(pageNum)}>{pageNum}</Pagination.Item>
+        )}
+        <Pagination.Next onClick={() => updatePage("+1")} disabled={page.num === pages.length} />
       </Pagination>
     </Container>
   </div>);

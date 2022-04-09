@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"

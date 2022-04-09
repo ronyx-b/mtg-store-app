@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardGroup } from "react-bootstrap";
 import { SERVER_URL } from "./config"
 // import { useSelector, useDispatch, connect } from "react-redux";
