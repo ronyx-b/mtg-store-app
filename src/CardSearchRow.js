@@ -28,7 +28,7 @@ export function CardSearchRow(props) {
 
   return (<div className="CardSearRow">
     <Row className="m-1 p-2 border-bottom">
-      <Col className="col-lg-auto">{props.index + 1}</Col>
+      <Col className="col-lg-auto">{props.index}</Col>
       <Col className="col-lg-auto">{card.image_uris?(<img src={card.image_uris.normal} height="150" alt={card.name} />):(<img src={card.card_faces[0].image_uris.normal} width="100" alt={card.name} />)}</Col>
       <Col>{card.name}</Col>
       <Col className="col-lg-auto">{card.prices.usd && <>{card.prices.usd}$</>}</Col>

@@ -14,7 +14,6 @@ export function CardSearch(props) {
   const PER_PAGE = 25;
 
   const updatePage = (goto) => {
-    console.log(goto)
     let num, pageCards, first, last;
     switch (goto) {
       case "+1":
@@ -30,7 +29,6 @@ export function CardSearch(props) {
     if (isNaN(num) || num < 1 || num > pages.length) {
       num = page.num;
     }
-    console.log(num);
     first = (num - 1) * PER_PAGE;
     last = first + PER_PAGE;
     if (last > cards.length) {
@@ -45,7 +43,6 @@ export function CardSearch(props) {
       let cardData = [];
       const urlParams = new URLSearchParams(location.search);
       let search = urlParams.get('search');
-      console.log(search);
       let requestString = 'https://api.scryfall.com/cards/search';
       requestString += `?q=${search}`;
       let response = await fetch(requestString, { method: 'GET'});
@@ -57,11 +54,9 @@ export function CardSearch(props) {
         setPage({ num: 1, pageCards: cardData});
       }
       while (data.has_more) {
-        console.log("hello from inside the loop");
         response = await fetch(data.next_page, { method: 'GET'});
         data = await response.json();
         cardData = [...cardData, ...data.data];
-        console.log(cardData.length);
       }
       setCards(cardData);
       // setLastPage(Math.ceil(cardData.length / PER_PAGE));
@@ -86,15 +81,36 @@ export function CardSearch(props) {
   return (<div className="CardSearch">
     <Container>
       {page.pageCards && page.pageCards.map((card, i) => 
-        <CardSearchRow key={i} index={i} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
+        <CardSearchRow key={i + 1 + (page.num - 1) * PER_PAGE} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
       )}
-      <Pagination>
-        <Pagination.Prev onClick={() => updatePage("-1")} disabled={page.num === 1} />  
-        {pages && pages.map((pageNum) => 
-          <Pagination.Item active={pageNum === page.num} onClick={() => updatePage(pageNum)}>{pageNum}</Pagination.Item>
-        )}
-        <Pagination.Next onClick={() => updatePage("+1")} disabled={page.num === pages.length} />
-      </Pagination>
+      <div className="d-block mx-auto" style={{width: "fit-content"}}>
+        <Pagination>
+          <Pagination.Prev onClick={() => updatePage("-1")} disabled={page.num === 1} />  
+          {pages && pages.map((pageNum, i) => {
+            if (pages.length > 7) {
+              if (pageNum < page.num - 1 && pageNum > 1) {
+                if (page.num > 4) {
+                  if (pageNum === 2) {
+                    return (<Pagination.Ellipsis key={i} />);
+                  } else if (!(page.num > pages.length - 4 && pageNum > pages.length - 5)) {
+                    return null;
+                  }
+                } 
+              } else if (pageNum > page.num + 1 && pageNum < pages.length) {
+                if (page.num < pages.length - 3) {
+                  if (pageNum === pages.length - 1) {
+                    return (<Pagination.Ellipsis key={i} />);
+                  } else if (!(page.num < 5 && pageNum < 6)) {
+                    return null;
+                  }
+                } 
+              }
+            }
+            return (<Pagination.Item key={i} active={pageNum === page.num} onClick={() => updatePage(pageNum)}>{pageNum}</Pagination.Item>);
+          })}
+          <Pagination.Next onClick={() => updatePage("+1")} disabled={page.num === pages.length} />
+        </Pagination>
+      </div>
     </Container>
   </div>);
 }
