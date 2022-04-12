@@ -93,13 +93,16 @@ function App() {
           <Col>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/Products" element={<Products />} />
+              <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
               <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
               <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
               <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
               <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+              <Route path="EditProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />}>
+                <Route path=":id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+              </Route>
               <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />

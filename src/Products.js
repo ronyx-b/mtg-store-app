@@ -1,38 +1,48 @@
 import { useState, useEffect } from "react";
-import { Card, CardGroup } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
 // import { useSelector, useDispatch, connect } from "react-redux";
 // import { addProducts } from "./productsSlice";
 
-export function Products() {
+export function Products(props) {
   // const products = useSelector((state) => state.products.all);
   // const dispatch = useDispatch();
+  const isAdmin = props.decodedToken?.isAdmin;
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    let requestString = `${SERVER_URL}/api/products`;
-    fetch(requestString, { method: 'GET'})
-    .then(response => response.json())
-    .then(data => { setProducts(data.products) })
-    // .then(data => { dispatch(addProducts(data.products)) })
-    .catch(err => { console.error(err); });
+    const getProducts = async () => {
+      let requestString = `${SERVER_URL}/api/products`;
+      let response = await fetch(requestString, { method: 'GET'});
+      let data = await response.json();
+      setProducts(data.products);
+    };
+
+    try {
+      getProducts();
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
   return (
     <div className="Products">
-      <CardGroup>
+      <Row xs={1} md={3} className="g-4">
       {products && products.map((prod) => 
-        <Card style={{ width: '18rem' }} key={prod._id} id={prod._id}>
-          <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} />
-          <Card.Body>
-            <Card.Title>{prod.name}</Card.Title>
-            <Card.Text>
-              {prod.description}
-            </Card.Text>
-          </Card.Body>
-        </Card>  
+        <Col key={prod._id}>
+          <Card className="" style={{ width: '18rem' }} id={prod._id}>
+            <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} />
+            <Card.Body>
+              <Card.Title>{prod.name} {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>}</Card.Title>
+              <Card.Text>
+                {prod.description}
+              </Card.Text>
+            </Card.Body>
+          </Card>  
+        </Col>
       )}
-      </CardGroup>
+      </Row>
     </div>
   );
 }

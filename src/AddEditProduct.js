@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_URL } from "./config"
 
 export function AddEditProduct(props) {
   const mode = props.mode;
-  let token = props.token;
+  const token = props.token;
+  let params = useParams();
+  let id = params?.id || null;
   const [formFields, setFormFields] = useState({name: "", prodType: "sealed", description: "", cardSet: "", price: 0, stock: 0});
   const image = useRef(null);
+  const [currentImage, setCurrentImage] = useState();
   const [formErrors, setFormErrors] = useState({name: "", prodType: "", description: "", cardSet: "", price: "", stock: "", image: ""});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [imageModal, setImagetModal] = useState(false);
@@ -41,6 +44,9 @@ export function AddEditProduct(props) {
     // }
     try {
       let requestString = `${SERVER_URL}/api/products`;
+      if (mode === "edit" && id) {
+        requestString += `/${id}`;
+      }
       let method = (mode === "add")?"POST":"PUT";
       let body = new FormData(e.target);
       let response = await fetch(requestString, { 
@@ -64,6 +70,10 @@ export function AddEditProduct(props) {
     }
   };
 
+  const goBack = useCallback(() => {
+    navigate('/Products');
+  }, [navigate]);
+
   useEffect(() => {
     const getSets = async () => {
       let requestString = "https://api.scryfall.com/sets/";
@@ -72,12 +82,32 @@ export function AddEditProduct(props) {
       let setsData = data.data;
       setCardSets(setsData.filter((set) => set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
     }
+
+    const getProduct = async (id) => {
+      let requestString = `${SERVER_URL}/api/products/${id}`;
+      let response = await fetch(requestString, { method: 'GET'});
+      let data = await response.json();
+      if (!data.product) {
+        goBack();
+        return;
+      }
+      setFormFields({...data.product});
+      setCurrentImage(data.product.image);
+    }
+
     try {
+      if (mode === "edit") {
+        if (!id) {
+          goBack();
+          return;
+        }
+        getProduct(id);
+      }
       getSets();
     } catch (err) {
       console.error(err);
     }
-  }, []);
+  }, [id, mode, goBack]);
 
   return (<div className="AddEditProduct">
     <Container>
@@ -149,7 +179,10 @@ export function AddEditProduct(props) {
                 <Button size="sm" className="my-1" onClick={handleShow}>View current image</Button>
               }
             </Form.Group>
-            <Button variant="primary" type="submit" className="d-block mx-auto" disabled={isSubmitted}>Submit</Button>
+            <div className="d-flex mx-auto" style={{width: "fit-content"}}>
+              <Button variant="primary" type="submit" className="d-block mx-3" disabled={isSubmitted}>Save</Button>
+              <Button variant="secondary" className="d-block mx-3" disabled={isSubmitted} onClick={goBack}>Cancel</Button>
+            </div>
             {submissionError !== "" && <Alert variant="danger" className="mt-3">{submissionError}</Alert>}
           </Form>
         </Container>
@@ -160,7 +193,7 @@ export function AddEditProduct(props) {
       <Modal.Header closeButton>
         <Modal.Title>Current Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body>Show current image here on edit mode</Modal.Body>
+      <Modal.Body><img src={`${SERVER_URL}/img/${currentImage}`} className="w-100" alt="current" /></Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
           Close
