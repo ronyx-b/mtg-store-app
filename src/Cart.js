@@ -7,7 +7,6 @@ export function Cart(props) {
   const cart = props.cart;
   const setCart = props.setCart;
   const setCartQty = props.setCartQty;
-  // const [cart, setCart] = useState(shoppingCart.getCart());
   const [cards, setCards] = useState([]);
   const [cartTotal, setCartTotal] = useState();
   const [emptyCartModal, setEmptyCartModal] = useState(false);
@@ -30,6 +29,10 @@ export function Cart(props) {
     const getCardsData = async () => {
       let requestString = `https://api.scryfall.com/cards/collection`;
       let identifiers = cart.filter((item) => (item.type === "single")).map((item) => ({id: item.id}));
+      if (identifiers.length === 0) {
+        setCards([]);
+        return [];
+      }
       let cardList = { identifiers };
       let requestOptions = { 
         method: 'POST', 
@@ -43,11 +46,11 @@ export function Cart(props) {
     };
 
     const getSealedData = async () => {
-      return ({});
+      return ([]);
     };
 
     const getAccessoriesData = async () => {
-      return ({});
+      return ([]);
     };
 
     const calculateCartTotal = (data) => { 

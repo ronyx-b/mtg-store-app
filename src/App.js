@@ -15,6 +15,7 @@ import { Dashboard } from './Dashboard';
 import { useToken } from './useToken';
 import shoppingCart from './shoppingCart'
 import { Cart } from './Cart';
+import { AddEditProduct } from './AddEditProduct';
 
 
 function App() {
@@ -98,6 +99,7 @@ function App() {
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
               <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
               <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+              <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
               <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />
@@ -134,7 +136,8 @@ function App() {
               </li>
               <li>
                 <a className="text-white px-3" href="https://portfolio-ronyx-b.vercel.app/">
-                  <i className="bi bi-briefcase-fill"></i>
+                  {/* <i className="bi bi-briefcase-fill"></i> */}
+                  <i className="bi bi-file-earmark-code-fill"></i>
                 </a>
               </li>
             </ul>

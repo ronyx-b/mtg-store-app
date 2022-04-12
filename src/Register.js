@@ -155,9 +155,7 @@ export function Register() {
               Your password must match exactly
             </Form.Text>
           </Form.Group>
-          <Button variant="primary" type="submit" className="d-block mx-auto" disabled={isSubmitted}>
-            Submit
-          </Button>
+          <Button variant="primary" type="submit" className="d-block mx-auto" disabled={isSubmitted}>Submit</Button>
           {submissionError !== "" && <Alert variant="danger" className="mt-3">{submissionError}</Alert>}
         </Form>
       </Container>
