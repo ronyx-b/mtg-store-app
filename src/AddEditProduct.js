@@ -1,22 +1,7 @@
-import { useRef, useState } from "react";
-import { Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
-
-/*
-let productSchema = new Schema({
-  "name": String,
-  "prodType": {
-    "type": String,
-    "default": "sealed"
-  },
-  "description": String,
-  "cardSet": String,
-  "price": Number,
-  "stock": Number,
-  "image": String
-});
-let Product;
-*/
 
 export function AddEditProduct(props) {
   const mode = props.mode;
@@ -26,6 +11,9 @@ export function AddEditProduct(props) {
   const [formErrors, setFormErrors] = useState({name: "", prodType: "", description: "", cardSet: "", price: "", stock: "", image: ""});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [imageModal, setImagetModal] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
+  const [cardSets, setCardSets] = useState([]);
+  const navigate = useNavigate();
 
   const handleClose = () => setImagetModal(false);
   const handleShow = () => setImagetModal(true);
@@ -40,11 +28,6 @@ export function AddEditProduct(props) {
         value = 0;
       }
     }
-    console.log(`${name}: ${value}`)
-    // if (e.target.type === "select-one") {
-    //   console.log(e.target.options);
-    // }
-    console.log(typeof value);
     setFormFields((formData) => {
       return {...formData, [name]: value};
     });
@@ -52,24 +35,14 @@ export function AddEditProduct(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setIsSubmitted(true);
-    console.log(formFields);
-    console.log(e.target)
-    if (image.current.files.length > 0) {
-      console.log(`Selected file - ${image.current.files[0].name}`);
-    }
-
+    setIsSubmitted(true);
+    // if (image.current.files.length > 0) {
+    //   console.log(`Selected file - ${image.current.files[0].name}`);
+    // }
     try {
       let requestString = `${SERVER_URL}/api/products`;
       let method = (mode === "add")?"POST":"PUT";
-      let body = new FormData();
-      for (let field in formFields) {
-        console.log(`${field}: ${formFields[field]}`);
-
-        body.append(field, formFields[field]);
-      }
-      body.set("text", "hello")
-      console.log(JSON.stringify(body));
+      let body = new FormData(e.target);
       let response = await fetch(requestString, { 
         method,
         body,
@@ -78,12 +51,33 @@ export function AddEditProduct(props) {
         } 
       });
       let json = await response.json();
-      console.log(json);
+      if (json.success) {
+        navigate('/Products');
+      } else {
+        setIsSubmitted(false);
+        setSubmissionError(json.message);
+      }
     } catch (err) {
       console.log(err);
+      setSubmissionError(err);
       setIsSubmitted(false);
     }
   };
+
+  useEffect(() => {
+    const getSets = async () => {
+      let requestString = "https://api.scryfall.com/sets/";
+      let response = await fetch(requestString, { method: 'GET'});
+      let data = await response.json();
+      let setsData = data.data;
+      setCardSets(setsData.filter((set) => set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
+    }
+    try {
+      getSets();
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
   return (<div className="AddEditProduct">
     <Container>
@@ -112,7 +106,12 @@ export function AddEditProduct(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="formProduct.cardSet">
               <Form.Label>Card Set:</Form.Label>
-              <Form.Control type="text" name="cardSet" value={formFields.cardSet} onChange={handleChange} isInvalid={formErrors.cardSet !== ""} />
+              <Form.Control type="text" list="sets" name="cardSet" value={formFields.cardSet} onChange={handleChange} isInvalid={formErrors.cardSet !== ""} />
+              <datalist id="sets">
+                {cardSets.length > 0 && cardSets.map((set, i) => {
+                  return (<option key={i} value={set.name} />);
+                })}
+              </datalist>
               <Form.Control.Feedback type="invalid">
                 {formErrors.cardSet}
               </Form.Control.Feedback>
@@ -146,9 +145,12 @@ export function AddEditProduct(props) {
               <Form.Control.Feedback type="invalid">
                 {formErrors.image}
               </Form.Control.Feedback>
-              <Button size="sm" className="my-1" onClick={handleShow}>View current image</Button>
+              {mode === "edit" && 
+                <Button size="sm" className="my-1" onClick={handleShow}>View current image</Button>
+              }
             </Form.Group>
             <Button variant="primary" type="submit" className="d-block mx-auto" disabled={isSubmitted}>Submit</Button>
+            {submissionError !== "" && <Alert variant="danger" className="mt-3">{submissionError}</Alert>}
           </Form>
         </Container>
       </Card>
