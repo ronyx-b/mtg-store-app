@@ -16,6 +16,7 @@ import { useToken } from './useToken';
 import shoppingCart from './shoppingCart'
 import { Cart } from './Cart';
 import { AddEditProduct } from './AddEditProduct';
+import { CardDetails } from './CardDetails';
 
 
 function App() {
@@ -95,14 +96,13 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
               <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
+              <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
               <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
               <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
               <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
               <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              <Route path="EditProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />}>
-                <Route path=":id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              </Route>
+              <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
               <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Decklist" element={<DecklistProcessor />} />
               <Route path="*" element={<NotFound />} />

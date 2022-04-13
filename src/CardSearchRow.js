@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import shoppingCart from "./shoppingCart";
 
 export function CardSearchRow(props) {
@@ -29,8 +30,12 @@ export function CardSearchRow(props) {
   return (<div className="CardSearRow">
     <Row className="m-1 p-2 border-bottom">
       <Col className="col-lg-auto">{props.index}</Col>
-      <Col className="col-lg-auto">{card.image_uris?(<img src={card.image_uris.normal} height="150" alt={card.name} loading="lazy" />):(<img src={card.card_faces[0].image_uris.normal} width="100" alt={card.name} />)}</Col>
-      <Col>{card.name}</Col>
+      <Col className="col-lg-auto">
+        <Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>
+          <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} height="150" alt={card.name} loading="lazy" />
+        </Link>
+      </Col>
+      <Col><Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>{card.name}</Link></Col>
       <Col className="col-lg-auto">{card.prices.usd && <>{card.prices.usd}$</>}</Col>
       <Col className="col-lg-auto">
         {(card.prices.usd)?

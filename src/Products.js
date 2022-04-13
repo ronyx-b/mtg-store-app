@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
 // import { useSelector, useDispatch, connect } from "react-redux";
@@ -28,21 +28,23 @@ export function Products(props) {
 
   return (
     <div className="Products">
-      <Row xs={1} md={3} className="g-4">
-      {products && products.map((prod) => 
-        <Col key={prod._id}>
-          <Card className="" style={{ width: '18rem' }} id={prod._id}>
-            <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} />
-            <Card.Body>
-              <Card.Title>{prod.name} {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>}</Card.Title>
-              <Card.Text>
-                {prod.description}
-              </Card.Text>
-            </Card.Body>
-          </Card>  
-        </Col>
-      )}
-      </Row>
+      <Container>
+        <Row xs={1} md={3} className="g-4">
+          {products && products.map((prod) => 
+            <Col key={prod._id}>
+              <Card className="" style={{ width: '18rem' }} id={prod._id}>
+                <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
+                <Card.Body>
+                  <Card.Title>{prod.name} {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>}</Card.Title>
+                  <Card.Text>
+                    {prod.description}
+                  </Card.Text>
+                </Card.Body>
+              </Card>  
+            </Col>
+          )}
+        </Row>
+      </Container>
     </div>
   );
 }
