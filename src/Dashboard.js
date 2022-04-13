@@ -34,7 +34,6 @@ export function Dashboard(props) {
         <h1>Admin Dashboard</h1>
         <p>{decodedToken?.email}</p>
         <p>{decodedToken.exp}</p>
-        <p>{token}</p>
         <p><Link to="/AddProduct">Add New Product</Link></p>
         <Button onClick={handleSubmit}>Are You Admin</Button>
       </Container>

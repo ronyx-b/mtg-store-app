@@ -80,7 +80,7 @@ export function AddEditProduct(props) {
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       let setsData = data.data;
-      setCardSets(setsData.filter((set) => set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
+      setCardSets(setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
     }
 
     const getProduct = async (id) => {
