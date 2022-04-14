@@ -32,7 +32,10 @@ export function CartItem(props) {
             <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} height="70" alt={card.name} loading="lazy" />
           </Link>
         </Col>
-        <Col><Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>{card.name}</Link></Col>
+        <Col>
+          <Row><Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none", fontWeight: "bold"}}>{card.name}</Link></Row>
+          <Row><span className="mx-1">{card.set_name}</span></Row>
+        </Col>
         <Col className="col-lg-auto"><div className="text-right" style={{width: "4em"}}>{card.prices.usd && <>{card.prices.usd}$</>}</div></Col>
         <Col className="col-lg-auto"><div className="text-right" style={{width: "5em"}}>{card.prices.usd && <>{(parseFloat(card.prices.usd) * item.qty).toFixed(2)}$</>}</div></Col>
         <Col className="col-lg-auto">

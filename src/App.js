@@ -89,7 +89,7 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container>
+      <Container style={{ minHeight: "80vh" }}>
         <Row>
           <Col>
             <Routes>

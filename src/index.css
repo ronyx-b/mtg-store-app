@@ -1,3 +1,10 @@
+html, body {
+  height: auto; /* required to allow content to expand vertically without overflow */
+  width: auto;
+  min-height: 100%; /* fallback for IE and older browsers */
+  min-height: 100vh;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

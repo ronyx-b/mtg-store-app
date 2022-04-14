@@ -44,7 +44,7 @@ export function CardSearch(props) {
       const urlParams = new URLSearchParams(location.search);
       let search = urlParams.get('search');
       let requestString = 'https://api.scryfall.com/cards/search';
-      requestString += `?q=${search}`;
+      requestString += `?q=${search}&unique=prints`;
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       cardData = data.data;

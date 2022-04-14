@@ -1,5 +1,5 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { useParams } from "react-router-dom";
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import shoppingCart from "./shoppingCart";
 import { useEffect, useState } from "react";
 
@@ -9,7 +9,8 @@ export function CardDetails(props) {
   let params = useParams();
   let id = params?.id || null;
   const [card, setCard] = useState();
-  const [symbols, setSymbols] = useState()
+  const [symbols, setSymbols] = useState();
+  const [qty, setQty] = useState(shoppingCart.getItemQty(id));
 
   const showSymbols = (symbolCode) => {
     let symbolCodeArr = symbolCode.split("}{");
@@ -31,7 +32,6 @@ export function CardDetails(props) {
     while (first !== -1) {
       first = text.indexOf("{");
       last = text.indexOf("}", first);
-      console.log(`first ${first} and last ${last}`);
       if (first >= 0) {
         textBefore = text.substring(0, first);
         symbol = showSymbols(text.substring(first, last + 1));
@@ -43,6 +43,24 @@ export function CardDetails(props) {
     }
     parsedtext.push(text);
     return parsedtext;
+  };
+
+  const handleChange = (e) => {
+    let value = parseInt(e.target.value)
+    if (isNaN(value) || value < 0) {
+      setQty(0);
+    } else if (value > 20) {
+      setQty(20);
+    } else {
+      setQty(value);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setCart(shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, qty));
+    setCartQty(shoppingCart.getCartQty());
+    setQty(1);
   };
 
   useEffect(() => {
@@ -102,7 +120,20 @@ export function CardDetails(props) {
             </>)
             :
             (card.oracle_text.split("\n").map((line, i) => <p key={i} className="mb-1">{symbols && addSymbolsToText(line)}</p>))           
-            }</Row>
+            }
+            </Row>
+            <Row>
+            {(card.prices.usd)?
+              <>
+                <Form onSubmit={handleSubmit}>
+                  <div className="d-flex flex-nowrap">
+                    <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
+                    <Button type="submit" size="sm">Add</Button>
+                  </div>
+                </Form> 
+              </>
+              :<>Out of Stock</>}
+            </Row>
           </Col>
         </Row>
       </div>}

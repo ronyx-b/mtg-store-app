@@ -38,6 +38,16 @@ export function getItem(i) {
   return cart[i];
 }
 
+export function getItemQty(id) {
+  let qty = 0;
+  let cart = getCart();
+  let i = cart.findIndex((item) => item.id === id);
+  if (i >= 0) {
+    qty = cart[i].qty;
+  }
+  return qty;
+}
+
 export function addOrRemoveToCart(item, qty) {
   qty = parseInt(qty);
   let cart = getCart();
@@ -91,6 +101,6 @@ export function adjustCart(item, qty) {
   return getCart();
 };
 
-const shoppingCart = { getCart, getCartQty, saveCart, emptyCart, getItem, addOrRemoveToCart, adjustCart };
+const shoppingCart = { getCart, getCartQty, saveCart, emptyCart, getItem, getItemQty, addOrRemoveToCart, adjustCart };
 
 export default shoppingCart;

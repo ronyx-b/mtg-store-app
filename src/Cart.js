@@ -100,7 +100,7 @@ export function Cart(props) {
       {(cart && cart.length > 0)?
         <>
         {shoppingCart.getCart().filter((item) => (item.type === "single")).map((item, i) => 
-          <CartItem key={i} item={item} card={cards.find((card) => (card.id === item.id))} adjustCart={adjustCart} />
+          <CartItem key={item.id} item={item} card={cards.find((card) => (card.id === item.id))} adjustCart={adjustCart} />
         )}
         <Row className="m-1 p-2 border-bottom">
           <Col><h3>Cart Total</h3></Col>
