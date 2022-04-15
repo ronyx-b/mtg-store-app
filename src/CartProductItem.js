@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { SERVER_URL } from "./config";
 
-export function CartItem(props) {
+export function CartProductItem(props) {
   const item = props.item;
-  const card = props.card;
+  const product = props.product;
   const adjustCart = props.adjustCart;
   const [qty, setQty] = useState(item.qty);
 
@@ -28,22 +29,22 @@ export function CartItem(props) {
     adjustCart(item, qty);
   };
 
-  return (<div className="CartItem">
+  return (<div className="CartProductItem">
     <Row className="m-1 p-2 border-bottom">
-      {card && <>
+      {product && <>
         <Col className="col-lg-auto">
-          <Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>
-            <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} height="70" alt={card.name} loading="lazy" />
+          <Link to={`/ProductDetails/${product._id}`} style={{ color: "#000000", textDecoration: "none"}}>
+            <img src={`${SERVER_URL}/img/${product.image}`} height="70" alt={product.name} loading="lazy" />
           </Link>
         </Col>
         <Col>
-          <Row><Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none", fontWeight: "bold"}}>{card.name}</Link></Row>
-          <Row><span className="mx-1">{card.set_name}</span></Row>
+          <Row><Link to={`/ProductDetails/${product._id}`} style={{ color: "#000000", textDecoration: "none", fontWeight: "bold"}}>{product.name}</Link></Row>
+          <Row><span className="mx-1">{product.cardSet}</span></Row>
         </Col>
-        <Col className="col-lg-auto"><div className="text-right" style={{width: "4em"}}>{card.prices.usd && <>{card.prices.usd}$</>}</div></Col>
-        <Col className="col-lg-auto"><div className="text-right" style={{width: "5em"}}>{card.prices.usd && <>{(parseFloat(card.prices.usd) * item.qty).toFixed(2)}$</>}</div></Col>
+        <Col className="col-lg-auto"><div className="text-right" style={{width: "4em"}}>{product.stock > 0 && <>{product.price}$</>}</div></Col>
+        <Col className="col-lg-auto"><div className="text-right" style={{width: "5em"}}>{product.stock > 0 && <>{parseFloat(product.price).toFixed(2)}$</>}</div></Col>
         <Col className="col-lg-auto">
-          {(card.prices.usd)?
+          {(product.stock > 0)?
           <>
             <Form onSubmit={handleSubmit}>
               <div className="d-flex flex-nowrap">

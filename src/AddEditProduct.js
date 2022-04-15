@@ -141,6 +141,7 @@ export function AddEditProduct(props) {
                 {cardSets.length > 0 && cardSets.map((set, i) => {
                   return (<option key={i} value={set.name} />);
                 })}
+                <option value="Accessories" />
               </datalist>
               <Form.Control.Feedback type="invalid">
                 {formErrors.cardSet}

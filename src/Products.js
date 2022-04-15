@@ -29,13 +29,17 @@ export function Products(props) {
   return (
     <div className="Products">
       <Container>
-        <Row xs={1} md={3} className="g-4">
+        <Row xs={1} md={2} lg={3} xl={4} className="g-4">
           {products && products.map((prod) => 
             <Col key={prod._id}>
               <Card className="" style={{ width: '18rem' }} id={prod._id}>
-                <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
+                <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>
+                  <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
+                </Link>
                 <Card.Body>
-                  <Card.Title>{prod.name} {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>}</Card.Title>
+                  <Card.Title>
+                    <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>{prod.name}</Link>
+                    {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>}</Card.Title>
                   <Card.Text>
                     {prod.description}
                   </Card.Text>

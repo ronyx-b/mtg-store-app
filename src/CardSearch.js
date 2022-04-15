@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container, Pagination } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { CardSearchRow } from "./CardSearchRow";
@@ -73,6 +73,7 @@ export function CardSearch(props) {
       getCardData().then((cardData) => {
         console.log(`card data fully loaded, ${cardData.length} records`);
       });
+      window.scrollTo(0, 0);
     } catch (err) {
       console.error(err);
     }
@@ -81,7 +82,7 @@ export function CardSearch(props) {
   return (<div className="CardSearch">
     <Container>
       {page.pageCards && page.pageCards.map((card, i) => 
-        <CardSearchRow key={i + 1 + (page.num - 1) * PER_PAGE} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
+        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
       )}
       <div className="d-block mx-auto" style={{width: "fit-content"}}>
         <Pagination>

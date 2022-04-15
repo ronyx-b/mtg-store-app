@@ -17,6 +17,7 @@ import shoppingCart from './shoppingCart'
 import { Cart } from './Cart';
 import { AddEditProduct } from './AddEditProduct';
 import { CardDetails } from './CardDetails';
+import { ProductDetails } from './ProductDetails';
 
 
 function App() {
@@ -89,12 +90,13 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container style={{ minHeight: "80vh" }}>
+      <Container style={{ minHeight: "70vh" }}>
         <Row>
           <Col>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
+              <Route path="/ProductDetails/:id" element={<ProductDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
               <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />

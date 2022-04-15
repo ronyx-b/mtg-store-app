@@ -111,6 +111,7 @@ export function CardDetails(props) {
                 </h3>
               </Col>
             </Row>
+            <Row><h4>{card.set_name}</h4></Row>
             <Row><h5>{card.type_line}</h5></Row>
             <Row>{card.card_faces?
             (<>
@@ -125,12 +126,17 @@ export function CardDetails(props) {
             <Row>
             {(card.prices.usd)?
               <>
-                <Form onSubmit={handleSubmit}>
-                  <div className="d-flex flex-nowrap">
-                    <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                    <Button type="submit" size="sm">Add</Button>
-                  </div>
-                </Form> 
+                <Col className="col-lg-auto">
+                  {card.prices.usd}$
+                </Col>
+                <Col>
+                  <Form onSubmit={handleSubmit}>
+                    <div className="d-flex flex-nowrap">
+                      <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
+                      <Button type="submit" size="sm">Add</Button>
+                    </div>
+                  </Form>
+                </Col>
               </>
               :<>Out of Stock</>}
             </Row>

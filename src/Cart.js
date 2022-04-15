@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
 import { CartItem } from "./CartItem";
+import { CartProductItem } from "./CartProductItem";
+import { SERVER_URL } from "./config";
 import shoppingCart from "./shoppingCart";
 
 export function Cart(props) {
@@ -8,6 +10,7 @@ export function Cart(props) {
   const setCart = props.setCart;
   const setCartQty = props.setCartQty;
   const [cards, setCards] = useState([]);
+  const [sealed, setSealed] = useState([]);
   const [cartTotal, setCartTotal] = useState();
   const [emptyCartModal, setEmptyCartModal] = useState(false);
 
@@ -46,7 +49,22 @@ export function Cart(props) {
     };
 
     const getSealedData = async () => {
-      return ([]);
+      let requestString = `${SERVER_URL}/api/products/collection`;
+      let products = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
+      if (products.length === 0) {
+        setSealed([]);
+        return ([]);
+      }
+      let requestOptions = { 
+        method: 'POST', 
+        body: JSON.stringify({ products }), 
+        headers: { 'Content-Type': 'application/json'}
+      };
+      let response = await fetch(requestString, requestOptions);
+      let data = await response.json();
+      // console.log(data.products);
+      setSealed(data.products);
+      return (data.products);
     };
 
     const getAccessoriesData = async () => {
@@ -55,6 +73,7 @@ export function Cart(props) {
 
     const calculateCartTotal = (data) => { 
       let cards = data.cards;
+      let sealed = data.sealed;
       let total = cart.reduce((total, item) => { 
         let price = 0;
         switch(item.type) {
@@ -62,6 +81,7 @@ export function Cart(props) {
             price = cards ? parseFloat(cards.find((card) => (card.id === item.id))?.prices.usd) : 0;
             break;
           case "sealed":
+            price = sealed ? parseFloat(sealed.find((product) => (product._id === item.id))?.price) : 0;
             break;
           case "accessory":
             break;
@@ -99,7 +119,10 @@ export function Cart(props) {
       <Container className="p-3">
       {(cart && cart.length > 0)?
         <>
-        {shoppingCart.getCart().filter((item) => (item.type === "single")).map((item, i) => 
+        {shoppingCart.getCart().filter((item) => (item.type === "sealed")).map((item) => 
+          <CartProductItem key={item.id} item={item} product={sealed.find((product) => (product._id === item.id))} adjustCart={adjustCart} />
+        )}
+        {shoppingCart.getCart().filter((item) => (item.type === "single")).map((item) => 
           <CartItem key={item.id} item={item} card={cards.find((card) => (card.id === item.id))} adjustCart={adjustCart} />
         )}
         <Row className="m-1 p-2 border-bottom">
