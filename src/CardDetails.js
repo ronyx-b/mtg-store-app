@@ -95,8 +95,8 @@ export function CardDetails(props) {
   return (<div className="CardDetails">
     <Container>
       {card && <div className="m-3">
-        <Row>
-          <Col className="col-lg-auto">
+        <Row sm={1} md={2}>
+          <Col md="auto" xs={{ order: 'last' }}>
             <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px"}} alt={card.name} loading="lazy" /></Row>
             {card.card_faces && <Row>
               <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px"}} alt={card.name} loading="lazy" />
@@ -105,7 +105,7 @@ export function CardDetails(props) {
           <Col>
             <Row>
               <Col><h3>{card.name}</h3></Col>
-              <Col className="col-lg-auto">
+              <Col md="auto">
                 <h3>
                   {symbols && showSymbols(card.card_faces ? card.card_faces[0].mana_cost : card.mana_cost)}
                 </h3>

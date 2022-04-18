@@ -49,8 +49,8 @@ export function ProductDetails(props) {
   return (<div className="ProductDetails">
     <Container>
       {product && <div className="m-3">
-        <Row>
-          <Col className="col-lg-auto">
+        <Row sm={1} md={2}>
+          <Col md="auto" xs={{ order: 'last' }}>
             <img src={`${SERVER_URL}/img/${product.image}`} style={{maxWidth: "250px"}} alt={product.name} />
           </Col>
           <Col>
@@ -60,7 +60,7 @@ export function ProductDetails(props) {
             <Row>
             {(product.stock > 0)?
               <>
-                <Col className="col-lg-auto">
+                <Col md="auto">
                   {product.price}$
                 </Col>
                 <Col>

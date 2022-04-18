@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Pagination } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { CardSearchRow } from "./CardSearchRow";
