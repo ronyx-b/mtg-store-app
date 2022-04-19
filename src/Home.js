@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, Carousel, Col, Container, Row } from "react-bootstrap";
+import { Carousel, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
+import { ProductCard } from "./ProductCard";
 
-export function Home() {
+export function Home({decodedToken}) {
+  const isAdmin = decodedToken?.isAdmin;
   const [featuredSets, setFeaturedSets] = useState();
   const [products, setProducts] = useState([]);
 
@@ -12,7 +14,11 @@ export function Home() {
       let requestString = `${SERVER_URL}/api/sets`;
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
-      let setsData = data.sets;
+      let setsData = data.sets.sort((first, second) => {
+        let dateFirst = new Date(first.released_at);
+        let dateSecond = new Date(second.released_at);
+        return dateSecond - dateFirst;
+      });
       setFeaturedSets(setsData)
       return setsData;
     }
@@ -35,63 +41,24 @@ export function Home() {
   return (<div className="Home">
     <Container fluid="md">
       <Carousel fade>
-        <Carousel.Item>
-          <img src={`${SERVER_URL}/img/hero/streets-of-new-capenna_hero.jpg`} alt="Streets of New Capenna Hero" className="d-block mw-100" />
-          <Carousel.Caption>
-            <h3 style={{textShadow: "0 0 3px #000000"}}>Order Streets of New Capenna</h3>
-          </Carousel.Caption>
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={`${SERVER_URL}/img/hero/kamigawa-neon-dynasty_hero.jpg`} alt="Kamigawa Neon Dynasty Hero" className="d-block mw-100" />
-          <Carousel.Caption>
-            <h3 style={{textShadow: "0 0 3px #000000"}}>Order Kamigawa Neon Dynasty</h3>
-          </Carousel.Caption>
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={`${SERVER_URL}/img/hero/innistrad-crimson-vow_hero.jpg`} alt="Innistrad: Crimson Vow Hero" className="d-block mw-100" />
-          <Carousel.Caption>
-            <h3 style={{textShadow: "0 0 3px #000000"}}>Order Innistrad: Crimson Vow</h3>
-          </Carousel.Caption>
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={`${SERVER_URL}/img/hero/innistrad-midnight-hunt_hero.jpg`} alt="Innistrad: Midnight Hunt Hero" className="d-block mw-100" />
-          <Carousel.Caption>
-            <h3 style={{textShadow: "0 0 3px #000000"}}>Order Innistrad: Midnight Hunt</h3>
-          </Carousel.Caption>
-        </Carousel.Item>
-        <Carousel.Item>
-          <img src={`${SERVER_URL}/img/hero/kaldheim_hero.jpg`} alt="Kaldheim Hero" className="d-block mw-100" />
-          <Carousel.Caption>
-            <h3 style={{textShadow: "0 0 3px #000000"}}>Order Kaldheim</h3>
-          </Carousel.Caption>
-        </Carousel.Item>
+        {featuredSets && featuredSets.map((set) =>
+          <Carousel.Item key={set._id}>
+            <Link to={`/Products/${set.name}`}>
+              <img src={`${SERVER_URL}/img/hero/${set.hero}`} alt={`${set.name} Hero`} className="d-block mw-100" />
+            </Link>
+            <Carousel.Caption>
+              <h3 style={{textShadow: "0 0 3px #000000"}}>Order {set.name}</h3>
+            </Carousel.Caption>
+          </Carousel.Item>
+        )}
       </Carousel>
       <h1 className="my-4 text-center text-uppercase">Shop our latests sets</h1>
-      {featuredSets && featuredSets.sort((first, second) => {
-        let dateFirst = new Date(first.released_at);
-        let dateSecond = new Date(second.released_at);
-        return dateSecond - dateFirst;
-      }).map((set, i) => <div key={set._id}>
+      {featuredSets && featuredSets.filter((set) => set.featured).map((set, i) => <div key={set._id}>
         <h2>{set.name}</h2>
         <Container>
           <Row xs={1} md={2} lg={3}>
-            {products && products.filter((prod) => prod.cardSet === set.name).map((prod) => 
-              <Col key={prod._id} className="my-3">
-                <Card className="m-2 h-100 shadow" style={{ maxWidth: '18rem' }} id={prod._id}>
-                  <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>
-                    <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
-                  </Link>
-                  <Card.Body>
-                    <Card.Title>
-                      <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>{prod.name}</Link>
-                      {/* {isAdmin && <Link to={`/EditProduct/${prod._id}`} className="h6">Edit</Link>} */}
-                    </Card.Title>
-                    <Card.Text>
-                      {prod.description}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>  
-              </Col>
+            {products && products.filter((product) => product.cardSet === set.name).map((product) => 
+              <ProductCard key={product._id} product={product} isAdmin={isAdmin} />
             )}
           </Row>
         </Container>

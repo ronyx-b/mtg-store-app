@@ -5,7 +5,7 @@ import { SERVER_URL } from "./config";
 
 export function AddFeaturedSet({token}) {
   const [cardSets, setCardSets] = useState([]);
-  const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
+  const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", hero: "", featured: false});
   const [formErrors, ] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: ""});
   const [submissionError, ] = useState("");
   const [isSubmitted, ] = useState(false);
@@ -23,7 +23,7 @@ export function AddFeaturedSet({token}) {
     });
   };
 
-  const setFeatured = (e) => {
+  const handleChange = (e) => {
     let name = e.target.name;
     let value = e.target.value;
     let type = e.target.type;
@@ -33,7 +33,11 @@ export function AddFeaturedSet({token}) {
     setFormFields((formData) => {
       return {...formData, [name]: value};
     });
-  }
+  };
+
+  // const setFeatured = (e) => {
+
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,10 +114,14 @@ export function AddFeaturedSet({token}) {
               <Col md={4}>
                 <Form.Group className="mb-3" controlId="formSets.code">
                   <Form.Label>Featured:</Form.Label>
-                  <Form.Check type="checkbox" name="featured" value="true" label="Set is featured" checked={formFields.featured} onChange={setFeatured} />
+                  <Form.Check type="checkbox" name="featured" value="true" label="Set is featured" checked={formFields.featured} onChange={handleChange} />
                 </Form.Group>
               </Col>
             </Row>
+            <Form.Group className="mb-3" controlId="formSets.code">
+              <Form.Label>Hero:</Form.Label>
+              <Form.Control type="text" name="hero" value={formFields.hero} onChange={handleChange} />
+            </Form.Group>
             <div className="d-flex mx-auto" style={{width: "fit-content"}}>
               <Button variant="primary" type="submit" className="d-block mx-3" disabled={isSubmitted}>Save</Button>
               <Button variant="secondary" className="d-block mx-3" disabled={isSubmitted} onClick={goBack}>Cancel</Button>

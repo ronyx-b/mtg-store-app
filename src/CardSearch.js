@@ -43,8 +43,13 @@ export function CardSearch({setCart, setCartQty}) {
       let cardData = [];
       const urlParams = new URLSearchParams(location.search);
       let search = urlParams.get('search');
+      let set = urlParams.get('set');
       let requestString = 'https://api.scryfall.com/cards/search';
-      requestString += `?q=${search}&unique=prints`;
+      if (set) {
+        requestString += `?order=set&q=e%3A${set}&unique=prints`;
+      } else {
+        requestString += `?q=${search}&unique=prints`;
+      }
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       cardData = data.data;

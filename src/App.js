@@ -94,8 +94,10 @@ function App() {
     </header>
     <main style={{ minHeight: "70vh" }}>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
+        <Route path="/" element={<Home decodedToken={decodedToken} />} />
+        <Route path="/Products" element={<Products decodedToken={decodedToken} setCart={setCart} setCartQty={setCartQty} />} >
+          <Route path="/Products/:set" element={<Products decodedToken={decodedToken} setCart={setCart} setCartQty={setCartQty} />} />
+        </Route>
         <Route path="/ProductDetails/:id" element={<ProductDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
         <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
         <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
