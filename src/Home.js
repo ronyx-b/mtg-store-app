@@ -67,13 +67,17 @@ export function Home() {
         </Carousel.Item>
       </Carousel>
       <h1 className="my-4 text-center text-uppercase">Shop our latests sets</h1>
-      {featuredSets && featuredSets.map((set, i) => <div key={set._id}>
+      {featuredSets && featuredSets.sort((first, second) => {
+        let dateFirst = new Date(first.released_at);
+        let dateSecond = new Date(second.released_at);
+        return dateSecond - dateFirst;
+      }).map((set, i) => <div key={set._id}>
         <h2>{set.name}</h2>
         <Container>
-          <Row xs={1} md={2} lg={3} className="g-4">
+          <Row xs={1} md={2} lg={3}>
             {products && products.filter((prod) => prod.cardSet === set.name).map((prod) => 
-              <Col key={prod._id}>
-                <Card className="" style={{ width: '18rem' }} id={prod._id}>
+              <Col key={prod._id} className="my-3">
+                <Card className="m-2 h-100 shadow" style={{ maxWidth: '18rem' }} id={prod._id}>
                   <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>
                     <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
                   </Link>

@@ -29,10 +29,10 @@ export function Products({decodedToken}) {
   return (
     <div className="Products">
       <Container>
-        <Row xs={1} md={2} lg={3} xl={4} className="g-4">
+        <Row xs={1} md={2} lg={3} xl={4}>
           {products && products.map((prod) => 
-            <Col key={prod._id}>
-              <Card className="" style={{ width: '18rem' }} id={prod._id}>
+            <Col key={prod._id} className="my-3">
+              <Card className="m-2 h-100 shadow" style={{ maxWidth: '18rem' }} id={prod._id}>
                 <Link to={`/ProductDetails/${prod._id}`} style={{ color: "#000000", textDecoration: "none"}}>
                   <Card.Img variant="top" src={`${SERVER_URL}/img/${prod.image}`} loading="lazy" />
                 </Link>
