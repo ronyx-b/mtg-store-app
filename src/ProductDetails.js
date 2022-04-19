@@ -4,9 +4,9 @@ import shoppingCart from "./shoppingCart";
 import { SERVER_URL } from "./config";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 
-export function ProductDetails(props) {
-  const setCart = props.setCart;
-  const setCartQty = props.setCartQty;
+export function ProductDetails({setCart, setCartQty}) {
+  // const setCart = props.setCart;
+  // const setCartQty = props.setCartQty;
   let params = useParams();
   let id = params?.id || null;
   const [product, setProduct] = useState();
@@ -49,8 +49,8 @@ export function ProductDetails(props) {
   return (<div className="ProductDetails">
     <Container>
       {product && <div className="m-3">
-        <Row sm={1} md={2}>
-          <Col md="auto" xs={{ order: 'last' }}>
+        <Row>
+          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}}>
             <img src={`${SERVER_URL}/img/${product.image}`} style={{maxWidth: "250px"}} alt={product.name} />
           </Col>
           <Col>
@@ -60,10 +60,10 @@ export function ProductDetails(props) {
             <Row>
             {(product.stock > 0)?
               <>
-                <Col md="auto">
+                <Col className="text-right">
                   {product.price}$
                 </Col>
-                <Col>
+                <Col md="auto">
                   <Form onSubmit={handleSubmit}>
                     <div className="d-flex flex-nowrap">
                       <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />

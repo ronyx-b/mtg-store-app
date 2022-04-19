@@ -3,7 +3,7 @@ import { Container, Pagination } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { CardSearchRow } from "./CardSearchRow";
 
-export function CardSearch(props) {
+export function CardSearch({setCart, setCartQty}) {
   const [cards, setCards] = useState([]);
   // const [pageCards, setPageCards] = useState([]);
   const [page, setPage] = useState({ num: 1, pageCards: []});
@@ -82,7 +82,7 @@ export function CardSearch(props) {
   return (<div className="CardSearch">
     <Container>
       {page.pageCards && page.pageCards.map((card, i) => 
-        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={props.setCart} setCartQty={props.setCartQty} />
+        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={setCart} setCartQty={setCartQty} />
       )}
       <div className="d-block mx-auto" style={{width: "fit-content"}}>
         <Pagination>

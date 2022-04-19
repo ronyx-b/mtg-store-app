@@ -3,15 +3,15 @@ import { Alert, Button, Card, Col, Container, Form, Modal, Row } from "react-boo
 import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_URL } from "./config"
 
-export function AddEditProduct(props) {
-  const mode = props.mode;
-  const token = props.token;
+export function AddEditProduct({mode, token}) {
+  // const mode = props.mode;
+  // const token = props.token;
   let params = useParams();
   let id = params?.id || null;
   const [formFields, setFormFields] = useState({name: "", prodType: "sealed", description: "", cardSet: "", price: 0, stock: 0});
   const image = useRef(null);
   const [currentImage, setCurrentImage] = useState();
-  const [formErrors, setFormErrors] = useState({name: "", prodType: "", description: "", cardSet: "", price: "", stock: "", image: ""});
+  const [formErrors, /* setFormErrors */] = useState({name: "", prodType: "", description: "", cardSet: "", price: "", stock: "", image: ""});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [imageModal, setImagetModal] = useState(false);
   const [submissionError, setSubmissionError] = useState("");

@@ -5,10 +5,10 @@ import { SERVER_URL } from "./config"
 // import { useSelector, useDispatch, connect } from "react-redux";
 // import { addProducts } from "./productsSlice";
 
-export function Products(props) {
+export function Products({decodedToken}) {
   // const products = useSelector((state) => state.products.all);
   // const dispatch = useDispatch();
-  const isAdmin = props.decodedToken?.isAdmin;
+  const isAdmin = decodedToken?.isAdmin;
   const [products, setProducts] = useState([]);
 
   useEffect(() => {

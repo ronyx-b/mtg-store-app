@@ -18,6 +18,7 @@ import { Cart } from './Cart';
 import { AddEditProduct } from './AddEditProduct';
 import { CardDetails } from './CardDetails';
 import { ProductDetails } from './ProductDetails';
+import { AddFeaturedSet } from './AddFeaturedSet';
 
 
 function App() {
@@ -48,8 +49,8 @@ function App() {
     setSearchString('');
   }
 
-  return (
-    <div className="App">
+  return (<>
+    <header>
       <Navbar bg="dark" variant="dark" sticky="top" expand="lg">
         <Container>
           <LinkContainer to="/">
@@ -90,67 +91,64 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container style={{ minHeight: "70vh" }}>
+    </header>
+    <main style={{ minHeight: "70vh" }}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
+        <Route path="/ProductDetails/:id" element={<ProductDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
+        <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
+        <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
+        <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+        <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+        <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
+        <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/Decklist" element={<DecklistProcessor />} />
+        <Route path="/AddFeaturedSet" element={<AddFeaturedSet token={token} />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </main>
+    <footer className="bg-dark text-center text-lg-start text-white p-4">
+      <Container>
+        <Row className="d-flex flex-row justify-content-center">
+          <div id="disclaimer" style={{color: "#999999", fontSize: "0.8em"}}>
+            <p>This site is made solely for demonstration purposes and is not intended to actually sell any product or service.</p>
+            <p>Portions of the site are unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. The literal and graphical information presented on this site about Magic: The Gathering, including card images, the mana symbols, and Oracle text, is copyright Wizards of the Coast, LLC, a subsidiary of Hasbro, Inc. The site is not produced by, endorsed by, supported by, or affiliated with Wizards of the Coast.</p>
+            <p>Card information is provided by Scryfall, LLC. Prices and promotional offers represent daily estimates and/or market values provided by their affiliates. Absolutely no guarantee is made for any price information. See stores for final prices and details.</p>
+            <p>All other content &copy;{(new Date()).getFullYear()} Rony Boscan.</p>
+          </div>
+        </Row>
         <Row>
-          <Col>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/Products" element={<Products decodedToken={decodedToken} />} />
-              <Route path="/ProductDetails/:id" element={<ProductDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
-              <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
-              <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
-              <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
-              <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
-              <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
-              <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-              <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
-              <Route path="/Decklist" element={<DecklistProcessor />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Col>
+          <ul className="list-unstyled d-flex flex-row justify-content-center" style={{ fontSize: "1.5em" }}>
+            <li>
+              <a className="text-white px-3" href="https://github.com/ronyx-b">
+                <i className="bi bi-github"></i>
+              </a>
+            </li>
+            <li>
+              <a className="text-white px-3" href="https://www.linkedin.com/in/ronyboscan/">
+                <i className="bi bi-linkedin"></i>
+              </a>
+            </li>
+            <li>
+              <a className="text-white px-3" href="https://twitter.com/ronyx">
+                <i className="bi bi-twitter"></i>
+              </a>
+            </li>
+            <li>
+              <a className="text-white px-3" href="https://portfolio-ronyx-b.vercel.app/">
+                {/* <i className="bi bi-briefcase-fill"></i> */}
+                <i className="bi bi-file-earmark-code-fill"></i>
+              </a>
+            </li>
+          </ul>
         </Row>
       </Container>
-      <footer className="bg-dark text-center text-lg-start text-white p-4">
-        <Container>
-          <Row className="d-flex flex-row justify-content-center">
-            <div id="disclaimer" style={{color: "#999999", fontSize: "0.8em"}}>
-              <p>This site is made solely for demonstration purposes and is not intended to actually sell any product or service.</p>
-              <p>Portions of the site are unofficial Fan Content permitted under the Wizards of the Coast Fan Content Policy. The literal and graphical information presented on this site about Magic: The Gathering, including card images, the mana symbols, and Oracle text, is copyright Wizards of the Coast, LLC, a subsidiary of Hasbro, Inc. The site is not produced by, endorsed by, supported by, or affiliated with Wizards of the Coast.</p>
-              <p>Card information is provided by Scryfall, LLC. Prices and promotional offers represent daily estimates and/or market values provided by their affiliates. Absolutely no guarantee is made for any price information. See stores for final prices and details.</p>
-              <p>All other content &copy;{(new Date()).getFullYear()} Rony Boscan.</p>
-            </div>
-          </Row>
-          <Row>
-            <ul className="list-unstyled d-flex flex-row justify-content-center" style={{ fontSize: "1.5em" }}>
-              <li>
-                <a className="text-white px-3" href="https://github.com/ronyx-b">
-                  <i className="bi bi-github"></i>
-                </a>
-              </li>
-              <li>
-                <a className="text-white px-3" href="https://www.linkedin.com/in/ronyboscan/">
-                  <i className="bi bi-linkedin"></i>
-                </a>
-              </li>
-              <li>
-                <a className="text-white px-3" href="https://twitter.com/ronyx">
-                  <i className="bi bi-twitter"></i>
-                </a>
-              </li>
-              <li>
-                <a className="text-white px-3" href="https://portfolio-ronyx-b.vercel.app/">
-                  {/* <i className="bi bi-briefcase-fill"></i> */}
-                  <i className="bi bi-file-earmark-code-fill"></i>
-                </a>
-              </li>
-            </ul>
-          </Row>
-        </Container>
-      </footer>
-    </div>
-  );
+    </footer>
+  </>);
 }
 
 export default App;

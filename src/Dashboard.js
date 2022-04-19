@@ -2,9 +2,9 @@ import { Button, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
 
-export function Dashboard(props) {
-  let token = props.token;
-  let decodedToken = props.decodedToken;
+export function Dashboard({token, decodedToken}) {
+  // let token = props.token;
+  // let decodedToken = props.decodedToken;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,6 +35,7 @@ export function Dashboard(props) {
         <p>{decodedToken?.email}</p>
         <p>{decodedToken.exp}</p>
         <p><Link to="/AddProduct">Add New Product</Link></p>
+        <p><Link to="/AddFeaturedSet">Add Featured Set</Link></p>
         <Button onClick={handleSubmit}>Are You Admin</Button>
       </Container>
     </div>

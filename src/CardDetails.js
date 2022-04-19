@@ -3,9 +3,9 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import shoppingCart from "./shoppingCart";
 import { useEffect, useState } from "react";
 
-export function CardDetails(props) {
-  const setCart = props.setCart;
-  const setCartQty = props.setCartQty;
+export function CardDetails({setCart, setCartQty}) {
+  // const setCart = props.setCart;
+  // const setCartQty = props.setCartQty;
   let params = useParams();
   let id = params?.id || null;
   const [card, setCard] = useState();
@@ -95,11 +95,11 @@ export function CardDetails(props) {
   return (<div className="CardDetails">
     <Container>
       {card && <div className="m-3">
-        <Row sm={1} md={2}>
-          <Col md="auto" xs={{ order: 'last' }}>
-            <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px"}} alt={card.name} loading="lazy" /></Row>
+        <Row>
+          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}}>
+            <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" /></Row>
             {card.card_faces && <Row>
-              <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px"}} alt={card.name} loading="lazy" />
+              <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
             </Row>}
           </Col>
           <Col>
@@ -123,13 +123,13 @@ export function CardDetails(props) {
             (card.oracle_text.split("\n").map((line, i) => <p key={i} className="mb-1">{symbols && addSymbolsToText(line)}</p>))           
             }
             </Row>
-            <Row>
+            <Row className="mb-3">
             {(card.prices.usd)?
               <>
-                <Col className="col-lg-auto">
+                <Col className="text-right">
                   {card.prices.usd}$
                 </Col>
-                <Col>
+                <Col xs="auto">
                   <Form onSubmit={handleSubmit}>
                     <div className="d-flex flex-nowrap">
                       <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />

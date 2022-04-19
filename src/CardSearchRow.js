@@ -3,10 +3,10 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import shoppingCart from "./shoppingCart";
 
-export function CardSearchRow(props) {
-  const card = props.card;
-  const setCart = props.setCart;
-  const setCartQty = props.setCartQty;
+export function CardSearchRow({card, setCart, setCartQty}) {
+  // const card = props.card;
+  // const setCart = props.setCart;
+  // const setCartQty = props.setCartQty;
   const [qty, setQty] = useState(1);
 
   const handleChange = (e) => {
@@ -29,7 +29,6 @@ export function CardSearchRow(props) {
 
   return (<div className="CardSearRow">
     <Row className="m-1 p-2 border-bottom">
-      <Col className="col-lg-auto">{props.index}</Col>
       <Col className="col-lg-auto">
         <Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>
           <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} height="150" alt={card.name} loading="lazy" />

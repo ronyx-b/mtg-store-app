@@ -12,7 +12,7 @@ export function Account(props) {
     let requestString = `${SERVER_URL}/api/user/account`;
     try {
       let response = await fetch(requestString, { 
-        method: 'GET',
+        method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `JWT ${token}` 
