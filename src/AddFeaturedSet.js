@@ -1,14 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config";
 
 export function AddFeaturedSet({token}) {
   const [cardSets, setCardSets] = useState([]);
-  const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", hero: "", featured: false});
+  const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
   const [formErrors, ] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: ""});
-  const [submissionError, ] = useState("");
-  const [isSubmitted, ] = useState(false);
+  const [submissionError, setSubmissionError ] = useState("");
+  const [isSubmitted, setIsSubmitted ] = useState(false);
+  const hero = useRef(null);
   const navigate = useNavigate();
 
   const goBack = useCallback(() => {
@@ -41,35 +42,58 @@ export function AddFeaturedSet({token}) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitted(true);
     console.log(formFields);
-    let requestString = `${SERVER_URL}/api/sets`;
     try {
+      let requestString = `${SERVER_URL}/api/sets`;
+      let body = new FormData(e.target);  
       let response = await fetch(requestString, { 
         method: 'POST',
-        body: JSON.stringify(formFields),
+        body,
         headers: { 
-          'Content-Type': 'application/json',
           'Authorization': `JWT ${token}` 
         } 
       });
       let json = await response.json();
       console.log(json.message);
+      if (json.success) {
+        navigate('/Products');
+      } else {
+        setIsSubmitted(false);
+        setSubmissionError(json.message);
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
   useEffect(() => {
-    const getSets = async () => {
+    const getFeaturedSets = async () => {
+      let requestString = `${SERVER_URL}/api/sets`;
+      let response = await fetch(requestString, { method: 'GET'});
+      let data = await response.json();
+      let featuredSets = data.sets.sort((first, second) => {
+        let dateFirst = new Date(first.released_at);
+        let dateSecond = new Date(second.released_at);
+        return dateSecond - dateFirst;
+      });
+      return featuredSets;
+    }
+
+    const getSets = async (featuredSets) => {
       let requestString = "https://api.scryfall.com/sets/";
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       let setsData = data.data;
-      setCardSets(setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
+      setsData = setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia");
+      setsData = setsData.filter((set) => !featuredSets.some((featSet) => featSet.name === set.name));
+      setCardSets(setsData);
     }
 
     try {
-      getSets();
+      getFeaturedSets().then((featuredSets) => {
+        getSets(featuredSets);
+      });
     } catch (err) {
       console.error(err);
     }
@@ -82,18 +106,12 @@ export function AddFeaturedSet({token}) {
           <h1 className="cardHeader">Add a Featured Set</h1>
         </Card.Header>
         <Container className="p-3">
-          <Form noValidate id="formProduct" onSubmit={handleSubmit}>
+          <Form id="formSets" onSubmit={handleSubmit}>
             <input type="hidden" name="name" value={formFields.name} />
-            <Form.Group className="mb-3" controlId="formSets.name">
-              <Form.Label>Set Name:</Form.Label>
-              <Form.Select name="scryfall_id" value={formFields.scryfall_id} onChange={setCardSet}>
-                {cardSets.length > 0 && cardSets.map((set) => {
-                  return (<option key={set.id} value={set.id}>{set.name}</option>);
-                })}
-              </Form.Select>
-            </Form.Group>
+            <input type="hidden" name="code" value={formFields.code} />
+            <input type="hidden" name="released_at" value={formFields.released_at} />
             <Row>
-              <Col md={4}>
+              {/* <Col md={4}>
                 <Form.Group className="mb-3" controlId="formSets.code">
                   <Form.Label>Set Code:</Form.Label>
                   <Form.Control type="text" name="code" value={formFields.code} disabled />
@@ -103,24 +121,41 @@ export function AddFeaturedSet({token}) {
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3" controlId="formSets.code">
+                <Form.Group className="mb-3" controlId="formSets.releasedAt">
                   <Form.Label>Date Released:</Form.Label>
                   <Form.Control type="date" name="released_at" value={formFields.released_at} disabled />
                   <Form.Control.Feedback type="invalid">
                     {formErrors.released_at}
                   </Form.Control.Feedback>
                 </Form.Group>
+              </Col> */}
+              <Col xs>
+                <Form.Group className="mb-3" controlId="formSets.name">
+                <Form.Label>Set Name:</Form.Label>
+                <Form.Select name="scryfall_id" value={formFields.scryfall_id} onChange={setCardSet}>
+                  {cardSets.length > 0 && cardSets.map((set) => {
+                    return (<option key={set.id} value={set.id}>{set.name}</option>);
+                  })}
+                </Form.Select>
+              </Form.Group>
               </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3" controlId="formSets.code">
+              <Col xs={12} sm="auto">
+                <Form.Group className="mb-3" controlId="formSets.featured">
                   <Form.Label>Featured:</Form.Label>
                   <Form.Check type="checkbox" name="featured" value="true" label="Set is featured" checked={formFields.featured} onChange={handleChange} />
                 </Form.Group>
               </Col>
             </Row>
-            <Form.Group className="mb-3" controlId="formSets.code">
+            {/* <Form.Group className="mb-3" controlId="formSets.hero">
               <Form.Label>Hero:</Form.Label>
               <Form.Control type="text" name="hero" value={formFields.hero} onChange={handleChange} />
+            </Form.Group> */}
+            <Form.Group className="mb-3" controlId="formSets.hero">
+              <Form.Label>Hero:</Form.Label>
+              <Form.Control type="file" name="hero" ref={hero} accept="image/*" required />
+              {/* {mode === "edit" && 
+                <Button size="sm" className="my-1" onClick={handleShow}>View current image</Button>
+              } */}
             </Form.Group>
             <div className="d-flex mx-auto" style={{width: "fit-content"}}>
               <Button variant="primary" type="submit" className="d-block mx-3" disabled={isSubmitted}>Save</Button>
