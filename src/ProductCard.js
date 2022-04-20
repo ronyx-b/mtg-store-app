@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Card, Col, Form } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config";
 import shoppingCart from "./shoppingCart";
@@ -39,12 +39,21 @@ export function ProductCard({product, isAdmin, setCart, setCartQty}) {
           <Card.Text>
             {product.description}
           </Card.Text>
-          <Form onSubmit={handleSubmit}>
-            <div className="d-flex flex-nowrap">
-              <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-              <Button type="submit" size="sm">Add</Button>
-            </div>
-          </Form>
+          {(product.stock > 0)?
+          <Row xs={1} sm={2}>
+            <Col className="text-right">
+              {product.price}$
+            </Col>
+            <Col md="auto">
+              <Form onSubmit={handleSubmit}>
+                <div className="d-flex flex-nowrap">
+                  <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
+                  <Button type="submit" size="sm">Add</Button>
+                </div>
+              </Form>
+            </Col>
+          </Row>
+          :<>Out of Stock</>}
           {isAdmin && 
             <Button size="sm" className="position-absolute" style={{top: "10px", right: "10px"}} onClick={() => {navigate(`/EditProduct/${product._id}`)}}><i className="bi bi-gear"></i> Edit</Button>
           }

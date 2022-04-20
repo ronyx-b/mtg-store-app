@@ -47,7 +47,9 @@ export function Home({decodedToken}) {
               <img src={`${SERVER_URL}/img/hero/${set.hero}`} alt={`${set.name} Hero`} className="d-block mw-100" />
             </Link>
             <Carousel.Caption>
-              <h3 style={{textShadow: "0 0 3px #000000"}}>Order {set.name}</h3>
+              {/* <Link to={`/Products/${set.name}`}> */}
+                <h3 className="text-reset" style={{textShadow: "0 0 3px #000000"}}>Order {set.name}</h3>
+              {/* </Link> */}
             </Carousel.Caption>
           </Carousel.Item>
         )}
