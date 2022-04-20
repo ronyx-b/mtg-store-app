@@ -36,8 +36,6 @@ export function CardDetails({setCart, setCartQty}) {
         textBefore = text.substring(0, first);
         symbol = showSymbols(text.substring(first, last + 1));
         text = text.substring(last + 1);
-        console.log(textBefore)
-        console.log(text);
         parsedtext.push(textBefore, symbol);
       }
     }
@@ -98,7 +96,7 @@ export function CardDetails({setCart, setCartQty}) {
         <Row>
           <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}}>
             <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" /></Row>
-            {card.card_faces && <Row>
+            {card.card_faces && card.card_faces[1].image_uris && <Row>
               <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
             </Row>}
           </Col>
@@ -107,13 +105,13 @@ export function CardDetails({setCart, setCartQty}) {
               <Col><h3>{card.name}</h3></Col>
               <Col md="auto">
                 <h3>
-                  {symbols && showSymbols(card.card_faces ? card.card_faces[0].mana_cost : card.mana_cost)}
+                  {symbols && addSymbolsToText(card.mana_cost ? card.mana_cost : ((card.card_faces[1].mana_cost)? `${card.card_faces[0].mana_cost} // ${card.card_faces[1].mana_cost}` : card.card_faces[0].mana_cost ))}
                 </h3>
               </Col>
             </Row>
             <Row><h4>{card.set_name}</h4></Row>
             <Row><h5>{card.type_line}</h5></Row>
-            <Row>{card.card_faces?
+            <Row style={{ minHeight: "50%" }}>{card.card_faces?
             (<>
               {card.card_faces[0].oracle_text.split("\n").map((line, i) => <p key={i} className="mb-1">{symbols && addSymbolsToText(line)}</p>)}
               <hr />
@@ -126,7 +124,7 @@ export function CardDetails({setCart, setCartQty}) {
             <Row className="mb-3">
             {(card.prices.usd)?
               <>
-                <Col className="text-right">
+                <Col xs className="fw-bold">
                   {card.prices.usd}$
                 </Col>
                 <Col xs="auto">

@@ -50,20 +50,20 @@ export function ProductDetails({setCart, setCartQty}) {
     <Container>
       {product && <div className="m-3">
         <Row>
-          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}}>
+          <Col xs={{span: 12, order: "last"}} sm={{span: "auto", order: "first"}}>
             <img src={`${SERVER_URL}/img/${product.image}`} style={{maxWidth: "250px"}} alt={product.name} />
           </Col>
           <Col>
             <Row><h3>{product.name}</h3></Row>
             <Row><h4>{product.cardSet}</h4></Row>
             <Row>{product.description}</Row>
-            <Row>
+            <Row className="mb-3">
             {(product.stock > 0)?
               <>
-                <Col className="text-right">
+                <Col xs className="text-right fw-bold">
                   {product.price}$
                 </Col>
-                <Col md="auto">
+                <Col xs="auto">
                   <Form onSubmit={handleSubmit}>
                     <div className="d-flex flex-nowrap">
                       <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />

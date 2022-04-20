@@ -51,7 +51,7 @@ export function Products({decodedToken, setCart, setCartQty}) {
         {set && cardSet && <>
         <img src={`${SERVER_URL}/img/hero/${cardSet.hero}`} alt={cardSet.name} className="d-block mw-100" />
         <div className="my-3">
-          <Button size="lg" variant="primary" type="button" className="d-block mx-auto" onClick={() => navigate(`/CardSearch?set=${cardSet.code}`)}>Brose {cardSet.name} singles</Button>
+          <Button size="lg" variant="primary" type="button" className="d-block mx-auto" onClick={() => navigate(`/CardSearch?set=${cardSet.code}`)}>Browse {cardSet.name} singles</Button>
         </div>
         </>}
         <Row xs={1} md={2} lg={3} xl={4}>

@@ -58,7 +58,7 @@ export function Home({decodedToken}) {
       {featuredSets && featuredSets.filter((set) => set.featured).map((set, i) => <div key={set._id}>
         <h2>{set.name}</h2>
         <Container>
-          <Row xs={1} md={2} lg={3}>
+          <Row xs={1} md={2} lg={3} xl={4}>
             {products && products.filter((product) => product.cardSet === set.name).map((product) => 
               <ProductCard key={product._id} product={product} isAdmin={isAdmin} />
             )}
