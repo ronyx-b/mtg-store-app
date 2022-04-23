@@ -6,7 +6,6 @@ import { SERVER_URL } from "./config";
 export function AddFeaturedSet({token}) {
   const [cardSets, setCardSets] = useState([]);
   const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
-  const [formErrors, ] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: ""});
   const [submissionError, setSubmissionError ] = useState("");
   const [isSubmitted, setIsSubmitted ] = useState(false);
   const hero = useRef(null);
@@ -35,10 +34,6 @@ export function AddFeaturedSet({token}) {
       return {...formData, [name]: value};
     });
   };
-
-  // const setFeatured = (e) => {
-
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
