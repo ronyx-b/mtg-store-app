@@ -1,17 +1,14 @@
 import { useParams } from "react-router-dom";
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
+import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
 export function CardDetails() {
   let params = useParams();
   let id = params?.id || null;
   const [card, setCard] = useState();
   const [symbols, setSymbols] = useState();
-  const cartQty = useSelector((state) => state.cart.value.find((item) => item.id === id )?.qty || 0);
-  const [qty, setQty] = useState(cartQty === 0 ? 1 : cartQty);
-  const dispatch = useDispatch();
+  const [item, setItem] = useState({});
 
   const showSymbols = (symbolCode) => {
     let symbolCodeArr = symbolCode.split("}{");
@@ -44,32 +41,6 @@ export function CardDetails() {
     return parsedtext;
   };
 
-  const handleChange = (e) => {
-    let value = parseInt(e.target.value)
-    if (isNaN(value) || value < 0) {
-      setQty(0);
-    } else if (value > 20) {
-      setQty(20);
-    } else {
-      setQty(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // setCart(shoppingCart.addOrRemoveToCart(item, qty));
-    // setCartQty(shoppingCart.getCartQty());
-    let item = {id: card.id, type: "single", name: card.name};
-    if (cartQty === 0) {
-      dispatch(addOrRemoveToCart({item, qty}));
-    } else {
-      dispatch(adjustCart({item, qty}));
-      if (qty === 0) {
-        setQty(1);
-      }
-    } 
-  };
-
   useEffect(() => {
     const getCardData = async (id) => {
       let requestString = `https://api.scryfall.com/cards/${id}`;
@@ -93,7 +64,9 @@ export function CardDetails() {
 
     try {
       getSymbols();
-      getCardData(id);
+      getCardData(id).then((card) => {
+        setItem({id: card.id, type: "single", name: card.name});
+      });
     } catch (err) {
       console.log(err);
     }
@@ -137,12 +110,7 @@ export function CardDetails() {
                   {card.prices.usd}$
                 </Col>
                 <Col xs="auto">
-                  <Form onSubmit={handleSubmit}>
-                    <div className="d-flex flex-nowrap">
-                      <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                      <Button type="submit" size="sm" disabled={qty === cartQty}>{cartQty === 0 ? "Add": "Adjust"}</Button>
-                    </div>
-                  </Form>
+                  <AddAdjustCartButtons item={item} />
                 </Col>
               </>
               :<>Out of Stock</>}

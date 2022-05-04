@@ -1,37 +1,9 @@
-import { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 import { SERVER_URL } from "./config";
-import { adjustCart } from "./features/cart/cartSlice";
 
 export function CartProductItem({item, product}) {
-  const [qty, setQty] = useState(item.qty);
-  const dispatch = useDispatch();
-
-  const adjustShoppingCart = (qty) => {
-    dispatch(adjustCart({item, qty}));
-  };
-
-  const handleChange = (e) => {
-    let value = parseInt(e.target.value)
-    if (isNaN(value) || value < 0) {
-      setQty(0);
-    } else if (value > 20) {
-      setQty(20);
-    } else {
-      setQty(value);
-    }
-  };
-
-  const removeItem = () => {
-    adjustShoppingCart(0);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    adjustShoppingCart(qty);
-  };
 
   return (<div className="CartProductItem">
     <Row className="m-1 p-2 border-bottom">
@@ -49,18 +21,10 @@ export function CartProductItem({item, product}) {
         <Col xs={3} md="auto"><div className="text-right" style={{width: "5em"}}>{product.stock > 0 && <>{parseFloat(product.price).toFixed(2)}$</>}</div></Col>
         <Col xs={6} md="auto">
           {(product.stock > 0)?
-          <>
-            <Form onSubmit={handleSubmit}>
-              <div className="d-flex flex-nowrap">
-                <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                <Button type="submit" size="sm" disabled={item.qty === qty}>Adjust</Button>
-                <Button variant="secondary" size="sm" onClick={removeItem}>
-                  <i className="bi bi-trash3-fill"></i>
-                </Button>
-              </div>
-            </Form> 
-          </>
-          :<>Out of Stock</>}
+          <AddAdjustCartButtons item={item} showRemove={true} />
+          :
+          <>Out of Stock</>
+          }
         </Col>
       </>}
     </Row>

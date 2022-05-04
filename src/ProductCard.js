@@ -1,42 +1,15 @@
-import { useState } from "react";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 import { SERVER_URL } from "./config";
-import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
 import { selectDecodedToken } from "./features/token/tokenSlice";
 
 export function ProductCard({product}) {
   const decodedToken = useSelector(selectDecodedToken);
   const isAdmin = decodedToken?.isAdmin;
-  const cartQty = useSelector((state) => state.cart.value.find((item) => item.id === product._id )?.qty || 0);
-  const [qty, setQty] = useState(cartQty === 0 ? 1 : cartQty);
-  const dispatch = useDispatch();
+  const item = {id: product._id, type: product.prodType, name: product.name};
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    let value = parseInt(e.target.value)
-    if (isNaN(value) || value < 0) {
-      setQty(0);
-    } else if (value > 20) {
-      setQty(20);
-    } else {
-      setQty(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let item = {id: product._id, type: product.prodType, name: product.name};
-    if (cartQty === 0) {
-      dispatch(addOrRemoveToCart({item, qty}));
-    } else {
-      dispatch(adjustCart({item, qty}));
-      if (qty === 0) {
-        setQty(1);
-      }
-    } 
-  };
 
   return (<>
     <Col className="my-3 position-relative">
@@ -57,12 +30,7 @@ export function ProductCard({product}) {
               {product.price}$
             </Col>
             <Col md="auto">
-              <Form onSubmit={handleSubmit}>
-                <div className="d-flex flex-nowrap">
-                  <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                  <Button type="submit" size="sm" disabled={qty === cartQty}>{cartQty === 0 ? "Add": "Adjust"}</Button>
-                </div>
-              </Form>
+              <AddAdjustCartButtons item={item} />
             </Col>
           </Row>
           :<>Out of Stock</>}

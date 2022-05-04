@@ -1,30 +1,9 @@
-import { useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { addOrRemoveToCart } from "./features/cart/cartSlice";
+import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
 export function CardSearchRow({card}) {
   const item = {id: card.id, type: "single", name: card.name}
-  const [qty, setQty] = useState(1);
-  const dispatch = useDispatch();
-
-  const handleChange = (e) => {
-    let value = parseInt(e.target.value)
-    if (isNaN(value) || value < 0) {
-      setQty(0);
-    } else if (value > 20) {
-      setQty(20);
-    } else {
-      setQty(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch(addOrRemoveToCart({item, qty}))
-    setQty(1);
-  };
 
   return (<div className="CardSearRow">
     <Row className="m-1 p-2 border-bottom">
@@ -40,15 +19,10 @@ export function CardSearchRow({card}) {
       <Col xs={5} sm="auto" className="fw-bold">{card.prices.usd && <>{card.prices.usd}$</>}</Col>
       <Col xs={7} sm="auto">
         {(card.prices.usd)?
-        <>
-          <Form onSubmit={handleSubmit}>
-            <div className="d-flex flex-nowrap">
-              <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-              <Button type="submit" size="sm">Add</Button>
-            </div>
-          </Form> 
-        </>
-        :<>Out of Stock</>}
+        <AddAdjustCartButtons item={item} />
+        :
+        <>Out of Stock</>
+        }
       </Col>
     </Row>
   </div>);

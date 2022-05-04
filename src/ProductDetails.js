@@ -1,41 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { SERVER_URL } from "./config";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
+import { Col, Container, Row } from "react-bootstrap";
+import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
 export function ProductDetails() {
   let params = useParams();
   let id = params?.id || null;
   const [product, setProduct] = useState();
-  const cartQty = useSelector((state) => state.cart.value.find((item) => item.id === id )?.qty || 0);
-  const [qty, setQty] = useState(cartQty === 0 ? 1 : cartQty);
-  const dispatch = useDispatch();
-
-  const handleChange = (e) => {
-    let value = parseInt(e.target.value)
-    if (isNaN(value) || value < 0) {
-      setQty(0);
-    } else if (value > 20) {
-      setQty(20);
-    } else {
-      setQty(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let item = {id, type: product.prodType, name: product.name};
-    if (cartQty === 0) {
-      dispatch(addOrRemoveToCart({item, qty}));
-    } else {
-      dispatch(adjustCart({item, qty}));
-      if (qty === 0) {
-        setQty(1);
-      }
-    } 
-  };
+  const [item, setItem] = useState({});
 
   useEffect(() => {
     const getProductData = async (id) => {
@@ -43,16 +16,17 @@ export function ProductDetails() {
       let response = await fetch(requestString, { method: 'GET'});
       let data = await response.json();
       setProduct(data.product);
-      return data;
+      return data.product;
     }
 
     try {
-      getProductData(id);
+      getProductData(id).then((prod) => {
+        setItem({id: prod._id, type: prod.prodType, name: prod.name});
+      });
     } catch (err) {
       console.log(err);
     }
-    console.log(cartQty);
-  }, [id, cartQty]);
+  }, [id]);
 
   return (<div className="ProductDetails">
     <Container>
@@ -69,15 +43,10 @@ export function ProductDetails() {
             {(product.stock > 0)?
               <>
                 <Col xs className="text-right fw-bold">
-                  {product.price}$
+                  {product.price}$ ({product.stock} in stock) 
                 </Col>
                 <Col xs="auto">
-                  <Form onSubmit={handleSubmit}>
-                    <div className="d-flex flex-nowrap">
-                      <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                      <Button type="submit" size="sm" disabled={qty === cartQty}>{cartQty === 0 ? "Add": "Adjust"}</Button>
-                    </div>
-                  </Form>
+                  <AddAdjustCartButtons item={item} />
                 </Col>
               </>
               :<>Out of Stock</>}
