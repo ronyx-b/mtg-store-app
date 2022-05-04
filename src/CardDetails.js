@@ -1,16 +1,17 @@
 import { useParams } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
-import shoppingCart from "./shoppingCart";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
 
-export function CardDetails({setCart, setCartQty}) {
-  // const setCart = props.setCart;
-  // const setCartQty = props.setCartQty;
+export function CardDetails() {
   let params = useParams();
   let id = params?.id || null;
   const [card, setCard] = useState();
   const [symbols, setSymbols] = useState();
-  const [qty, setQty] = useState(shoppingCart.getItemQty(id));
+  const cartQty = useSelector((state) => state.cart.value.find((item) => item.id === id )?.qty || 0);
+  const [qty, setQty] = useState(cartQty === 0 ? 1 : cartQty);
+  const dispatch = useDispatch();
 
   const showSymbols = (symbolCode) => {
     let symbolCodeArr = symbolCode.split("}{");
@@ -56,9 +57,17 @@ export function CardDetails({setCart, setCartQty}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setCart(shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, qty));
-    setCartQty(shoppingCart.getCartQty());
-    setQty(1);
+    // setCart(shoppingCart.addOrRemoveToCart(item, qty));
+    // setCartQty(shoppingCart.getCartQty());
+    let item = {id: card.id, type: "single", name: card.name};
+    if (cartQty === 0) {
+      dispatch(addOrRemoveToCart({item, qty}));
+    } else {
+      dispatch(adjustCart({item, qty}));
+      if (qty === 0) {
+        setQty(1);
+      }
+    } 
   };
 
   useEffect(() => {
@@ -131,7 +140,7 @@ export function CardDetails({setCart, setCartQty}) {
                   <Form onSubmit={handleSubmit}>
                     <div className="d-flex flex-nowrap">
                       <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                      <Button type="submit" size="sm">Add</Button>
+                      <Button type="submit" size="sm" disabled={qty === cartQty}>{cartQty === 0 ? "Add": "Adjust"}</Button>
                     </div>
                   </Form>
                 </Col>

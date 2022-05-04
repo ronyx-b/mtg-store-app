@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
+import { selectDecodedToken, selectToken } from './features/token/tokenSlice'
 
-export function Account(props) {
+export function Account() {
   const [accountInfo, setAccountInfo] = useState();
   const navigate = useNavigate();
-  let token = props.token;
-  let decodedToken = props.decodedToken;
+  const token = useSelector(selectToken);
+  const decodedToken = useSelector(selectDecodedToken);
 
   const getAccountInfo = async () => {
     let requestString = `${SERVER_URL}/api/user/account`;
@@ -35,8 +38,10 @@ export function Account(props) {
 
   return (
     <div className="Account">
-      <p>Account Info: {accountInfo}</p>
-      <p>Welcome {decodedToken.email}</p>
+      <Container>
+        <p>Account Info: {accountInfo}</p>
+        <p>Welcome {decodedToken.email}</p>
+      </Container>
     </div>
   );
 }

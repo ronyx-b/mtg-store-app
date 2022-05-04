@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import shoppingCart from "./shoppingCart";
+import { addOrRemoveToCart } from "./features/cart/cartSlice";
 
-export function CardSearchRow({card, setCart, setCartQty}) {
-  // const card = props.card;
-  // const setCart = props.setCart;
-  // const setCartQty = props.setCartQty;
+export function CardSearchRow({card}) {
+  const item = {id: card.id, type: "single", name: card.name}
   const [qty, setQty] = useState(1);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     let value = parseInt(e.target.value)
@@ -22,8 +22,7 @@ export function CardSearchRow({card, setCart, setCartQty}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setCart(shoppingCart.addOrRemoveToCart({id: card.id, type: "single", name: card.name}, qty));
-    setCartQty(shoppingCart.getCartQty());
+    dispatch(addOrRemoveToCart({item, qty}))
     setQty(1);
   };
 

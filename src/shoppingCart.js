@@ -9,6 +9,9 @@ let cart = [
 ];
 */
 
+// migrated to redux store slice
+
+// implemented as selector
 export function getCart() {
   let cart = JSON.parse(localStorage.getItem('cart'));
   if (!cart) {
@@ -17,27 +20,32 @@ export function getCart() {
   return cart;
 };
 
+// implemented as selector
 export function getCartQty() {
   let cart = getCart();
   let qty = cart.reduce((total, item) => total += item.qty, 0)
   return qty;
 }
 
+// implemented as helper function
 export function saveCart(cart) {
   localStorage.setItem('cart', JSON.stringify(cart));
   return getCart();
 };
 
+// implemented as reducer
 export function emptyCart() {
   localStorage.removeItem('cart');
   return [];
 };
 
+// NOT IMPLEMENTED
 export function getItem(i) {
   let cart = getCart();
   return cart[i];
 }
 
+// NOT IMPLEMENTED
 export function getItemQty(id) {
   let qty = 0;
   let cart = getCart();
@@ -48,6 +56,7 @@ export function getItemQty(id) {
   return qty;
 }
 
+// implemented as reducer
 export function addOrRemoveToCart(item, qty) {
   qty = parseInt(qty);
   let cart = getCart();
@@ -75,6 +84,7 @@ export function addOrRemoveToCart(item, qty) {
   return getCart();
 };
 
+// implemented as reducer
 export function adjustCart(item, qty) {
   qty = parseInt(qty);
   let cart = getCart();
@@ -101,6 +111,6 @@ export function adjustCart(item, qty) {
   return getCart();
 };
 
-const shoppingCart = { getCart, getCartQty, saveCart, emptyCart, getItem, getItemQty, addOrRemoveToCart, adjustCart };
+const shoppingCart = { getCart, getCartQty, saveCart, emptyCart, addOrRemoveToCart, adjustCart, getItem, getItemQty };
 
 export default shoppingCart;

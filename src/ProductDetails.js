@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import shoppingCart from "./shoppingCart";
 import { SERVER_URL } from "./config";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
 
-export function ProductDetails({setCart, setCartQty}) {
-  // const setCart = props.setCart;
-  // const setCartQty = props.setCartQty;
+export function ProductDetails() {
   let params = useParams();
   let id = params?.id || null;
   const [product, setProduct] = useState();
-  const [qty, setQty] = useState(shoppingCart.getItemQty(id));
+  const cartQty = useSelector((state) => state.cart.value.find((item) => item.id === id )?.qty || 0);
+  const [qty, setQty] = useState(cartQty === 0 ? 1 : cartQty);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     let value = parseInt(e.target.value)
@@ -25,9 +26,15 @@ export function ProductDetails({setCart, setCartQty}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setCart(shoppingCart.addOrRemoveToCart({id: product._id, type: product.prodType, name: product.name}, qty));
-    setCartQty(shoppingCart.getCartQty());
-    setQty(1);
+    let item = {id, type: product.prodType, name: product.name};
+    if (cartQty === 0) {
+      dispatch(addOrRemoveToCart({item, qty}));
+    } else {
+      dispatch(adjustCart({item, qty}));
+      if (qty === 0) {
+        setQty(1);
+      }
+    } 
   };
 
   useEffect(() => {
@@ -44,7 +51,8 @@ export function ProductDetails({setCart, setCartQty}) {
     } catch (err) {
       console.log(err);
     }
-  }, [id]);
+    console.log(cartQty);
+  }, [id, cartQty]);
 
   return (<div className="ProductDetails">
     <Container>
@@ -67,7 +75,7 @@ export function ProductDetails({setCart, setCartQty}) {
                   <Form onSubmit={handleSubmit}>
                     <div className="d-flex flex-nowrap">
                       <Form.Control type="number" size="sm" style={{width: "50px"}} name="qty" value={qty} onChange={handleChange} />
-                      <Button type="submit" size="sm">Add</Button>
+                      <Button type="submit" size="sm" disabled={qty === cartQty}>{cartQty === 0 ? "Add": "Adjust"}</Button>
                     </div>
                   </Form>
                 </Col>

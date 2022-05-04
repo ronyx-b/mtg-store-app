@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Alert, Button, Card, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
+import { useDispatch } from 'react-redux';
+import { setToken } from './features/token/tokenSlice'
 
-export function Login(props) {
+export function Login() {
   const [formFields, setFormFields] = useState({email: "", password: "", keeplogged: false})
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loginError, setLoginError] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     let name = e.target.name;
@@ -35,7 +38,7 @@ export function Login(props) {
       });
       let json = await response.json();
       if (json.token) {
-        props.setToken(json.token);
+        dispatch(setToken(json.token));
         navigate('/Account');
       } else {
         setIsSubmitted(false);

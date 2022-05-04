@@ -1,10 +1,12 @@
 import { Button, Container } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
+import { selectDecodedToken, selectToken } from "./features/token/tokenSlice";
 
-export function Dashboard({token, decodedToken}) {
-  // let token = props.token;
-  // let decodedToken = props.decodedToken;
+export function Dashboard() {
+  const token = useSelector(selectToken);
+  const decodedToken = useSelector(selectDecodedToken);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ export function Dashboard({token, decodedToken}) {
     <div className="Dashboard">
       <Container>
         <h1>Admin Dashboard</h1>
-        <p>{decodedToken?.email}</p>
+        <p>{decodedToken.email}</p>
         <p>{decodedToken.exp}</p>
         <p><Link to="/AddProduct">Add New Product</Link></p>
         <p><Link to="/AddFeaturedSet">Add Featured Set</Link></p>

@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config";
+import { selectToken } from "./features/token/tokenSlice";
 
-export function AddFeaturedSet({token}) {
+export function AddFeaturedSet() {
   const [cardSets, setCardSets] = useState([]);
   const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
   const [submissionError, setSubmissionError ] = useState("");
   const [isSubmitted, setIsSubmitted ] = useState(false);
   const hero = useRef(null);
+  const token = useSelector(selectToken);
   const navigate = useNavigate();
 
   const goBack = useCallback(() => {

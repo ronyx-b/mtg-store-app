@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { SERVER_URL } from "./config";
 import { adjustCart } from "./features/cart/cartSlice";
 
-export function CartProductItem({item, product}) {
+export function CartCardItem({item, card}) {
   const [qty, setQty] = useState(item.qty);
   const dispatch = useDispatch();
 
@@ -33,22 +32,22 @@ export function CartProductItem({item, product}) {
     adjustShoppingCart(qty);
   };
 
-  return (<div className="CartProductItem">
+  return (<div className="CartItem">
     <Row className="m-1 p-2 border-bottom">
-      {product && <>
+      {card && <>
         <Col xs={5} md="auto">
-          <Link to={`/ProductDetails/${product._id}`} style={{ color: "#000000", textDecoration: "none"}}>
-            <img src={`${SERVER_URL}/img/${product.image}`} height="70" alt={product.name} loading="lazy" />
+          <Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>
+            <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} height="70" alt={card.name} loading="lazy" />
           </Link>
         </Col>
         <Col xs={7} md>
-          <Row><Link to={`/ProductDetails/${product._id}`} style={{ color: "#000000", textDecoration: "none", fontWeight: "bold"}}>{product.name}</Link></Row>
-          <Row><span className="mx-1">{product.cardSet}</span></Row>
+          <Row><Link to={`/CardDetails/${card.id}`} style={{ color: "#000000", textDecoration: "none", fontWeight: "bold"}}>{card.name}</Link></Row>
+          <Row><span className="mx-1">{card.set_name}</span></Row>
         </Col>
-        <Col xs={3} md="auto"><div className="text-right" style={{width: "4em"}}>{product.stock > 0 && <>{product.price}$</>}</div></Col>
-        <Col xs={3} md="auto"><div className="text-right" style={{width: "5em"}}>{product.stock > 0 && <>{parseFloat(product.price).toFixed(2)}$</>}</div></Col>
+        <Col xs={3} md="auto"><div className="text-right" style={{width: "4em"}}>{card.prices.usd && <>{card.prices.usd}$</>}</div></Col>
+        <Col xs={3} md="auto"><div className="text-right" style={{width: "5em"}}>{card.prices.usd && <>{(parseFloat(card.prices.usd) * item.qty).toFixed(2)}$</>}</div></Col>
         <Col xs={6} md="auto">
-          {(product.stock > 0)?
+          {(card.prices.usd)?
           <>
             <Form onSubmit={handleSubmit}>
               <div className="d-flex flex-nowrap">

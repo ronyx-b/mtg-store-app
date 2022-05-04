@@ -3,12 +3,10 @@ import { Container, Pagination } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { CardSearchRow } from "./CardSearchRow";
 
-export function CardSearch({setCart, setCartQty}) {
+export function CardSearch() {
   const [cards, setCards] = useState([]);
-  // const [pageCards, setPageCards] = useState([]);
   const [page, setPage] = useState({ num: 1, pageCards: []});
   const [pages, setPages] = useState([1]);
-  // const [lastPage, setLastPage] = useState(1);
   const location = useLocation();
 
   const PER_PAGE = 25;
@@ -64,7 +62,6 @@ export function CardSearch({setCart, setCartQty}) {
         cardData = [...cardData, ...data.data];
       }
       setCards(cardData);
-      // setLastPage(Math.ceil(cardData.length / PER_PAGE));
       let pagesArr = [];
       let lastPage = Math.ceil(cardData.length / PER_PAGE);
       for (let i = 1; i <= lastPage; i++) {
@@ -82,12 +79,12 @@ export function CardSearch({setCart, setCartQty}) {
     } catch (err) {
       console.error(err);
     }
-  }, [location.search]); /* [location.search, pageCards] */
+  }, [location.search]);
 
   return (<div className="CardSearch">
     <Container>
       {page.pageCards && page.pageCards.map((card, i) => 
-        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} setCart={setCart} setCartQty={setCartQty} />
+        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} />
       )}
       <div className="d-block mx-auto" style={{width: "fit-content"}}>
         <Pagination>

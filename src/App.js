@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Container, Nav, Navbar, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
 import { DecklistProcessor } from './DecklistProcessor';
 import { CardSearch } from './CardSearch';
 import { Home } from './Home';
@@ -12,36 +11,37 @@ import { Products } from './Products';
 import { Register } from './Register';
 import { Account } from './Account';
 import { Dashboard } from './Dashboard';
-import { useToken } from './useToken';
-import shoppingCart from './shoppingCart'
 import { Cart } from './Cart';
 import { AddEditProduct } from './AddEditProduct';
 import { CardDetails } from './CardDetails';
 import { ProductDetails } from './ProductDetails';
 import { AddFeaturedSet } from './AddFeaturedSet';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { removeToken, selectToken, selectDecodedToken } from './features/token/tokenSlice'
+import { selectCartQty } from './features/cart/cartSlice';
 
 function App() {
   const [searchString, setSearchString] = useState('');
-  const [cart, setCart] = useState(shoppingCart.getCart());
-  const [CartQty, setCartQty] = useState(shoppingCart.getCartQty());
-  const {token, setToken} = useToken();
-  const decodedToken = (token)?jwt_decode(token):null;
+  const cartQty = useSelector(selectCartQty);
+  const token = useSelector(selectToken);
+  const decodedToken = useSelector(selectDecodedToken);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const logout = () => {
-    setToken();
+  
+  const logout = useCallback(() => {
+    dispatch(removeToken());
     navigate('/');
-  }
+  }, [dispatch, navigate]);
 
   useEffect(() => {
     if (decodedToken?.exp) {
       let tokenExpires = decodedToken.exp * 1000;
       let now = (new Date()).valueOf();
       if (tokenExpires < now) {
-        setToken();
+        logout();
       }
     }
-  },[decodedToken?.exp, setToken]);
+  },[decodedToken?.exp, logout]);
   
   const handleSubmit = function(e) {
     e.preventDefault();
@@ -71,7 +71,7 @@ function App() {
                   Cart 
                   <div className="position-relative d-inline-block">
                     <i className="bi bi-cart3"></i>
-                    <div className="position-absolute rounded-circle bg-primary" style={{top: "-3px", right: "-5px", zIndex: "1", fontSize: "10px", width: "14px", height: "14px", textAlign: "center"}}>{CartQty}</div>
+                    <div className="position-absolute rounded-circle bg-primary" style={{top: "-3px", right: "-5px", zIndex: "1", fontSize: "10px", width: "14px", height: "14px", textAlign: "center"}}>{cartQty}</div>
                   </div>
                 </Nav.Link>
               </LinkContainer>
@@ -94,22 +94,22 @@ function App() {
     </header>
     <main style={{ minHeight: "70vh" }}>
       <Routes>
-        <Route path="/" element={<Home decodedToken={decodedToken} />} />
-        <Route path="/Products" element={<Products decodedToken={decodedToken} setCart={setCart} setCartQty={setCartQty} />} >
-          <Route path="/Products/:set" element={<Products decodedToken={decodedToken} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/Products" element={<Products />} >
+          <Route path="/Products/:set" element={<Products />} />
         </Route>
-        <Route path="/ProductDetails/:id" element={<ProductDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
-        <Route path="/CardSearch" element={<CardSearch shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
-        <Route path="/CardDetails/:id" element={<CardDetails shoppingCart={shoppingCart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/ProductDetails/:id" element={<ProductDetails />} />
+        <Route path="/CardSearch" element={<CardSearch />} />
+        <Route path="/CardDetails/:id" element={<CardDetails />} />
         <Route path="/Register" element={(token)?<Navigate to="/Account" />:<Register />} />
-        <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login setToken={setToken} />} />
-        <Route path="/Account" element={(token)?<Account token={token} decodedToken={decodedToken} />: <Navigate to="/Login" />} />
-        <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-        <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-        <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" token={token} decodedToken={decodedToken} />: <Navigate to="/" />} />
-        <Route path="/Cart" element={<Cart shoppingCart={shoppingCart} cart={cart} setCart={setCart} setCartQty={setCartQty} />} />
+        <Route path="/Login" element={(token)?<Navigate to="/Account" />:<Login />} />
+        <Route path="/Account" element={(token)?<Account />: <Navigate to="/Login" />} />
+        <Route path="/Dashboard" element={(decodedToken?.isAdmin)?<Dashboard />: <Navigate to="/" />} />
+        <Route path="/AddProduct" element={(decodedToken?.isAdmin)?<AddEditProduct mode="add" />: <Navigate to="/" />} />
+        <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" />: <Navigate to="/" />} />
+        <Route path="/Cart" element={<Cart />} />
         <Route path="/Decklist" element={<DecklistProcessor />} />
-        <Route path="/AddFeaturedSet" element={<AddFeaturedSet token={token} />} />
+        <Route path="/AddFeaturedSet" element={<AddFeaturedSet />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </main>

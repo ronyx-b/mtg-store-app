@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
 import { ProductCard } from "./ProductCard";
 
-export function Home({decodedToken}) {
-  const isAdmin = decodedToken?.isAdmin;
+export function Home() {
   const [featuredSets, setFeaturedSets] = useState();
   const [products, setProducts] = useState([]);
 
@@ -60,7 +59,7 @@ export function Home({decodedToken}) {
         <Container>
           <Row xs={1} md={2} lg={3} xl={4}>
             {products && products.filter((product) => product.cardSet === set.name).map((product) => 
-              <ProductCard key={product._id} product={product} isAdmin={isAdmin} />
+              <ProductCard key={product._id} product={product} />
             )}
           </Row>
         </Container>

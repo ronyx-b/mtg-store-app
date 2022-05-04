@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_URL } from "./config"
+import { selectToken } from "./features/token/tokenSlice";
 
-export function AddEditProduct({mode, token}) {
-  // const mode = props.mode;
-  // const token = props.token;
+export function AddEditProduct({mode}) {
   let params = useParams();
   let id = params?.id || null;
   const [formFields, setFormFields] = useState({name: "", prodType: "sealed", description: "", cardSet: "", price: 0, stock: 0});
@@ -16,6 +16,7 @@ export function AddEditProduct({mode, token}) {
   const [imageModal, setImagetModal] = useState(false);
   const [submissionError, setSubmissionError] = useState("");
   const [cardSets, setCardSets] = useState([]);
+  const token = useSelector(selectToken);
   const navigate = useNavigate();
 
   const handleClose = () => setImagetModal(false);

@@ -1,31 +1,26 @@
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
-import { CartItem } from "./CartItem";
+import { useDispatch, useSelector } from "react-redux";
+import { CartCardItem } from "./CartCardItem";
 import { CartProductItem } from "./CartProductItem";
 import { SERVER_URL } from "./config";
-import shoppingCart from "./shoppingCart";
+import { emptyCart, selectCart } from "./features/cart/cartSlice";
+// import shoppingCart from "./shoppingCart";
 
-export function Cart(props) {
-  const cart = props.cart;
-  const setCart = props.setCart;
-  const setCartQty = props.setCartQty;
+export function Cart() {
+  const cart = useSelector(selectCart);
   const [cards, setCards] = useState([]);
   const [sealed, setSealed] = useState([]);
   const [cartTotal, setCartTotal] = useState();
   const [emptyCartModal, setEmptyCartModal] = useState(false);
+  const dispatch = useDispatch();
 
   const handleClose = () => setEmptyCartModal(false);
   const handleShow = () => setEmptyCartModal(true);
 
-  const emptyCart = () => {
-    setCart(shoppingCart.emptyCart());
-    setCartQty(shoppingCart.getCartQty());
+  const emptyShoppingCart = () => {
+    dispatch(emptyCart());
     handleClose();
-  };
-
-  const adjustCart = (item, qty) => {
-    setCart(shoppingCart.adjustCart(item, qty));
-    setCartQty(shoppingCart.getCartQty());
   };
 
   useEffect(() => {
@@ -119,11 +114,11 @@ export function Cart(props) {
       <Container className="p-3">
       {(cart && cart.length > 0)?
         <>
-        {shoppingCart.getCart().filter((item) => (item.type === "sealed")).map((item) => 
-          <CartProductItem key={item.id} item={item} product={sealed.find((product) => (product._id === item.id))} adjustCart={adjustCart} />
+        {cart.filter((item) => (item.type === "sealed")).map((item) => 
+          <CartProductItem key={item.id} item={item} product={sealed.find((product) => (product._id === item.id))} />
         )}
-        {shoppingCart.getCart().filter((item) => (item.type === "single")).map((item) => 
-          <CartItem key={item.id} item={item} card={cards.find((card) => (card.id === item.id))} adjustCart={adjustCart} />
+        {cart.filter((item) => (item.type === "single")).map((item) => 
+          <CartCardItem key={item.id} item={item} card={cards.find((card) => (card.id === item.id))} />
         )}
         <Row className="m-1 p-2 border-bottom">
           <Col><h3>Cart Total</h3></Col>
@@ -143,7 +138,7 @@ export function Cart(props) {
             <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={emptyCart}>
+            <Button variant="primary" onClick={emptyShoppingCart}>
               Empty Cart
             </Button>
           </Modal.Footer>
