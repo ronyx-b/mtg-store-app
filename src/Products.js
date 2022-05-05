@@ -3,12 +3,8 @@ import { Button, Container, Row } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_URL } from "./config"
 import { ProductCard } from "./ProductCard";
-// import { useSelector, useDispatch, connect } from "react-redux";
-// import { addProducts } from "./productsSlice";
 
-export function Products({setCart, setCartQty}) {
-  // const products = useSelector((state) => state.products.all);
-  // const dispatch = useDispatch();
+export function Products() {
   let params = useParams();
   let set = params?.set || null;
   const [cardSet, setCardSet] = useState(); 
@@ -55,12 +51,10 @@ export function Products({setCart, setCartQty}) {
         </>}
         <Row xs={1} md={2} lg={3} xl={4}>
           {products && products.map((product) => 
-            <ProductCard key={product._id} product={product} setCart={setCart} setCartQty={setCartQty} />
+            <ProductCard key={product._id} product={product} />
           )}
         </Row>
       </Container>
     </div>
   );
 }
-
-// export default connect()(Products);

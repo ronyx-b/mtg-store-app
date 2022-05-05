@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { SERVER_URL } from "./config";
 import { Col, Container, Row } from "react-bootstrap";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
@@ -9,6 +9,7 @@ export function ProductDetails() {
   let id = params?.id || null;
   const [product, setProduct] = useState();
   const [item, setItem] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getProductData = async (id) => {
@@ -38,6 +39,7 @@ export function ProductDetails() {
           <Col>
             <Row><h3>{product.name}</h3></Row>
             <Row><h4>{product.cardSet}</h4></Row>
+            {/* <Row><h4 onClick={() => navigate(`/CardSearch?set=${product.cardSetCode}`)}>{product.cardSet}</h4></Row> */}
             <Row>{product.description}</Row>
             <Row className="mb-3">
             {(product.stock > 0)?

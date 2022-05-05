@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Col, Container, Row } from 'react-bootstrap';
+import { Col, Container, Row, Modal, Carousel } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
@@ -9,6 +9,10 @@ export function CardDetails() {
   const [card, setCard] = useState();
   const [symbols, setSymbols] = useState();
   const [item, setItem] = useState({});
+  const [imageModal, setImagetModal] = useState(false);
+
+  const handleClose = () => setImagetModal(false);
+  const handleShow = () => setImagetModal(true);
 
   const showSymbols = (symbolCode) => {
     let symbolCodeArr = symbolCode.split("}{");
@@ -76,7 +80,7 @@ export function CardDetails() {
     <Container>
       {card && <div className="m-3">
         <Row>
-          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}}>
+          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}} onClick={handleShow} style={{cursor: "pointer"}}>
             <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" /></Row>
             {card.card_faces && card.card_faces[1].image_uris && <Row>
               <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
@@ -119,5 +123,24 @@ export function CardDetails() {
         </Row>
       </div>}
     </Container>
+
+    <Modal show={imageModal} onHide={handleClose}>
+      <Modal.Body>
+        {card && 
+        <Col>
+        <Carousel>
+          <Carousel.Item>
+            <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} className="w-100" alt={card.name} loading="lazy" />
+          </Carousel.Item>
+          {card.card_faces && card.card_faces[1].image_uris &&
+          <Carousel.Item>
+            <img src={card.card_faces[1].image_uris.normal} className="w-100" alt={card.name} loading="lazy" />
+          </Carousel.Item>} 
+        </Carousel>
+
+        </Col>
+        }
+      </Modal.Body>
+    </Modal>
   </div>);
 }
