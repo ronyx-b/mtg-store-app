@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Col, Container, Row, Modal, Carousel } from 'react-bootstrap';
+import { Col, Container, Row, Modal, Carousel, Button } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
@@ -10,9 +10,24 @@ export function CardDetails() {
   const [symbols, setSymbols] = useState();
   const [item, setItem] = useState({});
   const [imageModal, setImagetModal] = useState(false);
+  const [isTransformed, setIsTransformed] = useState(false);
 
   const handleClose = () => setImagetModal(false);
   const handleShow = () => setImagetModal(true);
+
+  const transformCard = () => {
+    setIsTransformed(isTransformed => !isTransformed);
+  };
+
+  const isFrontFace = {
+    transform: "rotateY(0deg)",
+    zIndex: "1000"
+  };
+
+  const isBackFace = {
+    transform: "rotateY(180deg)",
+    zIndex: "-1000"
+  };
 
   const showSymbols = (symbolCode) => {
     let symbolCodeArr = symbolCode.split("}{");
@@ -80,10 +95,26 @@ export function CardDetails() {
     <Container>
       {card && <div className="m-3">
         <Row>
-          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}} onClick={handleShow} style={{cursor: "pointer"}}>
-            <Row><img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" /></Row>
-            {card.card_faces && card.card_faces[1].image_uris && <Row>
+          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}} style={{cursor: "pointer", position: "relative"}}>
+            {/* <Row>
+              <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
+            </Row>
+            {card.card_faces && card.card_faces[1].image_uris &&
+            <Row>
               <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
+            </Row>} */}
+            <Row>
+              <div style={{maxWidth: "250px", margin: "auto"}}>
+                <img className="w-100" style={{transition: "all 1s linear", position: "relative", ...(isTransformed? isBackFace : isFrontFace)}} src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} alt={card.name} loading="lazy" />
+                {card.card_faces && card.card_faces[1].image_uris && <>
+                  <img className="w-100" style={{transition: "all 1s linear", position: "relative", ...(isTransformed? isFrontFace : isBackFace)}} src={card.card_faces[1].image_uris.normal} alt={card.name} loading="lazy" />
+                </>
+                }
+              </div>  
+            </Row>
+            {card.card_faces && card.card_faces[1].image_uris && 
+            <Row className="p-3">
+              <Button style={{width: "fit-content", margin: "auto"}} onClick={transformCard}>Transform <i className="bi bi-arrow-repeat"></i></Button>
             </Row>}
           </Col>
           <Col>
@@ -97,7 +128,7 @@ export function CardDetails() {
             </Row>
             <Row><h4>{card.set_name}</h4></Row>
             <Row><h5>{card.type_line}</h5></Row>
-            <Row style={{ minHeight: "50%" }}>{card.card_faces?
+            <Row style={{}/* { minHeight: "50%" } */}>{card.card_faces?
             (<>
               {card.card_faces[0].oracle_text.split("\n").map((line, i) => <p key={i} className="mb-1">{symbols && addSymbolsToText(line)}</p>)}
               <hr />
