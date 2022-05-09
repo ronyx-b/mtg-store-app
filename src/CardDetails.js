@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
-import { Col, Container, Row, Modal, Carousel, Button } from 'react-bootstrap';
-import { useEffect, useState } from "react";
+import { Col, Container, Row, Button } from 'react-bootstrap';
+import { useEffect, useRef, useState } from "react";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 
 export function CardDetails() {
@@ -9,11 +9,12 @@ export function CardDetails() {
   const [card, setCard] = useState();
   const [symbols, setSymbols] = useState();
   const [item, setItem] = useState({});
-  const [imageModal, setImagetModal] = useState(false);
+  // const [imageModal, setImagetModal] = useState(false);
   const [isTransformed, setIsTransformed] = useState(false);
+  const frontImage = useRef(null);
 
-  const handleClose = () => setImagetModal(false);
-  const handleShow = () => setImagetModal(true);
+  // const handleClose = () => setImagetModal(false);
+  // const handleShow = () => setImagetModal(true);
 
   const transformCard = () => {
     setIsTransformed(isTransformed => !isTransformed);
@@ -89,28 +90,21 @@ export function CardDetails() {
     } catch (err) {
       console.log(err);
     }
+
+    console.log(frontImage.current?.width);
   }, [id]);
 
   return (<div className="CardDetails">
     <Container>
       {card && <div className="m-3">
         <Row>
-          <Col xs={{span: 12, order: "last"}} md={{span: "auto", order: "first"}} style={{cursor: "pointer", position: "relative"}}>
-            {/* <Row>
-              <img src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
-            </Row>
-            {card.card_faces && card.card_faces[1].image_uris &&
-            <Row>
-              <img src={card.card_faces[1].image_uris.normal} style={{maxWidth: "250px", margin: "auto"}} alt={card.name} loading="lazy" />
-            </Row>} */}
-            <Row>
-              <div style={{maxWidth: "250px", margin: "auto"}}>
-                <img className="w-100" style={{transition: "all 1s linear", position: "relative", ...(isTransformed? isBackFace : isFrontFace)}} src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} alt={card.name} loading="lazy" />
-                {card.card_faces && card.card_faces[1].image_uris && <>
-                  <img className="w-100" style={{transition: "all 1s linear", position: "relative", ...(isTransformed? isFrontFace : isBackFace)}} src={card.card_faces[1].image_uris.normal} alt={card.name} loading="lazy" />
-                </>
-                }
-              </div>  
+          <Col xs={{span: 12, order: "last"}} md={{span: 3, order: "first"}}>
+            <Row style={{position: "relative"}}>
+              <img className="w-100" style={{transition: "all 1s linear", position: "relative", ...(isTransformed? isBackFace : isFrontFace)}} src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} alt={card.name} loading="lazy" ref={frontImage} />
+              {card.card_faces && card.card_faces[1].image_uris && <>
+                <img className="w-100" style={{transition: "all 1s linear", position: "absolute", ...(isTransformed? isFrontFace : isBackFace)}} src={card.card_faces[1].image_uris.normal} alt={card.name} loading="lazy" />
+              </>
+              }  
             </Row>
             {card.card_faces && card.card_faces[1].image_uris && 
             <Row className="p-3">
@@ -155,7 +149,7 @@ export function CardDetails() {
       </div>}
     </Container>
 
-    <Modal show={imageModal} onHide={handleClose}>
+    {/* <Modal show={imageModal} onHide={handleClose}>
       <Modal.Body>
         {card && 
         <Col>
@@ -172,6 +166,6 @@ export function CardDetails() {
         </Col>
         }
       </Modal.Body>
-    </Modal>
+    </Modal> */}
   </div>);
 }
