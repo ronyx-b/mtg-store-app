@@ -3,8 +3,12 @@ import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
 
+const selectCartItemQty = (state, id) => {
+  return state.cart.value.find((cartItem) => cartItem.id === id )?.qty || 0;
+};
+
 export function AddAdjustCartButtons({item, showRemove}) {
-  const cartItemQty = useSelector((state) => state.cart.value.find((cartItem) => cartItem.id === item.id )?.qty || 0);
+  const cartItemQty = useSelector((state) => selectCartItemQty(state, item.id));
   const [qty, setQty] = useState(cartItemQty === 0 ? 1 : cartItemQty);
   const dispatch = useDispatch();
 

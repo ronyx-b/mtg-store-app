@@ -5,7 +5,6 @@ import { CartCardItem } from "./CartCardItem";
 import { CartProductItem } from "./CartProductItem";
 import { SERVER_URL } from "./config";
 import { emptyCart, selectCart } from "./features/cart/cartSlice";
-// import shoppingCart from "./shoppingCart";
 
 export function Cart() {
   const cart = useSelector(selectCart);

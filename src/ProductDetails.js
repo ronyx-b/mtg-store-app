@@ -33,8 +33,8 @@ export function ProductDetails() {
     <Container>
       {product && <div className="m-3">
         <Row>
-          <Col xs={{span: 12, order: "last"}} sm={{span: "auto", order: "first"}}>
-            <img src={`${SERVER_URL}/img/${product.image}`} style={{maxWidth: "250px"}} alt={product.name} />
+          <Col xs={{span: 12, order: "last"}} sm={{span: 3, order: "first"}}>
+            <img src={`${SERVER_URL}/img/${product.image}`} className="w-100" alt={product.name} />
           </Col>
           <Col>
             <Row><h3>{product.name}</h3></Row>
