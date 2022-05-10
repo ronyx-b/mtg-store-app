@@ -17,8 +17,8 @@ import { CardDetails } from './CardDetails';
 import { ProductDetails } from './ProductDetails';
 import { AddFeaturedSet } from './AddFeaturedSet';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeToken, selectToken, selectDecodedToken } from './features/token/tokenSlice'
-import { selectCartQty } from './features/cart/cartSlice';
+import { removeToken, selectToken, selectDecodedToken } from './app/tokenSlice'
+import { selectCartQty } from './app/cartSlice';
 
 function App() {
   const [searchString, setSearchString] = useState('');

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Col, Container, Row, Button } from 'react-bootstrap';
 import { useEffect, useRef, useState } from "react";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
@@ -120,7 +120,7 @@ export function CardDetails() {
                 </h3>
               </Col>
             </Row>
-            <Row><h4>{card.set_name}</h4></Row>
+            <Row><h4><Link to={`/CardSearch?set=${card.set}`} style={{color: "inherit", textDecoration: "none", fontWeight: "bold"}}>{card.set_name}</Link></h4></Row>
             <Row><h5>{card.type_line}</h5></Row>
             <Row style={{}/* { minHeight: "50%" } */}>{card.card_faces?
             (<>

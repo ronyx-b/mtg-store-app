@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SERVER_URL } from "./config";
 import { Col, Container, Row } from "react-bootstrap";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
@@ -9,7 +9,6 @@ export function ProductDetails() {
   let id = params?.id || null;
   const [product, setProduct] = useState();
   const [item, setItem] = useState({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getProductData = async (id) => {

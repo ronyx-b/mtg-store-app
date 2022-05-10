@@ -3,7 +3,7 @@ import { Alert, Button, Card, Container, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
 import { useDispatch } from 'react-redux';
-import { setToken } from './features/token/tokenSlice'
+import { setToken } from './app/tokenSlice'
 
 export function Login() {
   const [formFields, setFormFields] = useState({email: "", password: "", keeplogged: false})

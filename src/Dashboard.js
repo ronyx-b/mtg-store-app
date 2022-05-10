@@ -2,7 +2,7 @@ import { Button, Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
-import { selectDecodedToken, selectToken } from "./features/token/tokenSlice";
+import { selectDecodedToken, selectToken } from "./app/tokenSlice";
 
 export function Dashboard() {
   const token = useSelector(selectToken);

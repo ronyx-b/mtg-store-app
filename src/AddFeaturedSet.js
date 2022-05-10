@@ -3,7 +3,7 @@ import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap"
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config";
-import { selectToken } from "./features/token/tokenSlice";
+import { selectToken } from "./app/tokenSlice";
 
 export function AddFeaturedSet() {
   const [cardSets, setCardSets] = useState([]);

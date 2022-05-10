@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Button, Card, Col, Container, Form, Row, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
-import { 
-  validateName,  
-  validatePostal,
-  validateEmail, 
-  validatePassword, 
-  validatePasswordConfirm, 
-  validateMinMaxLength
-} from "./formValidation";
+// import { 
+//   validateName,  
+//   validatePostal,
+//   validateEmail, 
+//   validatePassword, 
+//   validatePasswordConfirm, 
+//   validateMinMaxLength
+// } from "./formValidation";
 
 export function Register() {
   const [formFields, setFormFields] = useState({ name: "", street: "", city: "", province: "", postal: "", email: "", password: "", password2: "" });
@@ -24,45 +24,45 @@ export function Register() {
     });
   }
 
-  const validateRegisterForm = (formData) => {
-    let errors = {
-      isValid: true, 
-      name: "", 
-      email: "", 
-      street: "", 
-      city: "", 
-      province: "",
-      postal: "", 
-      password: "", 
-      passwordConfirm: ""
-    };
-    errors.name = validateMinMaxLength(formData.name, 'Name', errors.name, 2, 50)
-    errors.name = validateName(formData.name, errors.name);
-    errors.email = validateMinMaxLength(formData.email, 'Email', errors.email, 2, 50);
-    errors.email = validateEmail(formData.email, errors.email);
-    errors.street = validateMinMaxLength(formData.street, 'Street', errors.street, 2, 50);
-    errors.city = validateMinMaxLength(formData.city, 'City', errors.city, 2, 50);
-    errors.province = validateMinMaxLength(formData.province, 'Province', errors.province, 2, 50);
-    errors.postal = validatePostal(formData.postal, errors.postal);
-    errors.password = validateMinMaxLength(formData.password, 'Password', errors.password, 6, 50);
-    errors.password = validatePassword(formData.password, errors.password);
-    errors.passwordConfirm = validatePasswordConfirm(formData.password, formData.password2, errors.password);
-    for (let error in errors) {
-      if (error !== "isValid" && errors[error] !== "" ) {
-        errors.isValid = false;
-        break;
-      }
-    }
-    return errors;
-  }
+  // const validateRegisterForm = (formData) => {
+  //   let errors = {
+  //     isValid: true, 
+  //     name: "", 
+  //     email: "", 
+  //     street: "", 
+  //     city: "", 
+  //     province: "",
+  //     postal: "", 
+  //     password: "", 
+  //     passwordConfirm: ""
+  //   };
+  //   errors.name = validateMinMaxLength(formData.name, 'Name', errors.name, 2, 50)
+  //   errors.name = validateName(formData.name, errors.name);
+  //   errors.email = validateMinMaxLength(formData.email, 'Email', errors.email, 2, 50);
+  //   errors.email = validateEmail(formData.email, errors.email);
+  //   errors.street = validateMinMaxLength(formData.street, 'Street', errors.street, 2, 50);
+  //   errors.city = validateMinMaxLength(formData.city, 'City', errors.city, 2, 50);
+  //   errors.province = validateMinMaxLength(formData.province, 'Province', errors.province, 2, 50);
+  //   errors.postal = validatePostal(formData.postal, errors.postal);
+  //   errors.password = validateMinMaxLength(formData.password, 'Password', errors.password, 6, 50);
+  //   errors.password = validatePassword(formData.password, errors.password);
+  //   errors.passwordConfirm = validatePasswordConfirm(formData.password, formData.password2, errors.password);
+  //   for (let error in errors) {
+  //     if (error !== "isValid" && errors[error] !== "" ) {
+  //       errors.isValid = false;
+  //       break;
+  //     }
+  //   }
+  //   return errors;
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
     setSubmissionError("");
-    let errors = validateRegisterForm(formFields);
-    setFormErrors(errors);
-    if (!errors.isValid) {
+    // let errors = validateRegisterForm(formFields);
+    // setFormErrors(errors);
+    if (!formErrors.isValid) {
       setIsSubmitted(false);
     } else {
       try {

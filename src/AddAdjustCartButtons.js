@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { addOrRemoveToCart, adjustCart } from "./features/cart/cartSlice";
+import { addOrRemoveToCart, adjustCart } from "./app/cartSlice";
 
 const selectCartItemQty = (state, id) => {
   return state.cart.value.find((cartItem) => cartItem.id === id )?.qty || 0;

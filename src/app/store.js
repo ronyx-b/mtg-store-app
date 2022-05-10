@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartSlice from '../features/cart/cartSlice';
-import tokenReducer from '../features/token/tokenSlice'
+import cartSlice from './cartSlice';
+import tokenReducer from './tokenSlice'
 
 export const store = configureStore({
   reducer: {
     token: tokenReducer,
     cart: cartSlice,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(/* custom middleware */),
 });

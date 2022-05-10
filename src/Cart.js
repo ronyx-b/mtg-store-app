@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { CartCardItem } from "./CartCardItem";
 import { CartProductItem } from "./CartProductItem";
 import { SERVER_URL } from "./config";
-import { emptyCart, selectCart } from "./features/cart/cartSlice";
+import { emptyCart, selectCart } from "./app/cartSlice";
 
 export function Cart() {
   const cart = useSelector(selectCart);
@@ -110,7 +110,7 @@ export function Cart() {
       <Card.Header>
         <h1 className="cardHeader">Shopping Cart</h1>
       </Card.Header>
-      <Container className="p-3">
+      <Card.Body>
       {(cart && cart.length > 0)?
         <>
         {cart.filter((item) => (item.type === "sealed")).map((item) => 
@@ -145,7 +145,7 @@ export function Cart() {
         </>
         :<div className="text-center">Your shopping cart is empty</div>
       }
-      </Container>
+      </Card.Body>
     </Card>
   </div>);
 }

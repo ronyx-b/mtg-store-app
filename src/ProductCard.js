@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AddAdjustCartButtons } from "./AddAdjustCartButtons";
 import { SERVER_URL } from "./config";
-import { selectDecodedToken } from "./features/token/tokenSlice";
+import { selectDecodedToken } from "./app/tokenSlice";
 
 export function ProductCard({product}) {
   const decodedToken = useSelector(selectDecodedToken);
