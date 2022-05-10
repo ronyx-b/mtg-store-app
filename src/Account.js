@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Container, Nav } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
@@ -41,23 +41,37 @@ export function Account() {
     });;
   }, [navigate, token]);
 
-  return (
-    <div className="Account">
-      {accountInfo && <>
-        <Card className="m-4">
-          <Card.Header>
-            <h1 className="cardHeader">My Account</h1>
-          </Card.Header>
-          <Card.Body>
-            <p>Welcome {decodedToken.email}</p>
-            <div className="border border-secondary rounded">
-              <h3>Default Shipping Address</h3>
-              <p>{currentAddress?.street}, {currentAddress?.city}, {currentAddress?.province}, {currentAddress?.postal}</p>
-              <p></p>
-            </div>
-          </Card.Body>
-        </Card>
-      </>}
-    </div>
-  );
+  return (<div className="Account">
+    {accountInfo && 
+    <Container>
+      <Card className="my-3">
+        <Card.Header>
+          <h1 className="cardHeader">My Account</h1>
+        </Card.Header>
+        <Card.Body>
+
+        <Nav variant="tabs" defaultActiveKey="/home">
+        <Nav.Item>
+          <Nav.Link href="/home">Profile</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="link-1">Address Book</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="disabled" disabled>
+            Order History
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
+          <p>Welcome {decodedToken.email}</p>
+          <div className="border border-secondary rounded">
+            <h3>Default Shipping Address</h3>
+            <p>{currentAddress?.street}, {currentAddress?.city}, {currentAddress?.province}, {currentAddress?.postal}</p>
+            <p></p>
+          </div>
+        </Card.Body>
+      </Card>
+    </Container>}
+  </div>);
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Col, Modal, Row } from "react-bootstrap";
+import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { CartCardItem } from "./CartCardItem";
 import { CartProductItem } from "./CartProductItem";
@@ -105,8 +105,8 @@ export function Cart() {
     }
   }, [cart]);
 
-  return (<div className="Cart">
-    <Card className="m-4">
+  return (<Container className="Cart">
+    <Card className="my-3">
       <Card.Header>
         <h1 className="cardHeader">Shopping Cart</h1>
       </Card.Header>
@@ -147,5 +147,5 @@ export function Cart() {
       }
       </Card.Body>
     </Card>
-  </div>);
+  </Container>);
 }

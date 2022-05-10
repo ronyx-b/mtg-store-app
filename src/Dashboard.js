@@ -1,4 +1,4 @@
-import { Button, Container } from "react-bootstrap";
+import { Button, Card, Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { SERVER_URL } from "./config"
@@ -30,16 +30,20 @@ export function Dashboard() {
     }
   };
 
-  return (
-    <div className="Dashboard">
-      <Container>
-        <h1>Admin Dashboard</h1>
-        <p>{decodedToken.email}</p>
-        <p>{decodedToken.exp}</p>
-        <p><Link to="/AddProduct">Add New Product</Link></p>
-        <p><Link to="/AddFeaturedSet">Add Featured Set</Link></p>
-        <Button onClick={handleSubmit}>Are You Admin</Button>
-      </Container>
-    </div>
-  );
+  return (<div className="Dashboard">
+    <Container>
+      <Card className="my-3">
+        <Card.Header>
+          <h1 className="cardHeader">Admin Dashboard</h1>
+        </Card.Header>
+        <Card.Body>
+          <p>{decodedToken.email}</p>
+          <p>{decodedToken.exp}</p>
+          <p><Link to="/AddProduct">Add New Product</Link></p>
+          <p><Link to="/AddFeaturedSet">Add Featured Set</Link></p>
+          <Button onClick={handleSubmit}>Are You Admin</Button>
+        </Card.Body>
+      </Card>
+    </Container>
+  </div>);
 }

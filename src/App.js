@@ -109,7 +109,7 @@ function App() {
         <Route path="/EditProduct/:id" element={(decodedToken?.isAdmin)?<AddEditProduct mode="edit" />: <Navigate to="/" />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Decklist" element={<DecklistProcessor />} />
-        <Route path="/AddFeaturedSet" element={<AddFeaturedSet />} />
+        <Route path="/AddFeaturedSet" element={(decodedToken?.isAdmin)?<AddFeaturedSet />: <Navigate to="/" />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </main>
