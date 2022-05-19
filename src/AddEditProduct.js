@@ -72,8 +72,12 @@ export function AddEditProduct({mode}) {
   };
 
   const goBack = useCallback(() => {
-    navigate('/Products');
-  }, [navigate]);
+    if (mode === "edit") {
+      navigate('/Products');
+    } else {
+      navigate('/Dashboard');
+    }
+  }, [navigate, mode]);
 
   useEffect(() => {
     const getSets = async () => {

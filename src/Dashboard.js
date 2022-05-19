@@ -1,12 +1,13 @@
-import { Button, Card, Container } from "react-bootstrap";
+import { Button, Card, Container, ListGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SERVER_URL } from "./config"
 import { selectDecodedToken, selectToken } from "./app/tokenSlice";
 
 export function Dashboard() {
   const token = useSelector(selectToken);
   const decodedToken = useSelector(selectDecodedToken);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,13 +37,19 @@ export function Dashboard() {
         <Card.Header>
           <h1 className="cardHeader">Admin Dashboard</h1>
         </Card.Header>
-        <Card.Body>
+        <ListGroup variant="flush">
+          <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddProduct")}><i className="bi bi-tag me-2"></i> Add New Product</ListGroup.Item>
+          <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddProduct")}><i className="bi bi-toggles me-2"></i> Edit Product</ListGroup.Item>
+          <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddFeaturedSet")}><i className="bi bi-list-stars me-2"></i> Add Featured Set</ListGroup.Item>
+        </ListGroup>
+        {/* <Card.Body>
           <p>{decodedToken.email}</p>
           <p>{decodedToken.exp}</p>
           <p><Link to="/AddProduct">Add New Product</Link></p>
           <p><Link to="/AddFeaturedSet">Add Featured Set</Link></p>
           <Button onClick={handleSubmit}>Are You Admin</Button>
-        </Card.Body>
+        </Card.Body> */}
+        <Card.Footer className="text-center">logged as {decodedToken.email}{decodedToken.exp && <>"(session expires {decodedToken.exp})"</>}</Card.Footer>
       </Card>
     </Container>
   </div>);

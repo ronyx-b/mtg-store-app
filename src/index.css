@@ -28,3 +28,11 @@ code {
   font-size: 1.4em;
   text-align: center;
 }
+
+.highlightHover {
+  cursor: pointer;
+}
+
+.highlightHover:hover {
+  background-color: #fafafa;
+}

@@ -116,7 +116,7 @@ export function CardDetails() {
               <Col><h3>{card.name}</h3></Col>
               <Col md="auto">
                 <h3>
-                  {symbols && addSymbolsToText(card.mana_cost ? card.mana_cost : ((card.card_faces[1].mana_cost)? `${card.card_faces[0].mana_cost} // ${card.card_faces[1].mana_cost}` : card.card_faces[0].mana_cost ))}
+                  {symbols && addSymbolsToText(card.mana_cost !== undefined ? card.mana_cost : ((card.card_faces[1].mana_cost)? `${card.card_faces[0].mana_cost} // ${card.card_faces[1].mana_cost}` : card.card_faces[0].mana_cost ))}
                 </h3>
               </Col>
             </Row>

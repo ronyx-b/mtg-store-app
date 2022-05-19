@@ -15,7 +15,7 @@ export function AddFeaturedSet() {
   const navigate = useNavigate();
 
   const goBack = useCallback(() => {
-    navigate('/Products');
+    navigate('/Dashboard');
   }, [navigate]);
 
   const setCardSet = (e) => {
