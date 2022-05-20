@@ -34,5 +34,6 @@ code {
 }
 
 .highlightHover:hover {
-  background-color: #fafafa;
+  color: #ffffff;
+  background-color: #0d6efd;
 }

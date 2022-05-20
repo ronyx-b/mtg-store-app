@@ -41,6 +41,7 @@ export function Dashboard() {
           <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddProduct")}><i className="bi bi-tag me-2"></i> Add New Product</ListGroup.Item>
           <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddProduct")}><i className="bi bi-toggles me-2"></i> Edit Product</ListGroup.Item>
           <ListGroup.Item className="highlightHover" onClick={() => navigate("/AddFeaturedSet")}><i className="bi bi-list-stars me-2"></i> Add Featured Set</ListGroup.Item>
+          <ListGroup.Item className="highlightHover" onClick={handleSubmit}>Check if admin</ListGroup.Item>
         </ListGroup>
         {/* <Card.Body>
           <p>{decodedToken.email}</p>

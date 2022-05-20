@@ -5,14 +5,20 @@ import { CartCardItem } from "./CartCardItem";
 import { CartProductItem } from "./CartProductItem";
 import { SERVER_URL } from "./config";
 import { emptyCart, selectCart } from "./app/cartSlice";
+import { selectDecodedToken, selectToken } from "./app/tokenSlice";
+import { useNavigate } from "react-router-dom";
 
 export function Cart() {
   const cart = useSelector(selectCart);
+  const token = useSelector(selectToken);
+  const decodedToken = useSelector(selectDecodedToken);
   const [cards, setCards] = useState([]);
   const [sealed, setSealed] = useState([]);
   const [cartTotal, setCartTotal] = useState();
+  const [orderProducts, setOrderProducts] = useState();
   const [emptyCartModal, setEmptyCartModal] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClose = () => setEmptyCartModal(false);
   const handleShow = () => setEmptyCartModal(true);
@@ -20,6 +26,62 @@ export function Cart() {
   const emptyShoppingCart = () => {
     dispatch(emptyCart());
     handleClose();
+  };
+
+  const getAccountAddress = async () => {
+    let requestString = `${SERVER_URL}/api/user/account`;
+    try {
+      let response = await fetch(requestString, { 
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `JWT ${token}` 
+        } 
+      });
+      if (response.status >= 400) {
+        navigate('/Login');
+      } else {
+        let json = await response.json();
+        return (json.user.address[json.user.defaultAddress]);
+      }
+    } catch (err) {
+      console.log(err);
+      return {};
+    }
+  }
+
+  const checkout = async () => {
+    if(!token) {
+      console.log("You must be logged in");
+      return;
+    }
+
+    let address = await getAccountAddress()
+
+    let order = {
+      user_id : decodedToken._id,
+      date: new Date(),
+      address,
+      products: orderProducts
+    }
+
+    console.log(order);
+
+    let requestString = `${SERVER_URL}/api/checkout`;
+    let requestOptions = { 
+      method: 'POST', 
+      body: JSON.stringify(order), 
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${token}` 
+      }
+    };
+    let response = await fetch(requestString, requestOptions);
+    let json = await response.json();
+    console.log(json.message);
+    if (json.success) {
+      dispatch(emptyCart());
+    }
   };
 
   useEffect(() => {
@@ -65,25 +127,41 @@ export function Cart() {
       return ([]);
     };
 
-    const calculateCartTotal = (data) => { 
-      let cards = data.cards;
-      let sealed = data.sealed;
-      let total = cart.reduce((total, item) => { 
-        let price = 0;
+    const getOrderProducts = (data) => {
+      let {cards, sealed, accessories} = data;
+      let products = cart.map(item => {
+        let product = {
+          prodType: item.type,
+          prod_id: item.id,
+          name: item.name,
+          cardSet: "",
+          qty: item.qty,
+          price: 0
+        }
         switch(item.type) {
           case "single":
-            price = cards ? parseFloat(cards.find((card) => (card.id === item.id))?.prices.usd) : 0;
+            product.price = cards ? parseFloat(cards.find((card) => (card.id === item.id))?.prices.usd) : 0;
+            product.cardSet = cards ? cards.find((card) => (card.id === item.id))?.set_name : "";
             break;
           case "sealed":
-            price = sealed ? parseFloat(sealed.find((product) => (product._id === item.id))?.price) : 0;
+            product.price = sealed ? parseFloat(sealed.find((prod) => (prod._id === item.id))?.price) : 0;
+            product.cardSet= sealed ? sealed.find((prod) => (prod._id === item.id))?.cardSet : "";
             break;
           case "accessory":
             break;
           default:
-            price = 0;
+            product.price = 0;
             break;
         }
-        return total += (price * item.qty); 
+        return product;
+      });
+      setOrderProducts(products);
+      return products;
+    };
+
+    const calculateCartTotal = (products) => { 
+      let total = products.reduce((total, item) => { 
+        return total += (item.price * item.qty); 
       }, 0)
       setCartTotal(total.toFixed(2));
     };
@@ -93,7 +171,7 @@ export function Cart() {
       data.cards = await getCardsData();
       data.sealed = await getSealedData();
       data.accessories = await getAccessoriesData();
-      calculateCartTotal(data);
+      calculateCartTotal(getOrderProducts(data));
     }
 
     try {
@@ -124,7 +202,7 @@ export function Cart() {
           <Col className="col-lg-auto">{cartTotal}$</Col>
         </Row>
         <div className="d-flex justify-content-around">
-          <Button variant="primary">Checkout</Button>
+          <Button variant="primary" onClick={checkout}>Checkout</Button>
           <Button variant="secondary" onClick={handleShow}>Empty Your Cart</Button>
         </div>
         

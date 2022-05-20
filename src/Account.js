@@ -8,6 +8,7 @@ import { selectDecodedToken, selectToken } from './app/tokenSlice'
 export function Account() {
   const [accountInfo, setAccountInfo] = useState();
   const [currentAddress, setCurrentAddress] = useState();
+  const [userOrders, setUserOrders] = useState();
   const navigate = useNavigate();
   const token = useSelector(selectToken);
   const decodedToken = useSelector(selectDecodedToken);
@@ -36,8 +37,31 @@ export function Account() {
       }
     }
 
+    const getOrders = async (user_id) => {
+      let requestString = `${SERVER_URL}/api/users/${user_id}/orders`;
+      try {
+        let response = await fetch(requestString, { 
+          method: 'GET',
+          // headers: { 
+          //   'Content-Type': 'application/json',
+          //   'Authorization': `JWT ${token}` 
+          // } 
+        });
+        if (response.status >= 400) {
+          navigate('/Login');
+        } else {
+          let json = await response.json();
+          setUserOrders(json.orders);
+          return (json.orders);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
     getAccountInfo().then((accountInfo) => {
-      setCurrentAddress(accountInfo.address[accountInfo.defaultAddress])
+      setCurrentAddress(accountInfo.address[accountInfo.defaultAddress]);
+      getOrders(accountInfo._id)
     });;
   }, [navigate, token]);
 
@@ -58,7 +82,7 @@ export function Account() {
           <Nav.Link eventKey="link-1">Address Book</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="disabled" disabled>
+          <Nav.Link eventKey="link-2" onClick={() => console.log(userOrders)}>
             Order History
           </Nav.Link>
         </Nav.Item>
