@@ -1,0 +1,52 @@
+html, body, :has( > main ) {
+  height: auto; /* required to allow content to expand vertically without overflow */
+  width: auto;
+  min-height: 100%; /* fallback for IE and older browsers */
+  min-height: 100vh;
+}
+
+:has( > main ) {
+  display: flex;
+  flex-direction: column;
+}
+
+header, footer {
+  flex: none;
+}
+
+main {
+  flex: auto;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.cardHeader {
+  font-size: 1.62em;
+  text-align: center;
+}
+
+.subHeaders {
+  font-size: 1.4em;
+  text-align: center;
+}
+
+.highlightHover {
+  cursor: pointer;
+}
+
+.highlightHover:hover {
+  color: #ffffff;
+  background-color: #0d6efd;
+}
