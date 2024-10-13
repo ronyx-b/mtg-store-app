@@ -2,4 +2,4 @@ export const SERVER_URL = ""; // (window.location.hostname === 'localhost')?'htt
 
 export const CARD_SEARCH_API_BASE_URL = "https://api.scryfall.com";
 
-export const USD_CAD = 1.25;
+export const USD_CAD = 1.35;

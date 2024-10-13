@@ -4,7 +4,7 @@ import useAllProducts from "@/services/cache/useAllProducts";
 import useProductsBySet from "@/services/cache/useProductsBySet";
 import useSetByCode from "@/services/cache/useSetByCode";
 import { useRouter } from "next/router";
-import { Button, Container, Image, Row } from "react-bootstrap";
+import { Button, Container, Image, Row, Spinner } from "react-bootstrap";
 
 export default function Products({ ...props }) {
   const router = useRouter();
@@ -22,7 +22,11 @@ export default function Products({ ...props }) {
           <Button size="lg" variant="primary" type="button" className="d-block mx-auto" onClick={() => router.push(`/cards?set=${setData.data?.set.code}`)}>Browse {setData.data?.set.name} singles</Button>
         </div>
       </>}
-      {productsData.data && <>
+      {productsData.isLoading ? <>
+        <Spinner animation="border" role="status" style={{ display: "block", margin: "5rem auto" }}>
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </> : <>
         <Row xs={1} md={2} lg={3} xl={4}>
           {productsData.data?.productList?.map((product) => 
             <ProductCard key={product._id} product={product} />

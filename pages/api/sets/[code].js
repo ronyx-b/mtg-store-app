@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     const set = await setController.getSetByCode(code);
     res.status(200).json({ set });
   } else {
+    res.setHeader("Allow", ["GET"]);
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

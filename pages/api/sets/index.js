@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     const featuredSetList = await setController.getAllFeaturedSets({ pageSize, pageNum });
     res.status(200).json({ featuredSetList });
   } else {
+    res.setHeader("Allow", ["GET"]);
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

@@ -22,7 +22,7 @@ export default function Layout({ children, ...props }) {
 
   const logout = useCallback(() => {
     dispatch(removeToken());
-    router.push("");
+    router.push("/");
   }, [dispatch, router]);
 
   useEffect(() => {

@@ -36,7 +36,7 @@ export function ProductCard({product}) {
           </Row>
           :<>Out of Stock</>}
           {isAdmin && 
-            <Button size="sm" className="position-absolute" style={{top: "10px", right: "10px"}} onClick={() => {router.push(`/EditProduct/${product._id}`)}}><i className="bi bi-gear"></i> Edit</Button>
+            <Button size="sm" className="position-absolute" style={{top: "10px", right: "10px"}} onClick={() => {router.push(`/products/${product._id}/edit`)}}><i className="bi bi-gear"></i> Edit</Button>
           }
         </Card.Body>
       </Card>  

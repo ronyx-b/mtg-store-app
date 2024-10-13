@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     const productDetails = await productController.getProductDetailsById(id);
     res.status(200).json({ productDetails });
   } else {
+    res.setHeader("Allow", ["GET"]);
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

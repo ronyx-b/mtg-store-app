@@ -1,21 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
+
+const localStorageIsAvailable = typeof window !== "undefined";
 
 const initialState = {
-  // value: localStorage.getItem('token'),
+  value: localStorageIsAvailable ? localStorage.getItem("access_token") : "",
 };
 
 export const tokenSlice = createSlice({
-  name: 'token',
+  name: "token",
   initialState,
   reducers: {
     setToken: (state, action) => {
-      // localStorage.setItem('token', action.payload);
+      if (localStorageIsAvailable) localStorage.setItem("access_token", action.payload);
       state.value = action.payload;
     },
 
     removeToken: (state) => {
-      // localStorage.removeItem('token');
+      if (localStorageIsAvailable) localStorage.removeItem("access_token");
       state.value = null;
     }
   }
@@ -25,6 +27,16 @@ export const { setToken, removeToken } = tokenSlice.actions;
 
 export const selectToken = (state) => state.token.value;
 
-export const selectDecodedToken = (state) => state.token.value ? jwt_decode(state.token.value) : null;
+export const selectDecodedToken = (state) => {
+  let decodedToken = null;
+  if (state.token.value) {
+    try {
+      decodedToken = jwtDecode(state.token.value)
+    } catch (err) {
+      console.log(`error decoding access token: ${err}`);
+    }
+  }
+  return decodedToken;
+};
 
 export default tokenSlice.reducer;
