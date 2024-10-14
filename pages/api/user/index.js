@@ -1,4 +1,3 @@
-import ordersController from "@/dataService/ordersController";
 import userController from "@/dataService/userController";
 import jwtPassportUtils from "@/utils/jwtPassportUtils";
 
@@ -10,8 +9,8 @@ import jwtPassportUtils from "@/utils/jwtPassportUtils";
 export default async function handler(req, res) {
   if (req.method === "GET") {
     const user = jwtPassportUtils.getUser(req, res);
-    const orders = await ordersController.getOrdersByUserId(user._id);
-    res.status(200).json({ orders });
+    const userData = await userController.getUserData(user._id);
+    res.status(200).json({ user: userData });
   } else {
     res.setHeader("Allow", ["GET"]);
     res.status(405).json({ message: "Method Not Allowed" });

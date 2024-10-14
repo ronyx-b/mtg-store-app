@@ -8,11 +8,59 @@ import { useDispatch, useSelector } from "react-redux";
 
 export default function Layout({ children, ...props }) {
   const [searchString, setSearchString] = useState('');
-  const cartQty = 0; // useSelector(selectCartQty);
+  const cartQty = useSelector(selectCartQty);
   const token = useSelector(selectToken);
   const decodedToken = useSelector(selectDecodedToken);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const links = [
+    {
+      href: "/products",
+      title: "Products",
+      display: true
+    },
+    {
+      href: "/cards",
+      title: "Card Search",
+      display: true
+    },
+    {
+      href: "/decklist",
+      title: "Buy Decklist",
+      display: true
+    },
+    {
+      href: "/register",
+      title: "Register",
+      display: !token
+    },
+    {
+      href: "/login",
+      title: "Login",
+      display: !token
+    },
+    {
+      href: "/account",
+      title: "Account",
+      display: !!token
+    },
+    {
+      href: "/dashboard",
+      title: "Dashboard",
+      display: decodedToken?.isAdmin
+    },
+    {
+      href: "/cart",
+      title: "Cart",
+      display: true
+    },
+    {
+      href: "#",
+      title: "Log out",
+      display: !!token
+    },
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,21 +91,29 @@ export default function Layout({ children, ...props }) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
-                <Nav.Link as={Link} href="/products">Products</Nav.Link>
-                <Nav.Link as={Link} href="/cards">Card Search</Nav.Link>
-                <Nav.Link as={Link} href="/decklist">Buy Decklist</Nav.Link>
-                {!token && <Nav.Link as={Link} href="/register">Register</Nav.Link>}
-                {!token && <Nav.Link as={Link} href="/login">Login</Nav.Link>}
-                {token && <Nav.Link as={Link} href="/account">Account</Nav.Link>}
-                {decodedToken?.isAdmin && <Nav.Link as={Link} href="/dashboard">Dashboard</Nav.Link>}
-                  <Nav.Link as={Link} href="/cart">
-                    Cart 
-                    <div className="position-relative d-inline-block">
-                      <i className="bi bi-cart3"></i>
-                      <div className="position-absolute rounded-circle bg-primary" style={{top: "-3px", right: "-5px", zIndex: "1", fontSize: "10px", width: "14px", height: "14px", textAlign: "center"}}>{cartQty}</div>
-                    </div>
+                {links.filter((link) => link.display).map((link, i) => (
+                  <Nav.Link 
+                    key={`${i}:${link.href}`}
+                    as={Link} 
+                    href={link.href} 
+                    active={router.asPath.startsWith(link.href)} 
+                    onClick={(e) => {
+                      if (link.title === "Log out") {
+                        e.preventDefault();
+                        logout();
+                        router.push("/");
+                      }
+                    }}
+                  >
+                    {link.title}
+                    {link.title === "Cart" && <>
+                      <div className="position-relative d-inline-block">
+                        <i className="bi bi-cart3"></i>
+                        <div className="position-absolute rounded-circle bg-primary" style={{top: "-3px", right: "-5px", zIndex: "1", fontSize: "10px", width: "14px", height: "14px", textAlign: "center"}}>{cartQty}</div>
+                      </div>
+                    </>}
                   </Nav.Link>
-                {token && <Nav.Link onClick={logout}>Log out</Nav.Link>}
+                ))}
               </Nav>
               <Form className="d-flex" onSubmit={handleSubmit}>
                 <Form.Control

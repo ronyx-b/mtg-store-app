@@ -1,6 +1,7 @@
 import { SERVER_URL } from "@/config";
 import useProductDetails from "@/services/cache/useProductDetails";
 import { selectToken } from "@/services/store/tokenSlice";
+import useAdminAccess from "@/services/useAdminAccess";
 import { Formik } from "formik";
 import { useRouter } from "next/router"
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -14,6 +15,7 @@ import * as Yup from "yup";
  * @returns
  */
 export default function ManageProduct({ action = "add", id = null,  ...props }) {
+  const { isAdmin, isAdminAccessLoading } = useAdminAccess();
   const router = useRouter();
   const productDetails = useProductDetails(id);
   const initialProductData = productDetails?.data?.productDetails;
@@ -89,16 +91,17 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
         }
       }
 
-      console.log(body);
+      // console.log(body);
 
-      // let response = await fetch(requestString, { 
-      //   method,
-      //   body,
-      //   headers: { 
-      //     'Authorization': `JWT ${token}`
-      //   } 
-      // });
-      // let json = await response.json();
+      let response = await fetch(requestString, { 
+        method,
+        body,
+        headers: { 
+          'Authorization': `JWT ${token}`
+        } 
+      });
+      let json = await response.json();
+      console.log(json);
       // if (json.success) {
       //   router.push('/products');
       // } else {

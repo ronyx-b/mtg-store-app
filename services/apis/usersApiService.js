@@ -23,6 +23,19 @@ class UsersApiService extends BaseApiService {
     return this.post(url, body);
   }
 
+
+  static async getUserData(token) {
+    const url =`/api/user`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    }
+    return this.get(url, config);
+  }
+
+  
   static async isAdmin(token) {
     const url =`/api/user/is-admin`;
     /** @type {import("axios").AxiosRequestConfig} */
@@ -31,7 +44,7 @@ class UsersApiService extends BaseApiService {
         'Authorization': `JWT ${token}`
       }
     }
-    return this.post(url, {}, config);
+    return this.get(url, config);
   }
 }
 

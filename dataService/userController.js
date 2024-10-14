@@ -59,9 +59,26 @@ const loginUser = async (loginData) => {
   }
 }
 
+const getUserData = async (id) => {
+  try {
+    const db = await DataService.connect();
+    if (!db.error) {
+      const userData = await db.model.User.findById(id, ['name', 'email', 'address', 'defaultAddress', 'isAdmin', 'orders']);
+      if (!userData) {
+        throw 'user not found';
+      }
+      return userData; 
+    }
+  }
+  catch (err) {
+    throw `error looking for user data: ${err}`;
+  }
+};
+
 const userController = {
   registerUser,
   loginUser,
+  getUserData,
 }
 
 export default userController;

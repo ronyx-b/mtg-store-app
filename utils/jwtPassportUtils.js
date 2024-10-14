@@ -41,10 +41,21 @@ const signToken = (tokenPayload, optionsExpiresIn = { expiresIn: "24h" }) => {
  * @async
  * @param {import("next/server").NextRequest} req 
  * @param {import("next/server").NextResponse} res
+ * @returns {{ _id: string, email: string, isAdmin: boolean }} An object with user token payload 
+ */
+const getUser = (req, res) => {
+  passport.authenticate("jwt", { session: false })(req, res, () => {});
+  return req?.user;
+};
+
+/**
+ * Checks if request has user validated and if it is an Admin
+ * @async
+ * @param {import("next/server").NextRequest} req 
+ * @param {import("next/server").NextResponse} res
  * @returns {boolean} isAdmin value
  */
 const isAdmin = (req, res) => {
-  // passport.initialize()(req, null, () => {});
   passport.authenticate("jwt", { session: false })(req, res, () => {});
   return req?.user?.isAdmin;
 };
@@ -53,6 +64,7 @@ const isAdmin = (req, res) => {
 /* ********** Export jwt Passport Utils ********** */
 const jwtPassportUtils = {
   signToken,
+  getUser,
   isAdmin,
 };
 
