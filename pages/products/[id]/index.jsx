@@ -1,6 +1,7 @@
 import AddAdjustCartButtons from "@/components/AddAdjustCartButtons";
 import { SERVER_URL } from "@/config";
 import useProductDetails from "@/services/cache/useProductDetails";
+import { Cloudinary } from "@cloudinary/url-gen";
 import { useRouter } from "next/router";
 import { Col, Container, Image, Row } from "react-bootstrap";
 
@@ -14,12 +15,18 @@ export default function ProductById({ ...props }) {
     name: product?.data?.productDetails?.name
   };
 
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    }
+  });
+
   return (<div className="ProductDetails">
     <Container>
       {product?.data && <div className="m-3">
         <Row>
           <Col xs={{span: 12, order: "last"}} sm={{span: 3, order: "first"}}>
-            <Image src={`${SERVER_URL}/img/${product?.data?.productDetails?.image}`} className="w-100" alt={product?.data?.productDetails?.name} />
+            <Image src={cld.image(product?.data?.productDetails?.image).toURL()} className="w-100" alt={product?.data?.productDetails?.name} />
           </Col>
           <Col>
             <Row><h3>{product?.data?.productDetails?.name}</h3></Row>

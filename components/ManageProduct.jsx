@@ -4,7 +4,7 @@ import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
 import { Formik } from "formik";
 import { useRouter } from "next/router"
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Card, Col, Container, Form, Image, Row, Alert, Button, Modal, Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import * as Yup from "yup";
@@ -19,8 +19,8 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
   const router = useRouter();
   const productDetails = useProductDetails(id);
   const initialProductData = productDetails?.data?.productDetails;
+  /** @type {React.RefObject<HTMLInputElement>} */
   const image = useRef(null);
-  const [currentImage, setCurrentImage] = useState(initialProductData?.image);
 
   const initialValues = {
     name: initialProductData?.name || "", 
@@ -79,17 +79,15 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
       let body = new FormData();
       console.log(values);
       for (let field in values) {
-        console.log(`Add "${field}" to formData`);
         body.append(field, values[field]);
-        console.log(body.get(field));
       }
-      body.append("image", image);
+      body.append("image", image?.current?.files?.[0]);
       console.log(body.get("image"));
-      if (values?.attachments && values?.attachments?.length && values.attachments.length > 0) {
-        for (let i = 0; i <= values.attachments.length; i++) {
-          body.append(`attachments[${i}]`, values.attachments[i])
-        }
-      }
+      // if (values?.attachments && values?.attachments?.length && values.attachments.length > 0) {
+      //   for (let i = 0; i <= values.attachments.length; i++) {
+      //     body.append(`attachments[${i}]`, values.attachments[i])
+      //   }
+      // }
 
       // console.log(body);
 
@@ -303,7 +301,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
       <Modal.Header closeButton>
         <Modal.Title>Current Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body><Image src={`${SERVER_URL}/img/${currentImage}`} className="w-100" alt="current" /></Modal.Body>
+      <Modal.Body><Image src={`${SERVER_URL}/img/${initialProductData?.image}`} className="w-100" alt="current" /></Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
           Close

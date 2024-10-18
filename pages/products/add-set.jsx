@@ -45,7 +45,7 @@ export default function AddFeaturedSet({ ...props }) {
     setIsSubmitted(true);
     console.log(formFields);
     try {
-      let requestString = `${SERVER_URL}/api/sets`;
+      let requestString = `${SERVER_URL}/api/sets`; // "http://localhost:8080/api/sets"; // 
       let body = new FormData(e.target);  
       let response = await fetch(requestString, { 
         method: 'POST',
@@ -57,7 +57,7 @@ export default function AddFeaturedSet({ ...props }) {
       let json = await response.json();
       console.log(json.message);
       if (json.success) {
-        router.push('/Products');
+        router.push('/products');
       } else {
         setIsSubmitted(false);
         setSubmissionError(json.message);

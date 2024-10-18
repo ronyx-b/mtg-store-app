@@ -1,6 +1,6 @@
 import useProductsBySet from "@/services/cache/useProductsBySet";
 import { Container, Row } from "react-bootstrap";
-import { ProductCard } from "../ProductCard";
+import { ProductCard } from "./ProductCard";
 
 export default function ProductsList({ set, ...props }) {
   const products = useProductsBySet(set.name);

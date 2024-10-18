@@ -51,7 +51,7 @@ export default function Account({ ...props }) {
           } 
         });
         if (response.status >= 400) {
-          router.push('/Login');
+          router.push('/login');
         } else {
           let json = await response.json();
           setUserOrders(json.orders);

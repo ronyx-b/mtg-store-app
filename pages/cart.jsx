@@ -114,12 +114,11 @@ export default function Cart({ ...props }) {
       }
       let requestOptions = { 
         method: 'POST', 
-        body: JSON.stringify({ products }), 
+        body: JSON.stringify({ productIdList: products }), 
         headers: { 'Content-Type': 'application/json'}
       };
       let response = await fetch(requestString, requestOptions);
       let data = await response.json();
-      // console.log(data.products);
       setSealed(data.products);
       return (data.products);
     };
@@ -177,7 +176,6 @@ export default function Cart({ ...props }) {
 
     try {
       loadCartData().then(() => {
-        console.log("cart loaded");
         setIsLoading(false);
       });
     } catch (err) {
@@ -201,10 +199,10 @@ export default function Cart({ ...props }) {
             {(cart && cart.length > 0)?
               <>
               {cart.filter((item) => (item.type === "sealed")).map((item) => 
-                <CartProductItem key={item.id} item={item} product={sealed.find((product) => (product._id === item.id))} />
+                <CartProductItem key={item.id} item={item} product={sealed?.find((product) => (product._id === item.id))} />
               )}
               {cart.filter((item) => (item.type === "single")).map((item) => 
-                <CartCardItem key={item.id} item={item} card={cards.find((card) => (card.id === item.id))} />
+                <CartCardItem key={item.id} item={item} card={cards?.find((card) => (card.id === item.id))} />
               )}
               <Row className="m-1 p-2 border-bottom">
                 <Col><h3>Cart Total</h3></Col>

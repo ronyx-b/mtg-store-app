@@ -1,11 +1,18 @@
 import { Carousel, Container, Image } from "react-bootstrap";
 import { SERVER_URL } from "@/config"
 import Link from "next/link";
-import ProductsList from "@/components/home/ProductsList";
+import ProductsList from "@/components/Products/ProductsList";
 import useAllSets from "@/services/cache/useAllSets";
+import { Cloudinary } from "@cloudinary/url-gen";
 
 export default function Home() {
   const sets = useAllSets();
+
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    }
+  });
 
   return (<div className="Home">
     <Container fluid="md">
@@ -13,7 +20,7 @@ export default function Home() {
         {sets.data && sets.data.featuredSetList.map((set) =>
           <Carousel.Item key={set._id}>
             <Link href={`/products?set=${set.code}`}>
-              <Image src={`${SERVER_URL}/img/hero/${set.hero}`} alt={`${set.name} Hero`} className="d-block mw-100" />
+              <Image src={cld.image(set.hero).toURL()} alt={`${set.name} Hero`} className="d-block mw-100" />
             </Link>
             <Carousel.Caption>
               <Link href={`/products?set=${set.code}`} style={{ textDecoration: "none", color: "inherit" }}>

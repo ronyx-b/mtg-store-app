@@ -1,5 +1,7 @@
+import useIsAdmin from "@/services/cache/useIsAdmin";
 import { selectCartQty } from "@/services/store/cartSlice";
 import { removeToken, selectDecodedToken, selectToken } from "@/services/store/tokenSlice";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
@@ -11,8 +13,10 @@ export default function Layout({ children, ...props }) {
   const cartQty = useSelector(selectCartQty);
   const token = useSelector(selectToken);
   const decodedToken = useSelector(selectDecodedToken);
+  const validToken = !!token && token !== "" && !!decodedToken && !!decodedToken?._id && decodedToken?._id !== "";
   const dispatch = useDispatch();
   const router = useRouter();
+  const isAdmin = useIsAdmin(token);
 
   const links = [
     {
@@ -33,22 +37,22 @@ export default function Layout({ children, ...props }) {
     {
       href: "/register",
       title: "Register",
-      display: !token
+      display: !validToken
     },
     {
       href: "/login",
       title: "Login",
-      display: !token
+      display: !validToken
     },
     {
       href: "/account",
       title: "Account",
-      display: !!token
+      display: validToken
     },
     {
       href: "/dashboard",
       title: "Dashboard",
-      display: decodedToken?.isAdmin
+      display: isAdmin.data
     },
     {
       href: "/cart",
@@ -58,7 +62,7 @@ export default function Layout({ children, ...props }) {
     {
       href: "#",
       title: "Log out",
-      display: !!token
+      display: validToken
     },
   ];
 
@@ -84,13 +88,16 @@ export default function Layout({ children, ...props }) {
   },[decodedToken?.exp, logout]);
 
   return (<>
+    <Head>
+      <title>{`MTG Store {RB}`}</title>
+    </Head>
     <header>
       <Navbar bg="dark" variant="dark" sticky="top" expand="lg">
         <Container>
           <Navbar.Brand as={Link} href="/">MTG Store</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="mr-auto">
+              <Nav className="mr-auto" suppressHydrationWarning={true}>
                 {links.filter((link) => link.display).map((link, i) => (
                   <Nav.Link 
                     key={`${i}:${link.href}`}
