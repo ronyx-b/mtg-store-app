@@ -52,7 +52,7 @@ export default function Layout({ children, ...props }) {
     {
       href: "/dashboard",
       title: "Dashboard",
-      display: isAdmin.data
+      display: !isAdmin.isLoading && isAdmin.data
     },
     {
       href: "/cart",
