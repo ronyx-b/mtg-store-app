@@ -3,9 +3,22 @@ import { jwtDecode } from 'jwt-decode';
 
 const localStorageIsAvailable = typeof window !== "undefined";
 
+const getDecodedToken = () => {
+  let decodedToken = null;
+  try {
+    if (localStorageIsAvailable) {
+      decodedToken = jwtDecode(localStorage.getItem("access_token"));
+    }
+  }
+  catch (err) {
+    console.log(`couldn't decode local token: ${err}`)
+  }
+  return decodedToken;
+};
+
 const initialState = {
   value: localStorageIsAvailable ? localStorage.getItem("access_token") : "",
-  decodedToken: localStorageIsAvailable ? jwtDecode(localStorage.getItem("access_token")) : null,
+  decodedToken: getDecodedToken(),
 };
 
 export const tokenSlice = createSlice({

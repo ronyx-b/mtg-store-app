@@ -1,5 +1,4 @@
 import { Carousel, Container, Image } from "react-bootstrap";
-import { SERVER_URL } from "@/config"
 import Link from "next/link";
 import ProductsList from "@/components/Products/ProductsList";
 import useAllSets from "@/services/cache/useAllSets";

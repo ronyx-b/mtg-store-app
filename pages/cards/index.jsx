@@ -13,13 +13,7 @@ export default function CardSearch({ ...props }) {
   const { search, set } = router.query;
   const cardsFromSearchTerm = useCardsBySearchTerm(search);
   const cardsBySet = useCardsBySet(set);
-  let cards = [];
-  
-  if (!!set & set !== "") {
-    cards = cardsBySet.data;
-  } else {
-    cards = cardsFromSearchTerm.data;
-  }
+  const cards = (!!set & set !== "") ? cardsBySet.data : cardsFromSearchTerm.data;
   console.log(cards?.length);
   const PER_PAGE = 25;
   const lastPage = Math.ceil(cards?.length / PER_PAGE);
@@ -61,7 +55,7 @@ export default function CardSearch({ ...props }) {
         pageCards: cards?.slice(0, PER_PAGE)
       });
     }
-  }, [cardsBySet.isLoading, cardsFromSearchTerm.isLoading]);
+  }, [cardsBySet.isLoading, cardsFromSearchTerm.isLoading, cards]);
 
   return (<div className="CardSearch">
     <Container>
