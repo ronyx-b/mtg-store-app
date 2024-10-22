@@ -1,11 +1,11 @@
 import { Carousel, Container, Image } from "react-bootstrap";
 import Link from "next/link";
 import ProductsList from "@/components/Products/ProductsList";
-import useAllSets from "@/services/cache/useAllSets";
+import useAllFeaturedSets from "@/services/cache/useAllFeaturedSets";
 import { Cloudinary } from "@cloudinary/url-gen";
 
 export default function Home() {
-  const sets = useAllSets();
+  const sets = useAllFeaturedSets();
 
   const cld = new Cloudinary({
     cloud: {
