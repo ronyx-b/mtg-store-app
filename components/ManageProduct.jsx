@@ -1,10 +1,12 @@
 import { SERVER_URL } from "@/config";
+import useAllCardSets from "@/services/cache/useAllSetsList";
 import useProductDetails from "@/services/cache/useProductDetails";
 import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
+import { Cloudinary } from "@cloudinary/url-gen";
 import { Formik } from "formik";
 import { useRouter } from "next/router"
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Card, Col, Container, Form, Image, Row, Alert, Button, Modal, Spinner } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import * as Yup from "yup";
@@ -21,13 +23,16 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
   const initialProductData = productDetails?.data?.productDetails;
   /** @type {React.RefObject<HTMLInputElement>} */
   const image = useRef(null);
+  const ACTIONS = {
+    ADD: "add",
+    EDIT: "edit",
+  }
 
   const initialValues = {
     name: initialProductData?.name || "", 
     prodType: initialProductData?.prodType || "sealed", 
     description: initialProductData?.description || "", 
     cardSet: initialProductData?.cardSet || "", 
-    // image: image || null,
     price: initialProductData?.price || 0, 
     stock: initialProductData?.stock || 0,
   }
@@ -39,57 +44,37 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
     cardSet: Yup.string().required()
   });
 
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  // const [isSubmitted, setIsSubmitted] = useState(false);
   const [imageModal, setImageModal] = useState(false);
   const [submissionError, setSubmissionError] = useState("");
-  const [cardSets, setCardSets] = useState([]);
+  const cardSets = useAllCardSets();
   const token = useSelector(selectToken);
 
   const handleClose = () => setImageModal(false);
   const handleShow = () => setImageModal(true);
 
-  // const handleChange = (e) => {
-  //   let name = e.target.name;
-  //   let value = e.target.value;
-  //   let type = e.target.type;
-  //   if (type === "number") {
-  //     value = parseFloat(value);
-  //     if (isNaN(value)) {
-  //       value = 0;
-  //     }
-  //   }
-  //   setFormFields((formData) => {
-  //     return {...formData, [name]: value};
-  //   });
-  // };
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    }
+  });
 
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
-    // setSubmitting(true);
-    // setIsSubmitted(true);
-    // if (image.current.files.length > 0) {
-    //   console.log(`Selected file - ${image.current.files[0].name}`);
-    // }
     try {
       let requestString = `${SERVER_URL}/api/products`;
-      if (action === "edit" && id) {
+      if (action === ACTIONS.EDIT && id) {
         requestString += `/${id}`;
       }
-      let method = (action === "add")?"POST":"PUT";
+      let method = (action === ACTIONS.ADD) ? "POST" : "PUT";
       let body = new FormData();
       console.log(values);
       for (let field in values) {
         body.append(field, values[field]);
       }
       body.append("image", image?.current?.files?.[0]);
-      console.log(body.get("image"));
-      // if (values?.attachments && values?.attachments?.length && values.attachments.length > 0) {
-      //   for (let i = 0; i <= values.attachments.length; i++) {
-      //     body.append(`attachments[${i}]`, values.attachments[i])
-      //   }
-      // }
-
-      // console.log(body);
+      if (image.current?.files?.[0] !== undefined && action === ACTIONS.EDIT) {
+        body.append("previousImage", initialProductData?.image);
+      }
 
       let response = await fetch(requestString, { 
         method,
@@ -100,67 +85,23 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
       });
       let json = await response.json();
       console.log(json);
-      // if (json.success) {
-      //   router.push('/products');
-      // } else {
-      //   // setIsSubmitted(false);
-      //   setSubmissionError(json.message);
-      // }
+      if (json.success) {
+        router.push('/products');
+      } else {
+        // setSubmitting(false);
+        setSubmissionError(json.message);
+      }
 
     } catch (err) {
       console.log(err);
       setSubmissionError(err);
-      // setIsSubmitted(false);
+      // setSubmitting(false);
     }
   };
 
-  const goBack = useCallback(() => {
-    if (action === "edit") {
-      router.push('/products');
-    } else {
-      router.push('/dashboard');
-    }
-  }, [router, action]);
-
-  useEffect(() => {
-    const getSets = async () => {
-      let requestString = "https://api.scryfall.com/sets/";
-      let response = await fetch(requestString, { method: 'GET'});
-      let data = await response.json();
-      let setsData = data.data;
-      setCardSets(setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia"));
-    }
-
-    // const getProduct = async (id) => {
-    //   let requestString = `${SERVER_URL}/api/products/${id}`;
-    //   let response = await fetch(requestString, { method: 'GET'});
-    //   let data = await response.json();
-    //   if (!data.product) {
-    //     goBack();
-    //     return;
-    //   }
-    //   setFormFields({...data.product});
-    //   setCurrentImage(data.product.image);
-    // }
-
-    try {
-      if (action === "edit") {
-        if (!id) {
-          goBack();
-          return;
-        }
-        // getProduct(id);
-      }
-      getSets();
-    } catch (err) {
-      console.error(err);
-    }
-  }, [id, action, goBack]);
-
-
   return (<div className="ManageProduct" {...props}>
     <Container>
-      {action === "edit" && productDetails.isLoading ? <>
+      {cardSets.isLoading || (action === ACTIONS.EDIT && productDetails.isLoading) ? <>
         <Spinner animation="border" role="status" style={{ display: "block", margin: "5rem auto" }}>
           <span className="visually-hidden">Loading...</span>
         </Spinner>
@@ -220,7 +161,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
                       isInvalid={touched.cardSet && errors.cardSet}
                     />
                     <datalist id="sets">
-                      {cardSets.length > 0 && cardSets.map((set, i) => (
+                      {cardSets.data && cardSets.data?.length > 0 && cardSets.data?.map((set, i) => (
                         <option key={i} value={set.name} />  
                       ))}
                       <option value="Accessories" />
@@ -286,7 +227,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
                   </Form.Group>
                   <div className="d-flex mx-auto" style={{width: "fit-content"}}>
                     <Button variant="primary" type="submit" className="d-block mx-3" disabled={!isValid || isSubmitting}>Save</Button>
-                    <Button variant="secondary" className="d-block mx-3" disabled={isSubmitting} onClick={goBack}>Cancel</Button>
+                    <Button variant="secondary" className="d-block mx-3" disabled={isSubmitting} onClick={() => {router.push("/products")}}>Cancel</Button>
                   </div>
                   {submissionError !== "" && <Alert variant="danger" className="mt-3">{submissionError}</Alert>}
                 </Form>
@@ -301,7 +242,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
       <Modal.Header closeButton>
         <Modal.Title>Current Image</Modal.Title>
       </Modal.Header>
-      <Modal.Body><Image src={`${SERVER_URL}/img/${initialProductData?.image}`} className="w-100" alt="current" /></Modal.Body>
+      <Modal.Body><Image src={cld.image(initialProductData?.image).toURL()} className="w-100" alt="current" loading="lazy" /></Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={handleClose}>
           Close

@@ -1,6 +1,5 @@
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { SERVER_URL } from "@/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { selectDecodedToken } from "@/services/store/tokenSlice";

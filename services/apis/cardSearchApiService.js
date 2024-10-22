@@ -54,6 +54,16 @@ class CardSearchApiService extends BaseApiService {
     const url = `${CARD_SEARCH_API_BASE_URL}/symbology`;
     return this.get(url)
   }
+
+  /**
+   * Gets a list of all sets
+   * @async
+   * @returns 
+   */
+  static async getAllCardSets() {
+    const url = `${CARD_SEARCH_API_BASE_URL}/sets`;
+    return this.get(url)
+  }
 }
 
 export default CardSearchApiService;
