@@ -14,7 +14,7 @@ export default function CardSearch({ ...props }) {
   const cardsFromSearchTerm = useCardsBySearchTerm(search);
   const cardsBySet = useCardsBySet(set);
   const cards = (!!set & set !== "") ? cardsBySet.data : cardsFromSearchTerm.data;
-  console.log(cards?.length);
+  // console.log(cards?.length);
   const PER_PAGE = 25;
   const lastPage = Math.ceil(cards?.length / PER_PAGE);
   let pages = [];

@@ -20,6 +20,25 @@ class SetsApiService extends BaseApiService {
     const url = `/api/sets/${code}`;
     return this.get(url);
   }
+
+  /**
+   * Adds a new featured set
+   * @async
+   * @param {FormData} data 
+   * @param {string} token 
+   * @returns 
+   */
+  static async addFeaturedSet(data, token) {
+    const url = `/api/sets`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: { 
+        "Authorization": `JWT ${token}`,
+        "Content-Type": "multipart/form-data"
+      }
+    };
+    return this.post(url, data, config);
+  }
 }
 
 export default SetsApiService;

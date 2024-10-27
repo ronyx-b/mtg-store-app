@@ -10,7 +10,6 @@ const selectCartItemQty = (state, id) => {
 export default function AddAdjustCartButtons({item, showRemove}) {
   const cartItemQty = useSelector((state) => selectCartItemQty(state, item.id));
   const [qty, setQty] = useState(cartItemQty === 0 ? 1 : cartItemQty);
-  // const [show, setShow] = useState(false); // toast
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -52,12 +51,5 @@ export default function AddAdjustCartButtons({item, showRemove}) {
         }
       </div>
     </Form>
-
-    {/* <Toast onClose={() => setShow(false)} show={show} delay={3000} autohide>
-      <Toast.Header>
-        <strong className="me-auto">Bootstrap</strong>
-      </Toast.Header>
-      <Toast.Body>Hello, world! This is a toast message.</Toast.Body>
-    </Toast> */}
   </div>);
 }

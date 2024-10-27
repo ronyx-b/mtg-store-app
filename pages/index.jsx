@@ -16,7 +16,7 @@ export default function Home() {
   return (<div className="Home">
     <Container fluid="md">
       <Carousel fade>
-        {sets.data && sets.data.featuredSetList.map((set) =>
+        {sets.data && sets.data.map((set) =>
           <Carousel.Item key={set._id}>
             <Link href={`/products?set=${set.code}`}>
               <Image src={cld.image(set.hero).toURL()} alt={`${set.name} Hero`} className="d-block mw-100" />
@@ -30,7 +30,7 @@ export default function Home() {
         )}
       </Carousel>
       <h1 className="my-4 text-center text-uppercase">Shop our latests sets</h1>
-      {sets.data && sets.data.featuredSetList.filter((set) => set.featured).map((set, i) => <div key={set._id}>
+      {sets.data && sets.data.filter((set) => set.featured).map((set, i) => <div key={set._id}>
         <ProductsList set={set} />
       </div>)}
     </Container>

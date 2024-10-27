@@ -3,7 +3,7 @@ import SetsApiService from "../apis/setsApiService";
 
 const getAllSets = async (pagination = { pageSize: 10, pageNum: 1 }) => {
   const response = await SetsApiService.getAllSets(pagination);
-  const setList = response.status === 200 ? response.data : [];
+  const setList = response.status === 200 ? response.data.featuredSetList : [];
   return setList;
 }
 
