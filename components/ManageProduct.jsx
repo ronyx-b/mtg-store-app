@@ -1,5 +1,5 @@
-import { SERVER_URL } from "@/config";
-import useAllCardSets from "@/services/cache/useAllSetsList";
+import ProductsApiService from "@/services/apis/productsApiService";
+import useAllCardSets from "@/services/cache/useAllCardSets";
 import useProductDetails from "@/services/cache/useProductDetails";
 import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
@@ -61,13 +61,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
 
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
     try {
-      let requestString = `${SERVER_URL}/api/products`;
-      if (action === ACTIONS.EDIT && id) {
-        requestString += `/${id}`;
-      }
-      let method = (action === ACTIONS.ADD) ? "POST" : "PUT";
       let body = new FormData();
-      console.log(values);
       for (let field in values) {
         body.append(field, values[field]);
       }
@@ -76,26 +70,18 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
         body.append("previousImage", initialProductData?.image);
       }
 
-      let response = await fetch(requestString, { 
-        method,
-        body,
-        headers: { 
-          'Authorization': `JWT ${token}`
-        } 
-      });
-      let json = await response.json();
-      console.log(json);
-      if (json.success) {
+      const response = action === ACTIONS.ADD ? 
+        await ProductsApiService.addNewProduct(body, token) :
+        await ProductsApiService.editProduct(id, body, token);
+
+      if (response.data.success || response.status === 201) {
         router.push('/products');
       } else {
-        // setSubmitting(false);
         setSubmissionError(json.message);
       }
-
     } catch (err) {
       console.log(err);
       setSubmissionError(err);
-      // setSubmitting(false);
     }
   };
 
@@ -153,14 +139,14 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
                     <Form.Label>Card Set:</Form.Label>
                     <Form.Control 
                       type="text" 
-                      list="sets" 
+                      list="card-sets-datalist" 
                       name="cardSet" 
                       value={values.cardSet} 
                       onChange={handleChange} 
                       onBlur={handleBlur}
                       isInvalid={touched.cardSet && errors.cardSet}
                     />
-                    <datalist id="sets">
+                    <datalist id="card-sets-datalist">
                       {cardSets.data && cardSets.data?.length > 0 && cardSets.data?.map((set, i) => (
                         <option key={i} value={set.name} />  
                       ))}

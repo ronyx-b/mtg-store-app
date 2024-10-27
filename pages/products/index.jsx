@@ -1,5 +1,4 @@
 import { ProductCard } from "@/components/Products/ProductCard";
-import { SERVER_URL } from "@/config";
 import useAllProducts from "@/services/cache/useAllProducts";
 import useProductsBySet from "@/services/cache/useProductsBySet";
 import useSetByCode from "@/services/cache/useSetByCode";

@@ -1,4 +1,6 @@
-import { SERVER_URL } from "@/config";
+import SetsApiService from "@/services/apis/setsApiService";
+import useAllCardSets from "@/services/cache/useAllCardSets";
+import useAllFeaturedSets from "@/services/cache/useAllFeaturedSets";
 import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
 import { useRouter } from "next/router";
@@ -7,7 +9,7 @@ import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap"
 import { useSelector } from "react-redux";
 
 export default function AddFeaturedSet({ ...props }) {
-  const [cardSets, setCardSets] = useState([]);
+  const [unlistedCardSets, setUnlistedCardSets] = useState([]);
   const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
   const [submissionError, setSubmissionError ] = useState("");
   const [isSubmitted, setIsSubmitted ] = useState(false);
@@ -15,6 +17,8 @@ export default function AddFeaturedSet({ ...props }) {
   const token = useSelector(selectToken);
   const router = useRouter();
   const { isAdmin, isAdminAccessLoading } = useAdminAccess();
+  const featuredSets = useAllFeaturedSets();
+  const allSetsList = useAllCardSets();
 
   const goBack = useCallback(() => {
     router.push('/dashboard');
@@ -22,41 +26,31 @@ export default function AddFeaturedSet({ ...props }) {
 
   const setCardSet = (e) => {
     let scryfall_id = e.target.value;
-    let set = cardSets.find((set) => set.id === scryfall_id);
+    let set = unlistedCardSets.find((set) => set.id === scryfall_id);
     setFormFields((formData) => {
       return {...formData, scryfall_id, name: set.name, code: set.code, released_at: set.released_at};
     });
   };
 
+  /** @type {import("react").FormEventHandler} */
   const handleChange = (e) => {
     let name = e.target.name;
-    let value = e.target.value;
-    let type = e.target.type;
-    if (type === 'checkbox') {
-      value = e.target.checked;
-    }
+    let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormFields((formData) => {
       return {...formData, [name]: value};
     });
   };
 
+  /** @type {import("react").FormEventHandler} */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
-    console.log(formFields);
     try {
-      let requestString = `${SERVER_URL}/api/sets`; // "http://localhost:8080/api/sets"; // 
-      let body = new FormData(e.target);  
-      let response = await fetch(requestString, { 
-        method: 'POST',
-        body,
-        headers: { 
-          'Authorization': `JWT ${token}` 
-        } 
-      });
+      let data = new FormData(e.target);
+      const response = await SetsApiService.addFeaturedSet(data, token)
       let json = await response.json();
       console.log(json.message);
-      if (json.success) {
+      if (json.success || response.status === 201) {
         router.push('/products');
       } else {
         setIsSubmitted(false);
@@ -68,36 +62,13 @@ export default function AddFeaturedSet({ ...props }) {
   }
 
   useEffect(() => {
-    const getFeaturedSets = async () => {
-      let requestString = `${SERVER_URL}/api/sets`;
-      let response = await fetch(requestString, { method: 'GET'});
-      let data = await response.json();
-      let featuredSets = data.featuredSetList.sort((first, second) => {
-        let dateFirst = new Date(first.released_at);
-        let dateSecond = new Date(second.released_at);
-        return dateSecond - dateFirst;
-      });
-      return featuredSets;
-    }
-
-    const getSets = async (featuredSets) => {
-      let requestString = "https://api.scryfall.com/sets/";
-      let response = await fetch(requestString, { method: 'GET'});
-      let data = await response.json();
-      let setsData = data.data;
+    if (featuredSets.data && allSetsList.data) {
+      let setsData = [ ...allSetsList.data ];
       setsData = setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia");
-      setsData = setsData.filter((set) => !featuredSets.some((featSet) => featSet.name === set.name));
-      setCardSets(setsData);
+      setsData = setsData.filter((set) => !featuredSets.data.some((featSet) => featSet.name === set.name));
+      setUnlistedCardSets(setsData);
     }
-
-    try {
-      getFeaturedSets().then((featuredSets) => {
-        getSets(featuredSets);
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
+  }, [featuredSets.data, allSetsList.data]);
 
   return (
     <div className="AddFeaturedSet" {...props}>
@@ -110,30 +81,8 @@ export default function AddFeaturedSet({ ...props }) {
             <Form id="formSets" onSubmit={handleSubmit}>
               <input type="hidden" name="name" value={formFields.name} />
               <input type="hidden" name="code" value={formFields.code} />
-              <input
-                type="hidden"
-                name="released_at"
-                value={formFields.released_at}
-              />
+              <input type="hidden" name="released_at" value={formFields.released_at} />
               <Row>
-                {/* <Col md={4}>
-                <Form.Group className="mb-3" controlId="formSets.code">
-                  <Form.Label>Set Code:</Form.Label>
-                  <Form.Control type="text" name="code" value={formFields.code} disabled />
-                  <Form.Control.Feedback type="invalid">
-                    {formErrors.code}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col md={4}>
-                <Form.Group className="mb-3" controlId="formSets.releasedAt">
-                  <Form.Label>Date Released:</Form.Label>
-                  <Form.Control type="date" name="released_at" value={formFields.released_at} disabled />
-                  <Form.Control.Feedback type="invalid">
-                    {formErrors.released_at}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col> */}
                 <Col xs>
                   <Form.Group className="mb-3" controlId="formSets.name">
                     <Form.Label>Set Name:</Form.Label>
@@ -142,8 +91,11 @@ export default function AddFeaturedSet({ ...props }) {
                       value={formFields.scryfall_id}
                       onChange={setCardSet}
                     >
-                      {cardSets.length > 0 &&
-                        cardSets.map((set) => {
+                      {allSetsList.isLoading || featuredSets.isLoading && <>
+                        <option disabled={true}>Loading...</option>
+                      </>}
+                      {unlistedCardSets.length > 0 &&
+                        unlistedCardSets.map((set) => {
                           return (
                             <option key={set.id} value={set.id}>
                               {set.name}
@@ -167,10 +119,6 @@ export default function AddFeaturedSet({ ...props }) {
                   </Form.Group>
                 </Col>
               </Row>
-              {/* <Form.Group className="mb-3" controlId="formSets.hero">
-              <Form.Label>Hero:</Form.Label>
-              <Form.Control type="text" name="hero" value={formFields.hero} onChange={handleChange} />
-            </Form.Group> */}
               <Form.Group className="mb-3" controlId="formSets.hero">
                 <Form.Label>Hero:</Form.Label>
                 <Form.Control
