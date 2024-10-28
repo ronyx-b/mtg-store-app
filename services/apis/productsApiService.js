@@ -36,6 +36,17 @@ class ProductsApiService extends BaseApiService {
   }
 
   /**
+   * Gets a list of products given a list of its ids 
+   * @async
+   * @param {{ productIdList: string[] }} data
+   * @returns 
+   */
+  static async getProductsFromCollection(data) {
+    const url = `/api/products/collection`;
+    return this.post(url, data);
+  }
+
+  /**
    * Adds a new product
    * @async
    * @param {FormData} formData 

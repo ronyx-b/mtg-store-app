@@ -35,6 +35,17 @@ class CardSearchApiService extends BaseApiService {
   }
 
   /**
+   * Gets a list of cards given a list of its ids 
+   * @async
+   * @param {{ identifiers: { id: string }[] }} data 
+   * @returns 
+   */
+  static async getCardsFromCollection(data) {
+    const url = "https://api.scryfall.com/cards/collection";
+    return this.post(url, data);
+  }
+
+  /**
    * Gets card details given its ID
    * @async
    * @param {string} id 

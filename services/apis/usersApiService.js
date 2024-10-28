@@ -23,7 +23,12 @@ class UsersApiService extends BaseApiService {
     return this.post(url, body);
   }
 
-
+  /**
+   * Gets a user profile info
+   * @async
+   * @param {string} token 
+   * @returns 
+   */
   static async getUserData(token) {
     const url =`/api/user`;
     /** @type {import("axios").AxiosRequestConfig} */
@@ -35,7 +40,12 @@ class UsersApiService extends BaseApiService {
     return this.get(url, config);
   }
 
-  
+  /**
+   * Confirms if a user is admin
+   * @async
+   * @param {string} token 
+   * @returns 
+   */
   static async isAdmin(token) {
     const url =`/api/user/is-admin`;
     /** @type {import("axios").AxiosRequestConfig} */
@@ -45,6 +55,31 @@ class UsersApiService extends BaseApiService {
       }
     }
     return this.get(url, config);
+  }
+
+  /**
+   * Gets a user orders
+   * @async
+   * @param {string} token 
+   * @returns 
+   */
+  static async getUserOrders(token) {
+    const url =`/api/user/orders`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    }
+    return this.get(url, config);
+  }
+
+  static async checkoutOrder(orderData, token) {
+
+  }
+
+  static async getOrderDetails(orderId, token) {
+
   }
 }
 
