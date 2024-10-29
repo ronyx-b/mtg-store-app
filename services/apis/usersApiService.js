@@ -74,8 +74,22 @@ class UsersApiService extends BaseApiService {
     return this.get(url, config);
   }
 
+  /**
+   * Checks out a user's order
+   * @async
+   * @param {{ user_id: string, date: Date, address: Object, products: Object[] }} orderData 
+   * @param {string} token 
+   * @returns 
+   */
   static async checkoutOrder(orderData, token) {
-
+    const url =`/api/user/orders`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    }
+    return this.post(url, orderData, config);
   }
 
   static async getOrderDetails(orderId, token) {

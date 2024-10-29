@@ -1,9 +1,10 @@
 import CartCardItem from "@/components/Cart/CartCardItem";
 import CartProductItem from "@/components/Cart/CartProductItem";
+import UsersApiService from "@/services/apis/usersApiService";
 import useCardsFromCollection from "@/services/cache/useCardsFromCollection";
 import useProductsFromCollection from "@/services/cache/useProductsFromCollection";
 import useUserProfile from "@/services/cache/useUserProfile";
-import { selectCart } from "@/services/store/cartSlice";
+import { emptyCart, selectCart } from "@/services/store/cartSlice";
 import { selectDecodedToken, selectToken } from "@/services/store/tokenSlice";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -40,35 +41,24 @@ export default function Cart({ ...props }) {
     }
 
     let address = userProfile.data?.address?.[userProfile.data?.defaultAddress];
-
     let order = {
       user_id : decodedToken._id,
       date: new Date(),
       address,
       products: orderProducts
     }
-
     console.log(order);
+    const response = await UsersApiService.checkoutOrder(order, token);
 
-    // let requestString = `${SERVER_URL}/api/checkout`;
-    // let requestOptions = { 
-    //   method: 'POST', 
-    //   body: JSON.stringify(order), 
-    //   headers: { 
-    //     'Content-Type': 'application/json',
-    //     'Authorization': `JWT ${token}` 
-    //   }
-    // };
-    // let response = await fetch(requestString, requestOptions);
-    // let json = await response.json();
-    // console.log(json.message);
-    // if (json.success) {
-    //   dispatch(emptyCart());
-    // }
+    if (response.status === 201 || response.data?.success) {
+      dispatch(emptyCart());
+      router.push(`/account?view=orders`);
+    }
+    /* ********** TODO: implement error message handling for checkout error ********** */
   };
 
   useEffect(() => {
-    const getOrderProducts = () => {
+    if (cards.data && sealed.data) {
       let products = cart.map(item => {
         let product = {
           prodType: item.type,
@@ -88,6 +78,7 @@ export default function Cart({ ...props }) {
             product.cardSet = sealed.data?.find((prod) => (prod._id === item.id))?.cardSet;
             break;
           case "accessory":
+            /* ********** TODO: implement accessory product type support ********** */
             break;
           default:
             product.price = 0;
@@ -100,10 +91,6 @@ export default function Cart({ ...props }) {
         return total += (item.price * item.qty); 
       }, 0)
       setCartTotal(total.toFixed(2));
-    };
-
-    if (cards.data && sealed.data) {
-      getOrderProducts();
     }
 
   }, [cart, cards.data, sealed.data]);

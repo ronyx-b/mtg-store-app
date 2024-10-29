@@ -55,11 +55,11 @@ export default function Account({ ...props }) {
             <Card.Body>
 
             <Nav variant="tabs" defaultActiveKey="link-0">
-              {userAccountSections.map((section) => <>
-                <Nav.Item>
+              {userAccountSections.map((section, i) => (
+                <Nav.Item key={i}>
                   <Nav.Link as={Link} href="#" eventKey="link-0" onClick={section.handler}>{section.title}</Nav.Link>
                 </Nav.Item>
-              </>)}
+              ))}
             </Nav>
 
               <p>Welcome {accountInfo.data?.email}</p>
