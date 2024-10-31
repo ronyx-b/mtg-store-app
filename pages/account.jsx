@@ -1,3 +1,4 @@
+import Profile from "@/components/account/Profile";
 import useUserOrders from "@/services/cache/useUserOrders";
 import useUserProfile from "@/services/cache/useUserProfile";
 import { selectDecodedToken, selectToken } from "@/services/store/tokenSlice";
@@ -9,6 +10,7 @@ import { useSelector } from "react-redux";
 
 export default function Account({ ...props }) {
   const router = useRouter();
+  const { view } = router.query;
   const token = useSelector(selectToken);
   const accountInfo = useUserProfile(token);
   const userOrders = useUserOrders(token);
@@ -18,21 +20,27 @@ export default function Account({ ...props }) {
   const userAccountSections = [
     {
       title: "Profile",
-      handler: () => {},
+      query: "profile",
+      component: <Profile />,
     },
     {
       title: "Address Book",
-      handler: () => console.log(accountInfo.data?.address),
+      query: "address",
+      component: <>Address</>,
     },
     {
       title: "Order History",
-      handler: () => console.log(userOrders.data),
+      query: "orders",
+      component: <>Orders</>,
     },
     {
       title: "Change Password",
-      handler: () => {console.log("coming soon")},
+      query: "password",
+      component: <>Password</>,
     },
   ];
+
+  const SectionProvider = () => userAccountSections.find((section) => section.query === view)?.component || userAccountSections[0].component;
 
   useEffect(() => {
     if (!token) {
@@ -41,7 +49,7 @@ export default function Account({ ...props }) {
   }, [token, router]);
 
   return (
-    <div className="Account">
+    <div className="Account" {...props}>
       <Container>
         {accountInfo.isLoading || userOrders.isLoading ? <>
           <Spinner animation="border" role="status" style={{ display: "block", margin: "5rem auto" }}>
@@ -54,20 +62,22 @@ export default function Account({ ...props }) {
             </Card.Header>
             <Card.Body>
 
-            <Nav variant="tabs" defaultActiveKey="link-0">
+            <Nav variant="tabs" defaultActiveKey="profile" activeKey={view} className="mb-3">
               {userAccountSections.map((section, i) => (
                 <Nav.Item key={i}>
-                  <Nav.Link as={Link} href="#" eventKey="link-0" onClick={section.handler}>{section.title}</Nav.Link>
+                  <Nav.Link 
+                    as={Link} 
+                    href={`/account?view=${section.query}`} 
+                    eventKey={section.query} 
+                  >
+                    {section.title}
+                  </Nav.Link>
                 </Nav.Item>
               ))}
             </Nav>
 
-              <p>Welcome {accountInfo.data?.email}</p>
-              <div className="border border-secondary rounded">
-                <h3>Default Shipping Address</h3>
-                <p>{currentAddress?.street}, {currentAddress?.city}, {currentAddress?.province}, {currentAddress?.postal}</p>
-                <p></p>
-              </div>
+            <SectionProvider />
+
             </Card.Body>
           </Card>
         </>}
