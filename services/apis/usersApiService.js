@@ -61,10 +61,11 @@ class UsersApiService extends BaseApiService {
    * Gets a user orders
    * @async
    * @param {string} token 
+   * @param {{ pageSize: number|string, pageNum: number|string }} pagination 
    * @returns 
    */
-  static async getUserOrders(token) {
-    const url =`/api/user/orders`;
+  static async getUserOrders(token, pagination = { pageNum: 1, pageSize: 10 }) {
+    const url =`/api/user/orders?pageSize=${pagination.pageSize}&pageNum=${pagination.pageNum}`;
     /** @type {import("axios").AxiosRequestConfig} */
     const config = {
       headers: {
@@ -77,7 +78,7 @@ class UsersApiService extends BaseApiService {
   /**
    * Checks out a user's order
    * @async
-   * @param {{ user_id: string, date: Date, address: Object, products: Object[] }} orderData 
+   * @param {{ date: Date, address: Object, products: Object[] }} orderData 
    * @param {string} token 
    * @returns 
    */
@@ -92,8 +93,21 @@ class UsersApiService extends BaseApiService {
     return this.post(url, orderData, config);
   }
 
+  /**
+   * Gets an order by its ID
+   * @param {string} orderId 
+   * @param {string} token 
+   * @returns 
+   */
   static async getOrderDetails(orderId, token) {
-
+    const url =`/api/user/orders/${orderId}`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    }
+    return this.get(url, config);
   }
 }
 

@@ -96,7 +96,7 @@ export default function Profile({ ...props }) {
                 <p>You have no orders yet.</p>
               </Col>
             </> : <>
-              <Col># 000000</Col>
+              <Col># {userOrders.data?.[0]?.number}</Col>
               <Col>{(new Date(userOrders.data?.[0]?.date)).toDateString()}</Col>
               <Col style={{textAlign: "right"}}>{userOrders.data?.[0]?.products?.reduce((total, product) => (total + product.qty), 0)} items</Col>
               <Col style={{textAlign: "right"}}>${userOrders.data?.[0]?.products?.reduce((total, product) => total + (product.qty * product.price), 0)}</Col>
