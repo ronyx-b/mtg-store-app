@@ -42,7 +42,6 @@ export default function Cart({ ...props }) {
 
     let address = userProfile.data?.address?.[userProfile.data?.defaultAddress];
     let order = {
-      user_id : decodedToken._id,
       date: new Date(),
       address,
       products: orderProducts

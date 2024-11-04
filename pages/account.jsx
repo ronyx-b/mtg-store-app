@@ -1,3 +1,4 @@
+import Orders from "@/components/account/Orders";
 import Profile from "@/components/account/Profile";
 import useUserOrders from "@/services/cache/useUserOrders";
 import useUserProfile from "@/services/cache/useUserProfile";
@@ -13,7 +14,7 @@ export default function Account({ ...props }) {
   const { view } = router.query;
   const token = useSelector(selectToken);
   const accountInfo = useUserProfile(token);
-  const userOrders = useUserOrders(token);
+  const userOrders = useUserOrders(token, { pageNum: 1, pageSize: 1 });
   const currentAddress = accountInfo.data?.address?.[accountInfo.data?.defaultAddress];
   const decodedToken = useSelector(selectDecodedToken);
 
@@ -31,7 +32,7 @@ export default function Account({ ...props }) {
     {
       title: "Order History",
       query: "orders",
-      component: <>Orders</>,
+      component: <Orders />,
     },
     {
       title: "Change Password",
