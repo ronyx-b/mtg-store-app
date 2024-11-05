@@ -91,15 +91,15 @@ export default function Profile({ ...props }) {
 
           <Row className="mt-3">
 
-            {userOrders.data?.length === 0 ? <>
+            {userOrders.data?.orders?.length === 0 ? <>
               <Col>
                 <p>You have no orders yet.</p>
               </Col>
             </> : <>
-              <Col># {userOrders.data?.[0]?.number}</Col>
-              <Col>{(new Date(userOrders.data?.[0]?.date)).toDateString()}</Col>
-              <Col style={{textAlign: "right"}}>{userOrders.data?.[0]?.products?.reduce((total, product) => (total + product.qty), 0)} items</Col>
-              <Col style={{textAlign: "right"}}>${userOrders.data?.[0]?.products?.reduce((total, product) => total + (product.qty * product.price), 0)}</Col>
+              <Col># {userOrders.data?.orders?.[0]?.number}</Col>
+              <Col>{(new Date(userOrders.data?.orders?.[0]?.date)).toDateString()}</Col>
+              <Col style={{textAlign: "right"}}>{userOrders.data?.orders?.[0]?.products?.reduce((total, product) => (total + product.qty), 0)} items</Col>
+              <Col style={{textAlign: "right"}}>${userOrders.data?.orders?.[0]?.products?.reduce((total, product) => total + (product.qty * product.price), 0)}</Col>
             </>}
           </Row>
         </>}

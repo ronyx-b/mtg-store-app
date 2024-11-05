@@ -15,7 +15,7 @@ export default function Cart({ ...props }) {
   const router = useRouter();
   const cart = useSelector(selectCart);
   const token = useSelector(selectToken);
-  const decodedToken = useSelector(selectDecodedToken);
+  // const decodedToken = useSelector(selectDecodedToken);
   const identifiers = cart.filter((item) => (item.type === "single")).map((item) => ({id: item.id}));
   const cards = useCardsFromCollection({ identifiers });
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
@@ -23,6 +23,7 @@ export default function Cart({ ...props }) {
   const [cartTotal, setCartTotal] = useState();
   const [orderProducts, setOrderProducts] = useState();
   const [emptyCartModal, setEmptyCartModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const userProfile = useUserProfile(token);
 
@@ -34,24 +35,31 @@ export default function Cart({ ...props }) {
     handleClose();
   };
 
-  const checkout = async () => {
+  /** @type {import("react").FormEventHandler} */
+  const checkout = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
     if(!token) {
       console.log("You must be logged in");
       return;
     }
 
+    /* ********** TODO: implement choose address at checkout ********** */
     let address = userProfile.data?.address?.[userProfile.data?.defaultAddress];
     let order = {
       date: new Date(),
       address,
       products: orderProducts
     }
-    console.log(order);
+    // console.log(order);
     const response = await UsersApiService.checkoutOrder(order, token);
 
     if (response.status === 201 || response.data?.success) {
       dispatch(emptyCart());
       router.push(`/account?view=orders`);
+    } else {
+      console.log(response.data?.message);
+      setIsSubmitting(false);
     }
     /* ********** TODO: implement error message handling for checkout error ********** */
   };
@@ -120,7 +128,7 @@ export default function Cart({ ...props }) {
                 <Col className="col-lg-auto">{cartTotal}$</Col>
               </Row>
               <div className="d-flex justify-content-around">
-                <Button variant="primary" onClick={checkout}>Checkout</Button>
+                <Button variant="primary" onClick={checkout} disabled={isSubmitting}>Checkout</Button>
                 <Button variant="secondary" onClick={handleShow}>Empty Your Cart</Button>
               </div>
               
@@ -145,6 +153,21 @@ export default function Cart({ ...props }) {
           </Card>
         </>}
       </Container>
+
+      <Modal
+        show={isSubmitting}
+        onHide={() => {}}
+        backdrop="static"
+        keyboard={false}
+        centered
+      >
+        <Modal.Body style={{ textAlign: "center" }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p>Please wait while we process your order...</p>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }

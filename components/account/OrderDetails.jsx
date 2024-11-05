@@ -79,7 +79,7 @@ export default function OrderDetails({ ...props }) {
                 {item.price} $
               </td>
               <td style={{ textAlign: "right" }}>
-                {item.price * item.qty} $
+                {(item.price * item.qty).toFixed(2)} $
               </td>
             </tr>
           )}

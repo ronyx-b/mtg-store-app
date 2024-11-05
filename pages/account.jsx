@@ -1,3 +1,4 @@
+import ChangePassword from "@/components/account/ChangePassword";
 import Orders from "@/components/account/Orders";
 import Profile from "@/components/account/Profile";
 import useUserOrders from "@/services/cache/useUserOrders";
@@ -37,7 +38,7 @@ export default function Account({ ...props }) {
     {
       title: "Change Password",
       query: "password",
-      component: <>Password</>,
+      component: <ChangePassword />,
     },
   ];
 

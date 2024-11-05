@@ -36,7 +36,7 @@ class UsersApiService extends BaseApiService {
       headers: {
         'Authorization': `JWT ${token}`
       }
-    }
+    };
     return this.get(url, config);
   }
 
@@ -53,8 +53,20 @@ class UsersApiService extends BaseApiService {
       headers: {
         'Authorization': `JWT ${token}`
       }
-    }
+    };
     return this.get(url, config);
+  }
+
+
+  static async changePassword(token, data) {
+    const url = `/api/user/password`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    };
+    return this.put(url, data, config);
   }
 
   /**
@@ -71,7 +83,7 @@ class UsersApiService extends BaseApiService {
       headers: {
         'Authorization': `JWT ${token}`
       }
-    }
+    };
     return this.get(url, config);
   }
 
@@ -89,7 +101,7 @@ class UsersApiService extends BaseApiService {
       headers: {
         'Authorization': `JWT ${token}`
       }
-    }
+    };
     return this.post(url, orderData, config);
   }
 
@@ -106,7 +118,7 @@ class UsersApiService extends BaseApiService {
       headers: {
         'Authorization': `JWT ${token}`
       }
-    }
+    };
     return this.get(url, config);
   }
 }
