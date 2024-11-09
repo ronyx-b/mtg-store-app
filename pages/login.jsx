@@ -25,8 +25,6 @@ export default function Login({ ...props }) {
 
   /** @type {React.FormEventHandler} */
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
-    console.log(values);
-
     try {      
       const response = await UsersApiService.loginUser(values);
       if (!!response?.data?.token && response.data.token !== "") {

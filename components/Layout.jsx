@@ -108,7 +108,6 @@ export default function Layout({ children, ...props }) {
                       if (link.title === "Log out") {
                         e.preventDefault();
                         logout();
-                        router.push("/");
                       }
                     }}
                   >

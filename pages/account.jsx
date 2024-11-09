@@ -1,3 +1,4 @@
+import Address from "@/components/account/Address";
 import ChangePassword from "@/components/account/ChangePassword";
 import Orders from "@/components/account/Orders";
 import Profile from "@/components/account/Profile";
@@ -28,7 +29,7 @@ export default function Account({ ...props }) {
     {
       title: "Address Book",
       query: "address",
-      component: <>Address</>,
+      component: <Address />,
     },
     {
       title: "Order History",
