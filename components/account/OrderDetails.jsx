@@ -37,6 +37,10 @@ export default function OrderDetails({ ...props }) {
             <td>{(new Date(order.data.date)).toDateString()}</td>
           </tr>
           <tr>
+            <th>Shipping to:</th>
+            <td>{order.data.address.name}</td>
+          </tr>
+          <tr>
             <th>Shipping Address:</th>
             <td>{`${order.data.address.street}, ${order.data.address.city}, ${order.data.address.province}, ${order.data.address.postal}`}</td>
           </tr>

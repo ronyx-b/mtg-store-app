@@ -57,7 +57,13 @@ class UsersApiService extends BaseApiService {
     return this.get(url, config);
   }
 
-
+  /**
+   * Change a user's password
+   * @async
+   * @param {string} token 
+   * @param {Object} data 
+   * @returns 
+   */
   static async changePassword(token, data) {
     const url = `/api/user/password`;
     /** @type {import("axios").AxiosRequestConfig} */
@@ -67,6 +73,60 @@ class UsersApiService extends BaseApiService {
       }
     };
     return this.put(url, data, config);
+  }
+
+  /**
+   * Add an address to the user
+   * @async
+   * @param {string} token 
+   * @param {Object} data 
+   * @returns 
+   */
+  static async addAddress(token, data) {
+    const url = `api/user/address`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    };
+    return this.post(url, data, config);
+  }
+
+  /**
+   * Edit an address from the user
+   * @async
+   * @param {string} token 
+   * @param {Object} data 
+   * @returns 
+   */
+  static async editAddress(token, data) {
+    const url = `api/user/address`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    };
+    return this.put(url, data, config);
+  }
+
+  /**
+   * Deletes an address from the user
+   * @async
+   * @param {string} token 
+   * @param {{ addressId: string }} data 
+   * @returns 
+   */
+  static async deleteAddress(token, data) {
+    const url = `api/user/address/${data.addressId}`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    };
+    return this.delete(url, config);
   }
 
   /**
