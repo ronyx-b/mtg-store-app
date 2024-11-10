@@ -1,16 +1,11 @@
 import UsersApiService from "@/services/apis/usersApiService";
 import useUserProfile from "@/services/cache/useUserProfile";
 import { selectToken } from "@/services/store/tokenSlice";
-import { Formik, useFormik } from "formik";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Alert, Button, Card, Col, Form,
-  Modal,
-  Row,
-  Spinner,
-} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Alert, Button, Card, Col, Form, Modal, Row, Spinner, } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import * as Yup from "yup";
+import ManageAddressModal from "./ManageAddressModal";
 
 export default function Address({ ...props }) {
   const router = useRouter();
@@ -18,75 +13,48 @@ export default function Address({ ...props }) {
   const accountInfo = useUserProfile(token);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editAddressId, setEditAddressId] = useState(null);
-  const [submissionError, setSubmissionError] = useState("");
-
-  const formik = useFormik({
-    initialValues: {
-      name: accountInfo.data?.name,
-      street: "",
-      city: "",
-      province: "",
-      postal: "",
-    },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required().max(50),
-      street: Yup.string().required().max(50),
-      city: Yup.string().required().max(20),
-      province: Yup.string().required().max(20),
-      postal: Yup.string().required().max(10),
-    }),
-    onSubmit: async (values) => {
-      try {
-        let response;
-        if (editAddressId !== null) {
-          response = await UsersApiService.editAddress(token, { ...values, _id: editAddressId });
-        } else {
-          response = await UsersApiService.addAddress(token, values);
-        }
-        if (response.status !== 200 || response.status !== 201) {
-          throw response.data.message;
-        }
-        console.log("Submitted:", values);
-        setEditAddressId(null);
-        setShowAddressModal(false);
-      } catch (err) {
-        setSubmissionError(err);
-        console.log(`Error: ${err}`);
-      }
-    },
-  });
+  const [showConfirmDeleteAddressModal, setShowConfirmDeleteAddressModal] = useState(false);
+  const [deleteAddressId, setDeleteAddressId] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const handleModalClose = () => {
-    if (!formik.isSubmitting) {
-      setShowAddressModal(false);
-      setEditAddressId(null);
-    }
+    setShowAddressModal(false);
+    setEditAddressId(null);
   };
 
-  const handleDeleteAddress = async (addressId) => {
+  const handleDeleteAddress = async () => {
     try {
-      const response = await UsersApiService.deleteAddress(token, { addressId });
+      setIsDeleting(true);
+      const response = await UsersApiService.deleteAddress(token, { addressId: deleteAddressId });
       if (response.status === 200) {
         alert(response.data.message);
       }
+      accountInfo.mutate();
+      setShowConfirmDeleteAddressModal(false);
+      setDeleteAddressId(null);
     }
     catch (err) {
       console.log(`Error: ${err}`);
     }
-  }
-
-  useEffect(() => {
-    if (editAddressId !== null) {
-      (async () => {
-        await formik.setValues({
-          ...accountInfo.data?.address.find(
-            (thisAddress) => thisAddress._id == editAddressId
-          ),
-        });
-      })();
+    finally {
+      setIsDeleting(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editAddressId]);
+  };
+
+  /** @type {React.FormEventHandler} */
+  const handleChangeDefaultAddress = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await UsersApiService.updateDefaultAddress(token, { addressId: e.target.value });
+      if (response.status !== 200) {
+        throw new Error(response.data.message);
+      }
+      accountInfo.mutate();
+    }
+    catch (err) {
+      console.log(`Error: ${err}`);
+    }
+  };
 
   return (
     <div className="Address">
@@ -97,7 +65,7 @@ export default function Address({ ...props }) {
           </Button>
         </Col>
       </Row>
-      <Row xs={1} md={2} lg={3} xl={3} style={{ marginTop: "1rem" }}>
+      <Row xs={1} md={2} lg={3} xl={3}>
         {accountInfo.isLoading ? (
           <>
             <Spinner
@@ -111,7 +79,7 @@ export default function Address({ ...props }) {
         ) : (
           <>
             {accountInfo.data.address.map((thisAddress, i) => (
-              <Col key={i}>
+              <Col key={i} style={{ marginTop: "1rem" }}>
                 <Card className="shadow">
                   <Card.Body>
                     <Row>
@@ -137,121 +105,73 @@ export default function Address({ ...props }) {
                       <Col>
                         <Button
                           onClick={() => {
-                            handleDeleteAddress(thisAddress._id);
+                            setDeleteAddressId(thisAddress._id);
+                            setShowConfirmDeleteAddressModal(true);
                           }}
                         >
                           <i className="bi bi-trash3" /> Delete
                         </Button>
                       </Col>
-                      <Col>Make default / Is default</Col>
+                      <Col>
+                        <Form.Check
+                          type="radio"
+                          name="default-address"
+                          value={thisAddress._id}
+                          checked={thisAddress._id === accountInfo.data?.defaultAddress}
+                          id={`default-address-radio-${thisAddress._id}`}
+                          label="Default Address"
+                          onChange={handleChangeDefaultAddress}
+                        />
+                      </Col>
                     </Row>
                   </Card.Body>
                 </Card>
               </Col>
             ))}
 
+            <ManageAddressModal 
+              editAddressId={editAddressId}
+              setEditAddressId={setEditAddressId}
+              showAddressModal={showAddressModal}
+              handleModalClose={handleModalClose} 
+            />
+
             <Modal
-              size="lg"
-              show={showAddressModal}
-              onHide={handleModalClose}
+              show={showConfirmDeleteAddressModal}
+              onHide={() => {
+                if (!isDeleting) {
+                  setShowConfirmDeleteAddressModal(false);
+                  setDeleteAddressId(null);
+                }
+              }}
             >
-              <Form noValidate onSubmit={formik.handleSubmit}>
-                <Modal.Header>
-                  <Modal.Title>{editAddressId ? "Edit" : "Add"} Address</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form.Group className="mb-3" controlId="formRegister.name">
-                    <Form.Label>Full Name:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="name"
-                      {...formik.getFieldProps("name")}
-                      isInvalid={formik.touched.name && formik.errors.name}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {formik.errors.name}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formRegister.street">
-                    <Form.Label>Street:</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Street name, number, Apt/Suite, ..."
-                      name="street"
-                      {...formik.getFieldProps("street")}
-                      isInvalid={formik.touched.street && formik.errors.street}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {formik.errors.street}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                  <Row className="mb-3">
-                    <Form.Group as={Col} md="4" controlId="formRegister.city">
-                      <Form.Label>City:</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="city"
-                        {...formik.getFieldProps("city")}
-                        isInvalid={formik.touched.city && formik.errors.city}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {formik.errors.city}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group
-                      as={Col}
-                      md="4"
-                      controlId="formRegister.province"
-                    >
-                      <Form.Label>Province:</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="province"
-                        {...formik.getFieldProps("province")}
-                        isInvalid={formik.touched.province && formik.errors.province}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {formik.errors.province}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                    <Form.Group as={Col} md="4" controlId="formRegister.postal">
-                      <Form.Label>Postal Code:</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="A1A 2B2"
-                        name="postal"
-                        {...formik.getFieldProps("postal")}
-                        isInvalid={formik.touched.postal && formik.errors.postal}
-                      />
-                      <Form.Control.Feedback type="invalid">
-                        {formik.errors.postal}
-                      </Form.Control.Feedback>
-                    </Form.Group>
-                  </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                  <Button
-                    variant="secondary"
-                    type="reset"
-                    onClick={handleModalClose}
-                    disabled={formik.isSubmitting}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={!formik.isValid || formik.isSubmitting}
-                  >
-                    Submit
-                  </Button>
-                  {submissionError !== "" && (
-                    <Alert variant="danger" className="mt-3">
-                      {submissionError}
-                    </Alert>
-                  )}
-                </Modal.Footer>
-              </Form>
+              <Modal.Header>
+                <Modal.Title>Delete Address</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                Are you sure you want to delete this address?
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  variant="secondary"
+                  type="reset"
+                  onClick={() => {
+                    setShowConfirmDeleteAddressModal(false);
+                    setDeleteAddressId(null);
+                  }}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  type="submit"
+                  disabled={isDeleting}
+                  onClick={() => {handleDeleteAddress()}}
+                >
+                  Delete
+                </Button>
+              </Modal.Footer>
             </Modal>
           </>
         )}
