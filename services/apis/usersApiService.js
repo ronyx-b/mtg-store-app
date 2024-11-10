@@ -130,6 +130,24 @@ class UsersApiService extends BaseApiService {
   }
 
   /**
+   * Updates the default address
+   * @async
+   * @param {string} token 
+   * @param {{ addressId: string }} data 
+   * @returns 
+   */
+  static async updateDefaultAddress(token, data) {
+    const url = `api/user/address/default`;
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = {
+      headers: {
+        'Authorization': `JWT ${token}`
+      }
+    };
+    return this.put(url, data, config);
+  }
+
+  /**
    * Gets a user orders
    * @async
    * @param {string} token 

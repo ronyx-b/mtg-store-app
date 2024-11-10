@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 export default function Profile({ ...props }) {
   const token = useSelector(selectToken);
   const accountInfo = useUserProfile(token);
-  const currentAddress = accountInfo.data?.address?.[accountInfo.data?.defaultAddress];
+  const currentAddress = accountInfo.data?.address?.find((thisAddress) => thisAddress._id === accountInfo.data?.defaultAddress);
   const userOrders = useUserOrders(token);
 
   return (<div className="Profile">
