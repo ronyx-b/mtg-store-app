@@ -15,7 +15,6 @@ export default function Cart({ ...props }) {
   const router = useRouter();
   const cart = useSelector(selectCart);
   const token = useSelector(selectToken);
-  // const decodedToken = useSelector(selectDecodedToken);
   const identifiers = cart.filter((item) => (item.type === "single")).map((item) => ({id: item.id}));
   const cards = useCardsFromCollection({ identifiers });
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
@@ -41,6 +40,7 @@ export default function Cart({ ...props }) {
     setIsSubmitting(true);
     if(!token) {
       console.log("You must be logged in");
+      setIsSubmitting(false);
       return;
     }
 
@@ -128,8 +128,9 @@ export default function Cart({ ...props }) {
                 <Col className="col-lg-auto">{cartTotal}$</Col>
               </Row>
               <div className="d-flex justify-content-around">
-                <Button variant="primary" onClick={checkout} disabled={isSubmitting}>Checkout</Button>
+                {/* <Button variant="primary" onClick={checkout} disabled={isSubmitting}>Checkout</Button> */}
                 <Button variant="secondary" onClick={handleShow}>Empty Your Cart</Button>
+                <Button variant="primary" onClick={() => {router.push("/checkout")}}>Checkout</Button>
               </div>
               
               <Modal show={emptyCartModal} onHide={handleClose}>
@@ -146,7 +147,7 @@ export default function Cart({ ...props }) {
                   </Button>
                 </Modal.Footer>
               </Modal>
-              </>
+            </>
               :<div className="text-center">Your shopping cart is empty</div>
             }
             </Card.Body>

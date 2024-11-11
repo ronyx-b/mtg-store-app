@@ -71,8 +71,7 @@ export default function ManageAddressModal({ editAddressId, setEditAddressId, sh
         await formik.setValues({
           ...accountInfo.data?.address.find(
             (thisAddress) => thisAddress._id == editAddressId
-          ),
-          makeDefaultAddress: accountInfo.data?.defaultAddress === editAddressId,
+          )
         });
       })();
     } else {
