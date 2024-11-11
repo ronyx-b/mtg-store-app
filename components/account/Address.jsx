@@ -2,8 +2,8 @@ import UsersApiService from "@/services/apis/usersApiService";
 import useUserProfile from "@/services/cache/useUserProfile";
 import { selectToken } from "@/services/store/tokenSlice";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { Alert, Button, Card, Col, Form, Modal, Row, Spinner, } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Card, Col, Form, Modal, Row, Spinner, } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import ManageAddressModal from "./ManageAddressModal";
 
