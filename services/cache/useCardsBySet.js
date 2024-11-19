@@ -1,6 +1,10 @@
 import useSWR from "swr";
 import CardSearchApiService from "../apis/cardSearchApiService"
 
+/**
+ * @typedef {import("@/types").Card} Card
+ */
+
 const getCardsBySet = async (set) => {
   let response, cardData = [];
 
@@ -15,6 +19,11 @@ const getCardsBySet = async (set) => {
   return cardData;
 }
 
+/**
+ * Gets and caches a list of cards from a set
+ * @param {string} set 
+ * @returns {import("swr").SWRResponse<Card[], Error>}
+ */
 export default function useCardsBySet(set) {
   return useSWR([`cards?set=${set}`, set], ([url, set]) => set ? getCardsBySet(set) : [])
 }

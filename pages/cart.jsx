@@ -5,7 +5,7 @@ import useCardsFromCollection from "@/services/cache/useCardsFromCollection";
 import useProductsFromCollection from "@/services/cache/useProductsFromCollection";
 import useUserProfile from "@/services/cache/useUserProfile";
 import { emptyCart, selectCart } from "@/services/store/cartSlice";
-import { selectDecodedToken, selectToken } from "@/services/store/tokenSlice";
+import { selectToken } from "@/services/store/tokenSlice";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Modal, Row, Spinner } from "react-bootstrap";
@@ -20,7 +20,9 @@ export default function Cart({ ...props }) {
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
   const sealed = useProductsFromCollection({ productIdList });
   const [cartTotal, setCartTotal] = useState();
-  const [orderProducts, setOrderProducts] = useState();
+  /** @typedef {import("@/types").OrderItem} OrderItem */
+  /** @type {[ OrderItem[], React.Dispatch<React.SetStateAction<OrderItem[]>> ]} */
+  const [orderProducts, setOrderProducts] = useState([]);
   const [emptyCartModal, setEmptyCartModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
@@ -45,7 +47,9 @@ export default function Cart({ ...props }) {
     }
 
     /* ********** TODO: implement choose address at checkout ********** */
+    /** @type {import("@/types").Address} */
     let address = userProfile.data?.address?.[userProfile.data?.defaultAddress];
+    /** @type {import("@/types").Order} */
     let order = {
       date: new Date(),
       address,
@@ -66,8 +70,9 @@ export default function Cart({ ...props }) {
 
   useEffect(() => {
     if (cards.data && sealed.data) {
-      let products = cart.map(item => {
-        let product = {
+      let cartItems = cart.map(item => {
+        /** @type {import("@/types").OrderItem} */
+        let cartItem = {
           prodType: item.type,
           prod_id: item.id,
           name: item.name,
@@ -77,24 +82,24 @@ export default function Cart({ ...props }) {
         }
         switch(item.type) {
           case "single":
-            product.price = parseFloat(cards.data?.find((card) => (card.id === item.id))?.prices.usd);
-            product.cardSet = cards.data?.find((card) => (card.id === item.id))?.set_name;
+            cartItem.price = parseFloat(cards.data?.find((card) => (card.id === item.id))?.prices.usd);
+            cartItem.cardSet = cards.data?.find((card) => (card.id === item.id))?.set_name;
             break;
           case "sealed":
-            product.price = parseFloat(sealed.data?.find((prod) => (prod._id === item.id))?.price);
-            product.cardSet = sealed.data?.find((prod) => (prod._id === item.id))?.cardSet;
+            cartItem.price = parseFloat(sealed.data?.find((prod) => (prod._id === item.id))?.price);
+            cartItem.cardSet = sealed.data?.find((prod) => (prod._id === item.id))?.cardSet;
             break;
           case "accessory":
             /* ********** TODO: implement accessory product type support ********** */
             break;
           default:
-            product.price = 0;
+            cartItem.price = 0;
             break;
         }
-        return product;
+        return cartItem;
       });
-      setOrderProducts(products);
-      let total = products.reduce((total, item) => { 
+      setOrderProducts(cartItems);
+      let total = cartItems.reduce((total, item) => { 
         return total += (item.price * item.qty); 
       }, 0)
       setCartTotal(total.toFixed(2));

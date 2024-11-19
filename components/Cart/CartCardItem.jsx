@@ -2,14 +2,21 @@ import { Col, Image, Row } from "react-bootstrap";
 import Link from "next/link";
 import AddAdjustCartButtons from "../AddAdjustCartButtons";
 
-export default function CartCardItem({item, card}) {
+/**
+ * Displays a cart item details for a Card
+ * @param {Object} props
+ * @param {import("@/services/store/cartSlice").CartItem} props.item
+ * @param {import("@/types").Card} props.card 
+ * @returns {JSX.Element}
+ */
+export default function CartCardItem({ item, card, ...props}) {
 
   return (<div className="CartItem">
     <Row className="m-1 p-2 border-bottom">
       {card && <>
         <Col xs={5} md="auto">
           <Link href={`/cards/${card.id}`} style={{ color: "#000000", textDecoration: "none"}}>
-            <Image src={card.image_uris?(card.image_uris.normal):(card.card_faces[0].image_uris.normal)} width="100" alt={card.name} loading="lazy" />
+            <Image src={card.image_uris ? (card.image_uris.normal) : (card.card_faces[0].image_uris.normal)} width="100" alt={card.name} loading="lazy" />
           </Link>
         </Col>
         <Col xs={7} md>

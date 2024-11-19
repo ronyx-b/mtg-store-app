@@ -3,15 +3,29 @@ import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
+/**
+ * Selects the quantity of an item in the cart
+ * @param {Object} state 
+ * @param {string} id 
+ * @returns {number}
+ */
 const selectCartItemQty = (state, id) => {
   return state?.cart?.value?.find((cartItem) => cartItem.id === id )?.qty || 0;
 };
 
-export default function AddAdjustCartButtons({item, showRemove}) {
+/**
+ * Displays a button to adjust the quantity of a product in the cart
+ * @param {Object} props
+ * @param {import("@/services/store/cartSlice").CartItem} props.item
+ * @param {boolean} props.showRemove 
+ * @returns {JSX.Element}
+ */
+export default function AddAdjustCartButtons({ item, showRemove, ...props }) {
   const cartItemQty = useSelector((state) => selectCartItemQty(state, item.id));
   const [qty, setQty] = useState(cartItemQty === 0 ? 1 : cartItemQty);
   const dispatch = useDispatch();
 
+  /** @param {React.FormEvent<HTMLFormElement>} e */
   const handleChange = (e) => {
     let value = parseInt(e.target.value)
     if (isNaN(value) || value < 0) {
@@ -27,6 +41,7 @@ export default function AddAdjustCartButtons({item, showRemove}) {
     dispatch(adjustCart({item, qty: 0}));
   };
 
+  /** @param {React.FormEvent<HTMLFormElement>} e */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (cartItemQty === 0) {
