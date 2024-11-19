@@ -1,13 +1,14 @@
 import { PROD_TYPES } from "@/config";
+import UsersApiService from "@/services/apis/usersApiService";
 import useCardsFromCollection from "@/services/cache/useCardsFromCollection";
 import useProductsFromCollection from "@/services/cache/useProductsFromCollection";
 import useUserProfile from "@/services/cache/useUserProfile";
-import { selectCart } from "@/services/store/cartSlice";
+import { emptyCart, selectCart } from "@/services/store/cartSlice";
 import { selectToken } from "@/services/store/tokenSlice";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Button, Card, Col, Container, Image, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Card, Container, Image, Spinner, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Checkout({ ...props }) {
@@ -19,10 +20,15 @@ export default function Checkout({ ...props }) {
   const cards = useCardsFromCollection({ identifiers });
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
   const sealed = useProductsFromCollection({ productIdList });
-  const [cartTotal, setCartTotal] = useState();
-  const [orderProducts, setOrderProducts] = useState();
+  const [cartTotal, setCartTotal] = useState(0);
+  const [orderProducts, setOrderProducts] = useState([]);
   const [shippingAddressId, setShippingAddressId] = useState(userProfile.data?.defaultAddress);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const SHIPPING_OPTIONS_FACTORS = {
+    NO_TRACKING: 0.02,
+    TRACKING: 0.1,
+  };
+  const [shipping, setShipping] = useState(0);
   const dispatch = useDispatch();
   
   const cld = new Cloudinary({
@@ -54,6 +60,7 @@ export default function Checkout({ ...props }) {
     const response = await UsersApiService.checkoutOrder(order, token);
 
     if (response.status === 201 || response.data?.success) {
+      setOrderProducts([]);
       dispatch(emptyCart());
       router.push(`/account?view=orders`);
     } else {
@@ -110,12 +117,26 @@ export default function Checkout({ ...props }) {
       </> : <>
         <Card className="my-3">
           <Card.Header>
-            <h1 className="cardHeader">Shopping Cart</h1>
+            <h1 className="cardHeader">Order Checkout</h1>
           </Card.Header>
           <Card.Body>
-            <Table striped>
+            <Table>
+              <thead>
+                <th style={{ textAlign: "center" }} colSpan={2}>
+                  Item Name and Description
+                </th>
+                <th style={{ textAlign: "center" }}>
+                  Qty
+                </th>
+                <th style={{ textAlign: "center" }}>
+                  Unit $
+                </th>
+                <th style={{ textAlign: "center" }}>
+                  Subtotal $
+                </th>
+              </thead>
               <tbody>
-                {orderProducts?.map((item, i) => 
+                {orderProducts?.length > 0 && orderProducts?.map((item, i) => 
                   <tr key={i}>
                     <td>
                       <Image 
@@ -139,7 +160,7 @@ export default function Checkout({ ...props }) {
                       <p><strong>{item.name}</strong></p>
                       <p>{item.cardSet}</p>
                     </td>
-                    <td>
+                    <td style={{ textAlign: "center" }}>
                       {item.qty}
                     </td>
                     <td style={{ textAlign: "right" }}>
@@ -150,12 +171,32 @@ export default function Checkout({ ...props }) {
                     </td>
                   </tr>
                 )}
+                <tr>
+                  <td style={{ textAlign: "right" }} colSpan={4}>
+                    Subtotal:
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {cartTotal} $
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: "right" }} colSpan={4}>
+                    Shipping:
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {(cartTotal * SHIPPING_OPTIONS_FACTORS.TRACKING).toFixed(2)} $
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: "right" }} colSpan={4}>
+                    Total:
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {(cartTotal * (1 + SHIPPING_OPTIONS_FACTORS.TRACKING)).toFixed(2)} $
+                  </td>
+                </tr>
               </tbody>
             </Table>
-            <Row className="m-1 p-2 border-bottom">
-              <Col><h3>Cart Total</h3></Col>
-              <Col className="col-lg-auto">{cartTotal}$</Col>
-            </Row>
             <div className="d-flex justify-content-around">
               <Button variant="secondary" onClick={() => {router.push("/cart")}}>Go back to Your Cart</Button>
               <Button variant="primary" onClick={checkout} disabled={isSubmitting}>Complete your Order</Button>

@@ -1,10 +1,16 @@
 import { Col, Image, Row } from "react-bootstrap";
 import Link from "next/link";
 import AddAdjustCartButtons from "../AddAdjustCartButtons";
-import { SERVER_URL } from "@/config";
 import { Cloudinary } from "@cloudinary/url-gen";
 
-export default function CartProductItem({item, product}) {
+/**
+ * Displays a cart item details for a product
+ * @param {Object} props
+ * @param {import("@/services/store/cartSlice").CartItem} props.item
+ * @param {import("@/types").Product} props.product 
+ * @returns {JSX.Element}
+ */
+export default function CartProductItem({ item, product, ...props}) {
 
   const cld = new Cloudinary({
     cloud: {

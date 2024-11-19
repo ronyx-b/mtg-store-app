@@ -1,6 +1,10 @@
 import useSWR from "swr";
 import CardSearchApiService from "../apis/cardSearchApiService"
 
+/**
+ * @typedef {import("@/types").Card} Card
+ */
+
 const getCardsBySearchTerm = async (query) => {
   let response, cardData = [];
 
@@ -15,6 +19,11 @@ const getCardsBySearchTerm = async (query) => {
   return cardData;
 }
 
+/**
+ * Gets and caches a list of cards by a search query
+ * @param {string} query 
+ * @returns {import("swr").SWRResponse<Card[], Error>}
+ */
 export default function useCardsBySearchTerm(query) {
   return useSWR([`cards?query=${query}`, query], ([url, query]) => query ? getCardsBySearchTerm(query) : [])
 }

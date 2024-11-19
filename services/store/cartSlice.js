@@ -1,8 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+/**
+ * @typedef {Object} CartItem
+ * @property {import("@/types").ProdType} type
+ * @property {string} id
+ * @property {string} name 
+ * @property {number} qty
+ */
+
 const localStorageIsAvailable = typeof window !== "undefined";
 
 const initialState = {
+  /** @type {CartItem[]} */
   value: localStorageIsAvailable ? JSON.parse(localStorage.getItem('cart')) || [] : [],
 };
 
@@ -79,6 +88,13 @@ export const cartSlice = createSlice({
 
 export const { addOrRemoveToCart, adjustCart, emptyCart } = cartSlice.actions;
 
+/**
+ * Selects the items in the cart
+ * @param {Object} state 
+ * @param {Object} state.cart
+ * @param {CartItem[]} state.cart.value
+ * @returns {CartItem[]}
+ */
 export const selectCart = (state) => state.cart.value;
 
 export const selectCartQty = (state) => [ ...state?.cart?.value ].reduce((total, item) => total += item.qty, 0);
