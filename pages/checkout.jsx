@@ -21,6 +21,8 @@ export default function Checkout({ ...props }) {
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
   const sealed = useProductsFromCollection({ productIdList });
   const [cartTotal, setCartTotal] = useState(0);
+  /** @typedef {import("@/types").OrderItem} OrderItem */
+  /** @type {[ OrderItem[], React.Dispatch<React.SetStateAction<OrderItem[]>> ]} */
   const [orderProducts, setOrderProducts] = useState([]);
   const [shippingAddressId, setShippingAddressId] = useState(userProfile.data?.defaultAddress);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +39,7 @@ export default function Checkout({ ...props }) {
     }
   });
 
-  /** @type {import("react").FormEventHandler} */
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const checkout = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);

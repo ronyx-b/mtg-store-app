@@ -1,5 +1,4 @@
 import { Cloudinary } from "@cloudinary/url-gen";
-import { CldImage } from "next-cloudinary";
 import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 
@@ -19,7 +18,6 @@ export default function Decklist({ ...props }) {
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     }
   });
-  const myImg = cld.image("strixhaven-school-of-mages-set-booster-box-98228_zobyef")
 
   return (<div className="DecklistProcessor">
     <Container>
@@ -40,15 +38,6 @@ export default function Decklist({ ...props }) {
           </Form>
         </Card.Body>
       </Card>
-      {/* <CldImage
-        src="strixhaven-school-of-mages-set-booster-box-98228_zobyef"
-        width="500"
-        height="500"
-        crop={{
-          type: "auto",
-          source: true
-        }}
-      /> */}
     </Container>
   </div>);
 }
