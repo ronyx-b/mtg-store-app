@@ -1,3 +1,5 @@
+import ManageAddressModal from "@/components/account/ManageAddressModal";
+import ChooseAddressModal from "@/components/ChooseAddressModal";
 import { PROD_TYPES } from "@/config";
 import UsersApiService from "@/services/apis/usersApiService";
 import useCardsFromCollection from "@/services/cache/useCardsFromCollection";
@@ -6,9 +8,10 @@ import useUserProfile from "@/services/cache/useUserProfile";
 import { emptyCart, selectCart } from "@/services/store/cartSlice";
 import { selectToken } from "@/services/store/tokenSlice";
 import { Cloudinary } from "@cloudinary/url-gen";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Button, Card, Container, Image, Spinner, Table } from "react-bootstrap";
+import { useCallback, useEffect, useState } from "react";
+import { Button, Card, Col, Container, Image, Row, Spinner, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Checkout({ ...props }) {
@@ -25,19 +28,41 @@ export default function Checkout({ ...props }) {
   /** @type {[ OrderItem[], React.Dispatch<React.SetStateAction<OrderItem[]>> ]} */
   const [orderProducts, setOrderProducts] = useState([]);
   const [shippingAddressId, setShippingAddressId] = useState(userProfile.data?.defaultAddress);
+  /** @param {string} id */
+  const getAddressById = useCallback((id) => userProfile.data?.address.find((thisAddress) => thisAddress._id === id), [userProfile.data]);
+  const [currentShippingAddress, setCurrentShippingAddress] = useState(getAddressById(userProfile.data?.defaultAddress));
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [showChooseAddressModal, setShowChooseAddressModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shipping, setShipping] = useState(0);
+  const dispatch = useDispatch();
   const SHIPPING_OPTIONS_FACTORS = {
     NO_TRACKING: 0.02,
     TRACKING: 0.1,
   };
-  const [shipping, setShipping] = useState(0);
-  const dispatch = useDispatch();
   
   const cld = new Cloudinary({
     cloud: {
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     }
   });
+
+  const handleAddressModalClose = () => {
+    if (!shippingAddressId || shippingAddressId === "") {
+      setShippingAddressId(userProfile.data?.defaultAddress);
+    }
+    setShowAddressModal(false);
+  };
+
+  /** @param {string} id */
+  const setNewShippingAddress = (id) => {
+    setShippingAddressId(id);
+    userProfile.mutate();
+    if (showChooseAddressModal) {
+      setShowChooseAddressModal(false);
+    }
+    // setCurrentShippingAddress(getAddressById(id));
+  };
 
   /** @type {React.FormEventHandler<HTMLFormElement>} */
   const checkout = async (e) => {
@@ -49,10 +74,7 @@ export default function Checkout({ ...props }) {
       return;
     }
 
-    /* ********** TODO: implement choose address at checkout ********** */
-    let address = shippingAddressId ? 
-      userProfile.data?.address.find((thisAddress) => thisAddress._id === shippingAddressId) : 
-      userProfile.data?.address?.[userProfile.data?.defaultAddress];
+    let address = currentShippingAddress; // userProfile.data?.address.find((thisAddress) => thisAddress._id === shippingAddressId || userProfile.data?.defaultAddress);
     let order = {
       date: new Date(),
       address,
@@ -110,6 +132,12 @@ export default function Checkout({ ...props }) {
 
   }, [cart, cards.data, sealed.data]);
 
+  useEffect(() => {
+    if (userProfile.data) {
+      setCurrentShippingAddress(getAddressById(shippingAddressId));
+    }
+  }, [getAddressById, shippingAddressId, userProfile.data])
+
   return (<div className="Checkout">
     <Container className="Cart">
       {cards.isLoading || sealed.isLoading || userProfile.isLoading ? <>
@@ -140,7 +168,7 @@ export default function Checkout({ ...props }) {
               <tbody>
                 {orderProducts?.length > 0 && orderProducts?.map((item, i) => 
                   <tr key={i}>
-                    <td>
+                    <td style={{ width: "10rem" }}>
                       <Image 
                         src={(() => {
                           switch (item.prodType) {
@@ -148,7 +176,7 @@ export default function Checkout({ ...props }) {
                               let card = cards.data.find((card) => card.id === item.prod_id);
                               return card.image_uris ? card.image_uris.normal : card.card_faces[0].image_uris.normal;
                             case PROD_TYPES.SEALED:
-                              return cld.image(sealed.data.find((product) => product._id === item.prod_id).image).toURL();
+                              return cld.image(sealed.data?.find((product) => product._id === item.prod_id)?.image).toURL();
                             default:
                               return "";
                           }
@@ -182,7 +210,60 @@ export default function Checkout({ ...props }) {
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ textAlign: "right" }} colSpan={4}>
+                  <td>
+                    <Row>
+                      <Col>Shipping Address:</Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <Link 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowAddressModal(true);
+                          }}
+                        >
+                          Edit
+                        </Link>
+                        <>{" | "}</>
+                        <Link 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShippingAddressId(null);
+                            setShowAddressModal(true);
+                          }}
+                        >
+                          Add new
+                        </Link>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Link 
+                        href="#" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowChooseAddressModal(true)
+                        }}
+                      >
+                        Choose another
+                      </Link>
+                    </Row>
+                  </td>
+                  <td colSpan={2}>
+                    {shippingAddressId && currentShippingAddress && <>
+                      <Row>
+                        {currentShippingAddress?.name}
+                      </Row>
+                      <Row>
+                        {currentShippingAddress?.street}  
+                      </Row>
+                      <Row>
+                        {`${currentShippingAddress?.city}, ${currentShippingAddress?.province}, ${currentShippingAddress?.postal}`}
+                      </Row>
+                    </>}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
                     Shipping:
                   </td>
                   <td style={{ textAlign: "right" }}>
@@ -205,6 +286,19 @@ export default function Checkout({ ...props }) {
             </div>
           </Card.Body>
         </Card>
+
+        <ManageAddressModal
+          editAddressId={shippingAddressId}
+          setNewAddressId={setNewShippingAddress}
+          showAddressModal={showAddressModal}
+          handleModalClose={handleAddressModalClose}
+        />
+
+        <ChooseAddressModal
+          setAddressId={setNewShippingAddress}
+          showAddressModal={showChooseAddressModal}
+          handleModalClose={() => {setShowChooseAddressModal(false)}}
+        />
       </>}
     </Container>
   </div>);

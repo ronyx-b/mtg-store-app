@@ -25,6 +25,8 @@ export default function Layout({ children, ...props }) {
     }
   });
 
+  /** @typedef {import("@/types").NavBarLink} NavBarLink */
+  /** @type {NavBarLink[]} */
   const links = [
     {
       href: "/products",
@@ -91,6 +93,7 @@ export default function Layout({ children, ...props }) {
     },
   ];
 
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const handleSubmit = (e) => {
     e.preventDefault();
     router.push(`/cards?search=${searchString}`);

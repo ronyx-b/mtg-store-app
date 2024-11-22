@@ -10,7 +10,7 @@ import ManageAddressModal from "./ManageAddressModal";
 export default function Address({ ...props }) {
   const router = useRouter();
   const token = useSelector(selectToken);
-  const accountInfo = useUserProfile(token);
+  const userProfile = useUserProfile(token);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editAddressId, setEditAddressId] = useState(null);
   const [showConfirmDeleteAddressModal, setShowConfirmDeleteAddressModal] = useState(false);
@@ -29,7 +29,7 @@ export default function Address({ ...props }) {
       if (response.status === 200) {
         alert(response.data.message);
       }
-      accountInfo.mutate();
+      userProfile.mutate();
       setShowConfirmDeleteAddressModal(false);
       setDeleteAddressId(null);
     }
@@ -49,7 +49,7 @@ export default function Address({ ...props }) {
       if (response.status !== 200) {
         throw new Error(response.data.message);
       }
-      accountInfo.mutate();
+      userProfile.mutate();
     }
     catch (err) {
       console.log(`Error: ${err}`);
@@ -66,7 +66,7 @@ export default function Address({ ...props }) {
         </Col>
       </Row>
       <Row xs={1} md={2} lg={3} xl={3}>
-        {accountInfo.isLoading ? (
+        {userProfile.isLoading ? (
           <>
             <Spinner
               animation="border"
@@ -78,7 +78,7 @@ export default function Address({ ...props }) {
           </>
         ) : (
           <>
-            {accountInfo.data.address.map((thisAddress, i) => (
+            {userProfile.data.address.map((thisAddress, i) => (
               <Col key={i} style={{ marginTop: "1rem" }}>
                 <Card className="shadow">
                   <Card.Body>
@@ -117,7 +117,7 @@ export default function Address({ ...props }) {
                           type="radio"
                           name="default-address"
                           value={thisAddress._id}
-                          checked={thisAddress._id === accountInfo.data?.defaultAddress}
+                          checked={thisAddress._id === userProfile.data?.defaultAddress}
                           id={`default-address-radio-${thisAddress._id}`}
                           label="Default Address"
                           onChange={handleChangeDefaultAddress}
@@ -131,7 +131,6 @@ export default function Address({ ...props }) {
 
             <ManageAddressModal 
               editAddressId={editAddressId}
-              setEditAddressId={setEditAddressId}
               showAddressModal={showAddressModal}
               handleModalClose={handleModalClose} 
             />
