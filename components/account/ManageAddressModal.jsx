@@ -8,34 +8,43 @@ import { useSelector } from "react-redux";
 import * as Yup from "yup";
 
 /**
+ * @callback SetAddressId
+ * @param {string} id
+ * @returns {void}
+ */
+/**
  * Modal to add or edit an Address
  * @param {Object} props
  * @param {string} props.editAddressId
- * @param {Function} props.setEditAddressId
+ * @param {SetAddressId} props.setNewAddressId
  * @param {boolean} props.showAddressModal
- * @param {Function} props.handleModalClose 
+ * @param {Function} props.handleModalClose
  * @returns {JSX.Element}
  */
-export default function ManageAddressModal({ editAddressId, setEditAddressId, showAddressModal, handleModalClose, ...props }) {
+export default function ManageAddressModal({ editAddressId = null, setNewAddressId, showAddressModal, handleModalClose, ...props }) {
   const token = useSelector(selectToken);
-  const accountInfo = useUserProfile(token);
+  const userProfile = useUserProfile(token);
   const [submissionError, setSubmissionError] = useState("");
 
   const editAddressInitialValues = editAddressId !== null ? 
-    accountInfo.data?.address.find((thisAddress) => thisAddress._id === editAddressId) : null;
+    userProfile.data?.address.find((thisAddress) => thisAddress._id === editAddressId) : null;
+
+  /** @typedef {import("@/types").Address} Address */
+  /** @type {Address & { makeDefaultAddress: boolean }} */
+  const emptyInitialValues = {
+    name: userProfile.data?.name,
+    street: "",
+    city: "",
+    province: "",
+    postal: "",
+    makeDefaultAddress: false,
+  };
 
   const formik = useFormik({
     initialValues: editAddressId !== null ? { 
       ...editAddressInitialValues, 
       makeDefaultAddress: false,
-    } : {
-      name: accountInfo.data?.name,
-      street: "",
-      city: "",
-      province: "",
-      postal: "",
-      makeDefaultAddress: false,
-    },
+    } : emptyInitialValues,
     validationSchema: Yup.object().shape({
       name: Yup.string().required().max(50),
       street: Yup.string().required().max(50),
@@ -55,7 +64,10 @@ export default function ManageAddressModal({ editAddressId, setEditAddressId, sh
         if (response.status !== 200 && response.status !== 201) {
           throw response.data.message;
         }
-        accountInfo.mutate();
+        if (response.data.addressId) {
+          setNewAddressId(response.data.addressId);
+        }
+        userProfile.mutate();
         // console.log("Submitted:", values);
         handleModalClose();
       } catch (err) {
@@ -69,16 +81,16 @@ export default function ManageAddressModal({ editAddressId, setEditAddressId, sh
     if (editAddressId !== null) {
       (async () => {
         await formik.setValues({
-          ...accountInfo.data?.address.find(
+          ...userProfile.data?.address.find(
             (thisAddress) => thisAddress._id == editAddressId
           )
         });
       })();
     } else {
-      formik.resetForm();
+      formik.resetForm({ values: emptyInitialValues });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editAddressId]);
+  }, [editAddressId, showAddressModal]);
 
   return (
     <Modal
@@ -164,7 +176,7 @@ export default function ManageAddressModal({ editAddressId, setEditAddressId, sh
               </Form.Control.Feedback>
             </Form.Group>
           </Row>
-          {accountInfo.data?.defaultAddress === editAddressId ? <>
+          {userProfile.data?.defaultAddress === editAddressId ? <>
             <Row>
               <Col>
                 This is your <strong>default address</strong>  

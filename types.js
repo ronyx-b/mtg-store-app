@@ -60,6 +60,16 @@
  * 
  * @typedef {Pagination & {count: number}} PaginatedResult
  * 
+ * @typedef {Object} NavLink
+ * @property {string} title
+ * @property {string} href
+ * 
+ * @typedef {Object} NavLinkExtraProperties
+ * @property {boolean} display
+ * @property {NavLink[]} [dropdown]
+ * 
+ * @typedef {NavLink & NavLinkExtraProperties} NavBarLink
+ * 
  * ********** Start of type definitions from Scryfall API **********
  * 
  * @typedef {("W" | "U" | "B" | "R" | "G")} Color

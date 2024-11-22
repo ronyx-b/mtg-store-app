@@ -1,11 +1,12 @@
 import useIsAdmin from "@/services/cache/useIsAdmin";
 import { selectCartQty } from "@/services/store/cartSlice";
 import { removeToken, selectDecodedToken, selectToken } from "@/services/store/tokenSlice";
+import { Cloudinary } from "@cloudinary/url-gen";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Container, Form, Nav, Navbar, Row } from "react-bootstrap";
+import { Button, Container, Form, Image, Nav, Navbar, NavDropdown, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function Layout({ children, ...props }) {
@@ -18,6 +19,14 @@ export default function Layout({ children, ...props }) {
   const router = useRouter();
   const isAdmin = useIsAdmin(token);
 
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    }
+  });
+
+  /** @typedef {import("@/types").NavBarLink} NavBarLink */
+  /** @type {NavBarLink[]} */
   const links = [
     {
       href: "/products",
@@ -47,7 +56,25 @@ export default function Layout({ children, ...props }) {
     {
       href: "/account",
       title: "Account",
-      display: validToken
+      display: validToken,
+      dropdown: [
+        {
+          href: "/account?view=profile",
+          title: "Profile",
+        },
+        {
+          href: "/account?view=address",
+          title: "Address",
+        },
+        {
+          href: "/account?view=orders",
+          title: "Orders",
+        },
+        {
+          href: "/account?view=password",
+          title: "Change Password",
+        },
+      ]
     },
     {
       href: "/dashboard",
@@ -66,6 +93,7 @@ export default function Layout({ children, ...props }) {
     },
   ];
 
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const handleSubmit = (e) => {
     e.preventDefault();
     router.push(`/cards?search=${searchString}`);
@@ -92,13 +120,33 @@ export default function Layout({ children, ...props }) {
       <title>{`MTG Store {RB}`}</title>
     </Head>
     <header>
-      <Navbar bg="dark" variant="dark" sticky="top" expand="lg">
+      <Navbar bg="dark" data-bs-theme="dark" sticky="top" expand="lg">
         <Container>
-          <Navbar.Brand as={Link} href="/">MTG Store</Navbar.Brand>
+          <Navbar.Brand as={Link} href="/">
+            <Image src={cld.image("mtg-store/mtg-logo").toURL()} alt="MTG Store logo" height={30} style={{ marginRight: "0.5rem" }} />
+            MTG Store
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto" suppressHydrationWarning={true}>
-                {links.filter((link) => link.display).map((link, i) => (
+                {links.filter((link) => link.display).map((link, i) => ( link.dropdown ? 
+                  <NavDropdown 
+                    key={`${i}:${link.href}`}
+                    title={link.title}
+                    menuVariant=""
+                  >
+                    {link.dropdown.map((subLink, j) => (
+                      <NavDropdown.Item
+                        key={`${i.j}:${subLink.href}`}
+                        as={Link}
+                        href={subLink.href}
+                        active={router.asPath.startsWith(subLink.href)}
+                      >
+                        {subLink.title}
+                      </NavDropdown.Item>
+                    ))}
+                  </NavDropdown> 
+                : 
                   <Nav.Link 
                     key={`${i}:${link.href}`}
                     as={Link} 

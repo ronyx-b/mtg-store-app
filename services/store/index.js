@@ -8,4 +8,5 @@ export const store = configureStore({
     cart: cartSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(/* custom middleware */),
+  devTools: true,
 });

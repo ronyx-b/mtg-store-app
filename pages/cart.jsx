@@ -36,7 +36,7 @@ export default function Cart({ ...props }) {
     handleClose();
   };
 
-  /** @type {import("react").FormEventHandler} */
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const checkout = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);

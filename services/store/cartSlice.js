@@ -97,6 +97,13 @@ export const { addOrRemoveToCart, adjustCart, emptyCart } = cartSlice.actions;
  */
 export const selectCart = (state) => state.cart.value;
 
+/**
+ * Selects the total number of items in the cart
+ * @param {Object} state 
+ * @param {Object} state.cart
+ * @param {CartItem[]} state.cart.value
+ * @returns {number}
+ */
 export const selectCartQty = (state) => [ ...state?.cart?.value ].reduce((total, item) => total += item.qty, 0);
 
 export default cartSlice.reducer;
