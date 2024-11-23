@@ -12,6 +12,7 @@ export default function Login({ ...props }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  /** @type {import("@/types").LoginRequest} */
   const initialValues = {
     email: "", 
     password: "", 
@@ -23,7 +24,12 @@ export default function Login({ ...props }) {
     password: Yup.string().required().max(50),
   });
 
-  /** @type {React.FormEventHandler} */
+  /**
+   * @async
+   * @param {import("@/types").LoginRequest} values 
+   * @param {import("formik").FormikHelpers} formikHelpers 
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
     try {      
       const response = await UsersApiService.loginUser(values);

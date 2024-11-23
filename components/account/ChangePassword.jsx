@@ -12,6 +12,7 @@ export default function ChangePassword({ ...props }) {
   const [changePasswordError, setChangePasswordError] = useState("");
   const token = useSelector(selectToken);
 
+  /** @type {import("@/types").ChangePasswordRequestBody} */
   const initialValues = {
     oldPassword: "",
     newPassword: "",
@@ -26,6 +27,12 @@ export default function ChangePassword({ ...props }) {
     .required("You need to confirm your new password")
   });
 
+  /**
+   * @async
+   * @param {import("@/types").ChangePasswordRequestBody} values 
+   * @param {import("formik").FormikHelpers} formikHelpers 
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
     setSubmitting(true);
     try {
