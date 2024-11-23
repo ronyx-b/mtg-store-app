@@ -10,7 +10,7 @@ import { selectToken } from "@/services/store/tokenSlice";
 import { Cloudinary } from "@cloudinary/url-gen";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Col, Container, Image, Row, Spinner, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -27,6 +27,7 @@ export default function Checkout({ ...props }) {
   /** @typedef {import("@/types").OrderItem} OrderItem */
   /** @type {[ OrderItem[], React.Dispatch<React.SetStateAction<OrderItem[]>> ]} */
   const [orderProducts, setOrderProducts] = useState([]);
+  /** @type {[string, React.Dispatch<React.SetStateAction<string>>]} */
   const [shippingAddressId, setShippingAddressId] = useState(userProfile.data?.defaultAddress);
   /** @param {string} id */
   const getAddressById = useCallback((id) => userProfile.data?.address.find((thisAddress) => thisAddress._id === id), [userProfile.data]);
@@ -49,15 +50,15 @@ export default function Checkout({ ...props }) {
 
   const handleAddressModalClose = () => {
     if (!shippingAddressId || shippingAddressId === "") {
-      setShippingAddressId(userProfile.data?.defaultAddress);
+      setShippingAddressId(currentShippingAddress._id);
     }
     setShowAddressModal(false);
   };
 
-  /** @param {string} id */
-  const setNewShippingAddress = (id) => {
-    setShippingAddressId(id);
-    userProfile.mutate();
+  /** @param {import("@/types").Address} address */
+  const setNewShippingAddress = (address) => {
+    setShippingAddressId(address._id);
+    setCurrentShippingAddress(address);
     if (showChooseAddressModal) {
       setShowChooseAddressModal(false);
     }
@@ -131,12 +132,6 @@ export default function Checkout({ ...props }) {
     }
 
   }, [cart, cards.data, sealed.data]);
-
-  useEffect(() => {
-    if (userProfile.data) {
-      setCurrentShippingAddress(getAddressById(shippingAddressId));
-    }
-  }, [getAddressById, shippingAddressId, userProfile.data])
 
   return (<div className="Checkout">
     <Container className="Cart">
@@ -289,13 +284,16 @@ export default function Checkout({ ...props }) {
 
         <ManageAddressModal
           editAddressId={shippingAddressId}
-          setNewAddressId={setNewShippingAddress}
+          setNewAddress={setNewShippingAddress}
           showAddressModal={showAddressModal}
           handleModalClose={handleAddressModalClose}
         />
 
         <ChooseAddressModal
-          setAddressId={setNewShippingAddress}
+          setAddressId={(id) => {
+            setNewShippingAddress(getAddressById(id));
+            setShowChooseAddressModal(false);
+          }}
           showAddressModal={showChooseAddressModal}
           handleModalClose={() => {setShowChooseAddressModal(false)}}
         />

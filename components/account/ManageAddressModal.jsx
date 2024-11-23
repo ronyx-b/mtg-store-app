@@ -7,8 +7,9 @@ import { Alert, Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import * as Yup from "yup";
 
+/** @typedef {import("@/types").Address} Address */
 /**
- * @callback SetAddressId
+ * @callback SetNewAddress
  * @param {string} id
  * @returns {void}
  */
@@ -16,12 +17,12 @@ import * as Yup from "yup";
  * Modal to add or edit an Address
  * @param {Object} props
  * @param {string} props.editAddressId
- * @param {SetAddressId} props.setNewAddressId
+ * @param {SetNewAddress} props.setNewAddress
  * @param {boolean} props.showAddressModal
  * @param {Function} props.handleModalClose
  * @returns {JSX.Element}
  */
-export default function ManageAddressModal({ editAddressId = null, setNewAddressId, showAddressModal, handleModalClose, ...props }) {
+export default function ManageAddressModal({ editAddressId = null, setNewAddress, showAddressModal, handleModalClose, ...props }) {
   const token = useSelector(selectToken);
   const userProfile = useUserProfile(token);
   const [submissionError, setSubmissionError] = useState("");
@@ -29,7 +30,6 @@ export default function ManageAddressModal({ editAddressId = null, setNewAddress
   const editAddressInitialValues = editAddressId !== null ? 
     userProfile.data?.address.find((thisAddress) => thisAddress._id === editAddressId) : null;
 
-  /** @typedef {import("@/types").Address} Address */
   /** @type {Address & { makeDefaultAddress: boolean }} */
   const emptyInitialValues = {
     name: userProfile.data?.name,
@@ -55,6 +55,7 @@ export default function ManageAddressModal({ editAddressId = null, setNewAddress
     }),
     onSubmit: async (values) => {
       try {
+        /** @type {import("axios").AxiosResponse} */
         let response;
         if (editAddressId !== null) {
           response = await UsersApiService.editAddress(token, { ...values, _id: editAddressId });
@@ -64,11 +65,13 @@ export default function ManageAddressModal({ editAddressId = null, setNewAddress
         if (response.status !== 200 && response.status !== 201) {
           throw response.data.message;
         }
-        if (response.data.addressId) {
-          setNewAddressId(response.data.addressId);
-        }
-        userProfile.mutate();
-        // console.log("Submitted:", values);
+        let copiedValues = { ...values };
+        delete copiedValues.makeDefaultAddress;
+        /** @type {Address} */
+        let updatedAddress = { ...copiedValues, _id: response.data.addressId ? response.data.addressId : editAddressId };
+        const updatedUserAddressList = [ ...userProfile.data?.address, updatedAddress ];
+        userProfile.mutate({ ...userProfile.data, address: updatedUserAddressList });
+        setNewAddress(updatedAddress);
         handleModalClose();
       } catch (err) {
         setSubmissionError(err);

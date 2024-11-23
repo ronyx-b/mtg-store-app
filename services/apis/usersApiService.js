@@ -80,7 +80,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {string} token 
    * @param {Object} data 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ success: boolean, message: string, addressId: string }, Object>>}
    */
   static async addAddress(token, data) {
     const url = `api/user/address`;
