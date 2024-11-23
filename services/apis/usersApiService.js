@@ -1,11 +1,12 @@
 import BaseApiService from "./baseApiService";
+import * as Types from "@/types";
 
 class UsersApiService extends BaseApiService {
   /**
    * Registers a new user
    * @async
    * @param {Object} body 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
    */
   static async registerUser(body) {
     const url = `/api/user/register`;
@@ -15,8 +16,8 @@ class UsersApiService extends BaseApiService {
   /**
    * Logs in a user
    * @async
-   * @param {Object} body 
-   * @returns 
+   * @param {Types.LoginRequest} body 
+   * @returns {Promise<import("axios").AxiosResponse<Types.LoginResponse>>}
    */
   static async loginUser(body) {
     const url = `/api/user/login`;
@@ -27,7 +28,7 @@ class UsersApiService extends BaseApiService {
    * Gets a user profile info
    * @async
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ user: Types.User }>>}
    */
   static async getUserData(token) {
     const url =`/api/user`;
@@ -44,7 +45,7 @@ class UsersApiService extends BaseApiService {
    * Confirms if a user is admin
    * @async
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ isAdmin: boolean }>>}
    */
   static async isAdmin(token) {
     const url =`/api/user/is-admin`;
@@ -61,8 +62,8 @@ class UsersApiService extends BaseApiService {
    * Change a user's password
    * @async
    * @param {string} token 
-   * @param {Object} data 
-   * @returns 
+   * @param {Types.ChangePasswordRequestBody} data 
+   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
    */
   static async changePassword(token, data) {
     const url = `/api/user/password`;
@@ -79,8 +80,8 @@ class UsersApiService extends BaseApiService {
    * Add an address to the user
    * @async
    * @param {string} token 
-   * @param {Object} data 
-   * @returns 
+   * @param {Types.Address} data 
+   * @returns {Promise<import("axios").AxiosResponse<Types.ManageAddressResponse, Object>>}
    */
   static async addAddress(token, data) {
     const url = `api/user/address`;
@@ -97,8 +98,8 @@ class UsersApiService extends BaseApiService {
    * Edit an address from the user
    * @async
    * @param {string} token 
-   * @param {Object} data 
-   * @returns 
+   * @param {Types.Address} data 
+   * @returns {Promise<import("axios").AxiosResponse<Types.ManageAddressResponse, Types.Address>>}
    */
   static async editAddress(token, data) {
     const url = `api/user/address`;
@@ -116,7 +117,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {string} token 
    * @param {{ addressId: string }} data 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
    */
   static async deleteAddress(token, data) {
     const url = `api/user/address/${data.addressId}`;
@@ -134,7 +135,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {string} token 
    * @param {{ addressId: string }} data 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
    */
   static async updateDefaultAddress(token, data) {
     const url = `api/user/address/default`;
@@ -152,7 +153,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {string} token 
    * @param {{ pageSize: number|string, pageNum: number|string }} pagination 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ orders: Types.Order[] }>>}
    */
   static async getUserOrders(token, pagination = { pageNum: 1, pageSize: 10 }) {
     const url =`/api/user/orders?pageSize=${pagination.pageSize}&pageNum=${pagination.pageNum}`;
@@ -170,7 +171,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {{ date: Date, address: Object, products: Object[] }} orderData 
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
    */
   static async checkoutOrder(orderData, token) {
     const url =`/api/user/orders`;
@@ -187,7 +188,7 @@ class UsersApiService extends BaseApiService {
    * Gets an order by its ID
    * @param {string} orderId 
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ order: Types.Order }>>}
    */
   static async getOrderDetails(orderId, token) {
     const url =`/api/user/orders/${orderId}`;

@@ -1,3 +1,4 @@
+/** ********** Collections Definitions ********** */
 /**
  * @typedef {Object} Address
  * @property {string} [_id]
@@ -54,12 +55,35 @@
  * @property {string} hero
  * @property {boolean} featured
  * 
- * @typedef {Object} Pagination
+ */
+/** ********** Start of type definitions for API requests ********** */
+/**
+ * @typedef {Object} Pagination Used for paginated requests and responses
  * @property {number | string} pageNum
  * @property {number | string} pageSize
  * 
- * @typedef {Pagination & {count: number}} PaginatedResult
+ * @typedef {Pagination & {count: number}} PaginatedResult pagination and count for paginated results
  * 
+ * @typedef {Object} BaseDataProcessingResponse
+ * @property {boolean} [success]
+ * @property {string} [message]
+ * 
+ * @typedef {Object} LoginRequest
+ * @property {string} email
+ * @property {string} password
+ * @property {boolean} [keepLogged]
+ * 
+ * @typedef {BaseDataProcessingResponse & { token: string | null }} LoginResponse
+ * 
+ * @typedef {Object} ChangePasswordRequestBody
+ * @property {string} oldPassword 
+ * @property {string} newPassword
+ * @property {string} confirmPassword
+ * 
+ * @typedef {BaseDataProcessingResponse & { addressId: string }} ManageAddressResponse
+ */
+/** ********** Miscellaneous portal types  ********** */
+/**
  * @typedef {Object} NavLink
  * @property {string} title
  * @property {string} href
@@ -69,9 +93,9 @@
  * @property {NavLink[]} [dropdown]
  * 
  * @typedef {NavLink & NavLinkExtraProperties} NavBarLink
- * 
- * ********** Start of type definitions from Scryfall API **********
- * 
+ */
+/** ********** Start of type definitions from Scryfall API ********** */
+/**
  * @typedef {("W" | "U" | "B" | "R" | "G")} Color
  * 
  * @typedef {Object} RelatedCard

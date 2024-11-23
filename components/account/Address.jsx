@@ -27,9 +27,15 @@ export default function Address({ ...props }) {
       setIsDeleting(true);
       const response = await UsersApiService.deleteAddress(token, { addressId: deleteAddressId });
       if (response.status === 200) {
-        alert(response.data.message);
+        const deleteAddressIndex = userProfile.data?.address.findIndex((thisAddress) => thisAddress._id === deleteAddressId);
+        console.log(`delete address at index: ${deleteAddressIndex}`);
+        if (deleteAddressIndex >= 0) {
+          const updatedUserAddressList = [ ...userProfile.data?.address ];
+          updatedUserAddressList.splice(deleteAddressIndex, 1);
+          console.log("updated user address list: ", updatedUserAddressList);
+          userProfile.mutate({ ...userProfile.data, address: updatedUserAddressList });
+        }
       }
-      userProfile.mutate();
       setShowConfirmDeleteAddressModal(false);
       setDeleteAddressId(null);
     }

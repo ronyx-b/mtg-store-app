@@ -14,7 +14,7 @@ const getUserData = async (token) => {
 /**
  * Hook that gets and caches a user's profile
  * @param {string} token 
- * @returns {import("swr").SWRResponse<User, Error>}
+ * @returns {import("swr").SWRResponse<User, Error, any>}
  */
 export default function useUserProfile(token) {
   return useSWR(["user/", token], ([url, token]) => token ? getUserData(token) : null);
