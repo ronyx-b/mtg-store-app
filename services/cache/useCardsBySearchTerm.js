@@ -1,19 +1,23 @@
 import useSWR from "swr";
 import CardSearchApiService from "../apis/cardSearchApiService"
 
+/** @typedef {import("@/scryfall-api-types").Card} Card */
+
 /**
- * @typedef {import("@/types").Card} Card
+ * @async
+ * @param {string} set
+ * @returns {Promise<Card[]>} 
  */
-
 const getCardsBySearchTerm = async (query) => {
-  let response, cardData = [];
+  /** @type {Card[]} */
+  let cardData = [];
 
-  response = await CardSearchApiService.searchCardByTerm(query);
-  cardData = [...cardData, ...response?.data?.data];
+  let response = await CardSearchApiService.searchCardByTerm(query);
+  cardData.push(...response.data?.data);
   
-  while (response?.data?.has_more) {
+  while (response.data?.has_more) {
     response = await CardSearchApiService.searchCardMorePages(response.data.next_page);
-    cardData = [...cardData, ...response?.data?.data];
+    cardData.push(...response.data?.data);
   } 
   
   return cardData;
@@ -22,7 +26,7 @@ const getCardsBySearchTerm = async (query) => {
 /**
  * Gets and caches a list of cards by a search query
  * @param {string} query 
- * @returns {import("swr").SWRResponse<Card[], Error>}
+ * @returns {import("swr").SWRResponse<Card[], Error, any>}
  */
 export default function useCardsBySearchTerm(query) {
   return useSWR([`cards?query=${query}`, query], ([url, query]) => query ? getCardsBySearchTerm(query) : [])

@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import UsersApiService from "../apis/usersApiService";
 
+/** @param {string} token */
 const getIsAdmin = async (token) => {
   let isAdmin = false;
   try {
@@ -13,6 +14,7 @@ const getIsAdmin = async (token) => {
   return isAdmin;
 }
 
+/** @param {string} token */
 export default function useIsAdmin(token) {
   return useSWR(["user/is-admin", token], ([url, token]) => token ? getIsAdmin(token) : false)
 }

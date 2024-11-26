@@ -1,19 +1,23 @@
 import useSWR from "swr";
 import CardSearchApiService from "../apis/cardSearchApiService"
 
+/** @typedef {import("@/scryfall-api-types").Card} Card */
+
 /**
- * @typedef {import("@/types").Card} Card
+ * @async
+ * @param {string} set
+ * @returns {Promise<Card[]>} 
  */
-
 const getCardsBySet = async (set) => {
-  let response, cardData = [];
+  /** @type {Card[]} */
+  let cardData = [];
 
-  response = await CardSearchApiService.searchCardBySet(set);
-  cardData = [...cardData, ...response?.data?.data];
+  let response = await CardSearchApiService.searchCardBySet(set);
+  cardData.push(...response.data?.data);
 
-  while (response?.data?.has_more) {
+  while (response.data?.has_more) {
     response = await CardSearchApiService.searchCardMorePages(response.data.next_page);
-    cardData = [...cardData, ...response?.data?.data];
+    cardData.push(...response.data?.data);
   } 
   
   return cardData;
@@ -22,7 +26,7 @@ const getCardsBySet = async (set) => {
 /**
  * Gets and caches a list of cards from a set
  * @param {string} set 
- * @returns {import("swr").SWRResponse<Card[], Error>}
+ * @returns {import("swr").SWRResponse<Card[], Error, any>}
  */
 export default function useCardsBySet(set) {
   return useSWR([`cards?set=${set}`, set], ([url, set]) => set ? getCardsBySet(set) : [])

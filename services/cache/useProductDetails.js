@@ -3,10 +3,10 @@ import ProductsApiService from "../apis/productsApiService"
 
 const getProductById = async (id) => {
   const response = await ProductsApiService.getProductById(id);
-  const productList = response.status === 200 ? response.data : [];
-  return productList
+  const productDetails = response.status === 200 ? response.data : null;
+  return productDetails
 }
 
 export default function useProductDetails(id) {
-  return useSWR([`products/${id}`, id], ([url, id]) => id ? getProductById(id) : {});
+  return useSWR([`products/${id}`, id], ([url, id]) => id ? getProductById(id) : null);
 }

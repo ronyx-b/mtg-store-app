@@ -1,9 +1,7 @@
 import useSWR from "swr";
 import UsersApiService from "../apis/usersApiService"
 
-/**
- * @typedef {import("@/types").User} User
- */
+/** @typedef {import("@/types").User} User */
 
 const getUserData = async (token) => {
   const response = await UsersApiService.getUserData(token);

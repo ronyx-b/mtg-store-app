@@ -1,13 +1,11 @@
 import useSWR from "swr";
 import ProductsApiService from "../apis/productsApiService";
 
-/**
- * @typedef {import("@/types").Product} Product
- */
+/** @typedef {import("@/types").Product} Product */
 
 const getProductsFromCollection = async (data) => {
   const response = await ProductsApiService.getProductsFromCollection(data);
-  const products = response.status === 200 ? response.data.products : [];
+  const products = response.status === 200 ? response.data.products : null;
   return products;
 };
 
@@ -15,11 +13,11 @@ const getProductsFromCollection = async (data) => {
  * Cache service that gets a list of products given a list of its ids
  * @async
  * @param {{ productIdList: string[] }} data
- * @returns {import("swr").SWRResponse<Product[], Error>}
+ * @returns {import("swr").SWRResponse<Product[], Error, any>}
  */
 export default function useProductsFromCollection(data) {
   return useSWR(
     ["products/collection", data],
-    ([url, data]) => data?.productIdList?.length > 0 ? getProductsFromCollection(data) : []
+    ([url, data]) => data?.productIdList?.length > 0 ? getProductsFromCollection(data) : null
   );
 }

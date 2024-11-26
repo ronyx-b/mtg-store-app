@@ -14,11 +14,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Col, Container, Image, Row, Spinner, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
+/** @typedef {import("@/scryfall-api-types").CardIdentifiers} CardIdentifiers */
+
 export default function Checkout({ ...props }) {
   const router = useRouter();
   const cart = useSelector(selectCart);
   const token = useSelector(selectToken);
   const userProfile = useUserProfile(token);
+  /** @type {CardIdentifiers[]} */
   const identifiers = cart.filter((item) => (item.type === "single")).map((item) => ({id: item.id}));
   const cards = useCardsFromCollection({ identifiers });
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
@@ -75,14 +78,11 @@ export default function Checkout({ ...props }) {
       return;
     }
 
-    let address = currentShippingAddress; // userProfile.data?.address.find((thisAddress) => thisAddress._id === shippingAddressId || userProfile.data?.defaultAddress);
-    let order = {
+    const response = await UsersApiService.checkoutOrder({
       date: new Date(),
-      address,
+      address: currentShippingAddress,
       products: orderProducts
-    }
-    // console.log(order);
-    const response = await UsersApiService.checkoutOrder(order, token);
+    }, token);
 
     if (response.status === 201 || response.data?.success) {
       setOrderProducts([]);
@@ -169,7 +169,7 @@ export default function Checkout({ ...props }) {
                           switch (item.prodType) {
                             case PROD_TYPES.SINGLE:
                               let card = cards.data.find((card) => card.id === item.prod_id);
-                              return card.image_uris ? card.image_uris.normal : card.card_faces[0].image_uris.normal;
+                              return card?.image_uris ? card.image_uris?.normal : card?.card_faces?.[0]?.image_uris?.normal;
                             case PROD_TYPES.SEALED:
                               return cld.image(sealed.data?.find((product) => product._id === item.prod_id)?.image).toURL();
                             default:

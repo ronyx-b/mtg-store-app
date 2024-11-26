@@ -1,10 +1,14 @@
 import BaseApiService from "./baseApiService";
 
+/** @typedef {import("@/types").Pagination} Pagination */
+/** @typedef {import("@/types").FeaturedSet} FeaturedSet */
+/** @typedef {import("@/types").BaseDataProcessingResponse} BaseDataProcessingResponse */
+
 class SetsApiService extends BaseApiService {
   /**
    * Gets all featured sets
-   * @param {{ pageSize: number|string, pageNum: number|string }} pagination 
-   * @returns 
+   * @param {Pagination} pagination 
+   * @returns {Promise<import("axios").AxiosResponse<{ featuredSetList: FeaturedSet[] }>>}
    */
   static async getAllSets(pagination = { pageSize: 10, pageNum: 1 }) {
     const url = `/api/sets?pageSize=${pagination.pageSize}&pageNum=${pagination.pageNum}`
@@ -14,7 +18,7 @@ class SetsApiService extends BaseApiService {
   /**
    * Gets a set data by its code
    * @param {string} code 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ set: FeaturedSet }>>}
    */
   static async getSetByCode(code) {
     const url = `/api/sets/${code}`;
@@ -26,7 +30,7 @@ class SetsApiService extends BaseApiService {
    * @async
    * @param {FormData} data 
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<BaseDataProcessingResponse & {setData: FeaturedSet}>>}
    */
   static async addFeaturedSet(data, token) {
     const url = `/api/sets`;
