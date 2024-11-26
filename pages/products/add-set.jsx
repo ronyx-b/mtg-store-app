@@ -4,12 +4,17 @@ import useAllFeaturedSets from "@/services/cache/useAllFeaturedSets";
 import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
+/** @typedef {import("@/scryfall-api-types").CardSet} CardSet */
+/** @typedef {import("@/types").FeaturedSet} FeaturedSet */
+
 export default function AddFeaturedSet({ ...props }) {
+  /** @type {[string[], React.Dispatch<React.SetStateAction<string[]>>]} */
   const [unlistedCardSets, setUnlistedCardSets] = useState([]);
+  /** @type {[FeaturedSet, React.Dispatch<React.SetStateAction<FeaturedSet>>]} */
   const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
   const [submissionError, setSubmissionError ] = useState("");
   const [isSubmitted, setIsSubmitted ] = useState(false);
@@ -48,13 +53,11 @@ export default function AddFeaturedSet({ ...props }) {
     try {
       let data = new FormData(e.target);
       const response = await SetsApiService.addFeaturedSet(data, token)
-      let json = await response.json();
-      console.log(json.message);
-      if (json.success || response.status === 201) {
+      if (response.status === 201 || response.data?.success) {
         router.push('/products');
       } else {
         setIsSubmitted(false);
-        setSubmissionError(json.message);
+        setSubmissionError(response.data?.message);
       }
     } catch (err) {
       console.log(err);
@@ -64,7 +67,6 @@ export default function AddFeaturedSet({ ...props }) {
   useEffect(() => {
     if (featuredSets.data && allSetsList.data) {
       let setsData = [ ...allSetsList.data ];
-      setsData = setsData.filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia");
       setsData = setsData.filter((set) => !featuredSets.data.some((featSet) => featSet.name === set.name));
       setUnlistedCardSets(setsData);
     }

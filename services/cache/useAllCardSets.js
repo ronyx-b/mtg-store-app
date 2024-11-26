@@ -1,9 +1,13 @@
 import useSWR from "swr";
 import CardSearchApiService from "../apis/cardSearchApiService";
 
+/** @typedef {import("@/scryfall-api-types").SetType} SetType */
+
 const getAllCardSets = async () => {
+  /** @type {SetType[]} */
+  const filterSets = ["alchemy", "promo", "token", "memorabilia", "vanguard"];
   const response = await CardSearchApiService.getAllCardSets();
-  const sets = [...response.data.data].filter((set) => set.set_type !== "alchemy" && set.set_type !== "promo" && set.set_type !== "token" && set.set_type !== "memorabilia")
+  const sets = [...response.data?.data].filter((set) => !filterSets.includes(set.set_type))
   return sets;
 }
 

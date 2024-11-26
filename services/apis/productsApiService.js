@@ -1,12 +1,16 @@
 import BaseApiService from "./baseApiService";
 
+/** @typedef {import("@/types").Pagination} Pagination */
+/** @typedef {import("@/types").Product} Product */
+/** @typedef {import("@/types").BaseDataProcessingResponse} BaseDataProcessingResponse */
+
 class ProductsApiService extends BaseApiService {
 
   /**
    * Gets all products
    * @async
-   * @param {{ pageSize: number|string, pageNum: number|string }} pagination 
-   * @returns 
+   * @param {Pagination} pagination 
+   * @returns {Promise<import("axios").AxiosResponse<Product[]>>}
    */
   static async getAllProducts(pagination = { pageSize: 10, pageNum: 1 }) {
     const url = `/api/products?pageSize=${pagination.pageSize}&pageNum=${pagination.pageNum}`;
@@ -17,7 +21,7 @@ class ProductsApiService extends BaseApiService {
    * Gets all products from a given set
    * @async
    * @param {string} set set code
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Product[]>>}
    */
   static async getProductsBySet(set) {
     const url = `/api/products/set/${set}`
@@ -28,7 +32,7 @@ class ProductsApiService extends BaseApiService {
    * Gets a product details by its id
    * @async
    * @param {string} id 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<Product>>}
    */
   static async getProductById(id) {
     const url = `/api/products/${id}`;
@@ -39,7 +43,7 @@ class ProductsApiService extends BaseApiService {
    * Gets a list of products given a list of its ids 
    * @async
    * @param {{ productIdList: string[] }} data
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<{ products: Product[] }>>}
    */
   static async getProductsFromCollection(data) {
     const url = `/api/products/collection`;
@@ -51,7 +55,7 @@ class ProductsApiService extends BaseApiService {
    * @async
    * @param {FormData} formData 
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<BaseDataProcessingResponse>>}
    */
   static async addNewProduct(formData, token) {
     const url = `/api/products`;
@@ -70,7 +74,7 @@ class ProductsApiService extends BaseApiService {
    * @param {string} id 
    * @param {FormData} formData 
    * @param {string} token 
-   * @returns 
+   * @returns {Promise<import("axios").AxiosResponse<BaseDataProcessingResponse>>}
    */
   static async editProduct(id, formData, token) {
     const url = `/api/products/${id}`;
