@@ -14,20 +14,29 @@ import * as Yup from "yup";
 /**
  * Component to manage products, either ADD or EDIT a product
  * @param {{ action: ("add"|"edit"), id: string, ...props: Object }} props 
- * @returns
+ * @returns {JSX.Element}
  */
-export default function ManageProduct({ action = "add", id = null,  ...props }) {
+export default function ManageProduct({ action = "add", id = null, ...props }) {
   const { isAdmin, isAdminAccessLoading } = useAdminAccess();
   const router = useRouter();
   const productDetails = useProductDetails(id);
   const initialProductData = productDetails?.data?.productDetails;
   /** @type {React.RefObject<HTMLInputElement>} */
   const image = useRef(null);
+  const [imageModal, setImageModal] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
+  const cardSets = useAllCardSets();
+  const token = useSelector(selectToken);
+
+  const handleClose = () => setImageModal(false);
+  const handleShow = () => setImageModal(true);
+
   const ACTIONS = {
     ADD: "add",
     EDIT: "edit",
   }
 
+  /** @type {import("@/types").Product} */
   const initialValues = {
     name: initialProductData?.name || "", 
     prodType: initialProductData?.prodType || "sealed", 
@@ -44,21 +53,18 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
     cardSet: Yup.string().required()
   });
 
-  // const [isSubmitted, setIsSubmitted] = useState(false);
-  const [imageModal, setImageModal] = useState(false);
-  const [submissionError, setSubmissionError] = useState("");
-  const cardSets = useAllCardSets();
-  const token = useSelector(selectToken);
-
-  const handleClose = () => setImageModal(false);
-  const handleShow = () => setImageModal(true);
-
   const cld = new Cloudinary({
     cloud: {
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     }
   });
 
+  /**
+   * @async
+   * @param {import("@/types").Product} values 
+   * @param {import("formik").FormikHelpers} formikHelpers 
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
     try {
       let body = new FormData();
@@ -77,7 +83,7 @@ export default function ManageProduct({ action = "add", id = null,  ...props }) 
       if (response.data.success || response.status === 201) {
         router.push('/products');
       } else {
-        setSubmissionError(json.message);
+        setSubmissionError(response.data?.message);
       }
     } catch (err) {
       console.log(err);

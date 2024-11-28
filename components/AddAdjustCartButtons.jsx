@@ -25,7 +25,7 @@ export default function AddAdjustCartButtons({ item, showRemove, ...props }) {
   const [qty, setQty] = useState(cartItemQty === 0 ? 1 : cartItemQty);
   const dispatch = useDispatch();
 
-  /** @param {React.FormEvent<HTMLFormElement>} e */
+  /** @type {React.ChangeEventHandler<HTMLInputElement>} */
   const handleChange = (e) => {
     let value = parseInt(e.target.value)
     if (isNaN(value) || value < 0) {
@@ -41,7 +41,7 @@ export default function AddAdjustCartButtons({ item, showRemove, ...props }) {
     dispatch(adjustCart({item, qty: 0}));
   };
 
-  /** @param {React.FormEvent<HTMLFormElement>} e */
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const handleSubmit = (e) => {
     e.preventDefault();
     if (cartItemQty === 0) {

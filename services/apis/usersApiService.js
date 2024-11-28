@@ -1,6 +1,8 @@
 import BaseApiService from "./baseApiService";
 
 /** @typedef {import("@/types").BaseDataProcessingResponse} BaseDataProcessingResponse */
+/** @typedef {import("@/types").RegisterRequestBody} RegisterRequestBody */
+/** @typedef {import("@/types").LoginRequest} LoginRequest */
 /** @typedef {import("@/types").LoginResponse} LoginResponse */
 /** @typedef {import("@/types").User} User */
 /** @typedef {import("@/types").ChangePasswordRequestBody} ChangePasswordRequestBody */
@@ -14,7 +16,7 @@ class UsersApiService extends BaseApiService {
   /**
    * Registers a new user
    * @async
-   * @param {Object} body 
+   * @param {RegisterRequestBody} body 
    * @returns {Promise<import("axios").AxiosResponse<BaseDataProcessingResponse>>}
    */
   static async registerUser(body) {
@@ -25,7 +27,7 @@ class UsersApiService extends BaseApiService {
   /**
    * Logs in a user
    * @async
-   * @param {Types.LoginRequest} body 
+   * @param {LoginRequest} body 
    * @returns {Promise<import("axios").AxiosResponse<LoginResponse>>}
    */
   static async loginUser(body) {
@@ -180,7 +182,7 @@ class UsersApiService extends BaseApiService {
    * @async
    * @param {{ date: Date, address: Address, products: OrderItem[] }} orderData 
    * @param {string} token 
-   * @returns {Promise<import("axios").AxiosResponse<Types.BaseDataProcessingResponse>>}
+   * @returns {Promise<import("axios").AxiosResponse<BaseDataProcessingResponse>>}
    */
   static async checkoutOrder(orderData, token) {
     const url =`/api/user/orders`;

@@ -17,6 +17,28 @@ class BaseApiService {
   /** @type {import("axios").AxiosInstance} */
   static axiosInstance = axios.create(axiosInstanceConfigs);
 
+    /**
+   * 
+   * @param {"get" | "post" | "put" | "delete" | "patch" | "head" | "options"} method 
+   * @param {string} url 
+   * @param {Object} [data] 
+   * @param {import("axios").AxiosRequestConfig} [customConfig]
+   * @returns
+   */
+    static async requestProcessor(method = "get", url, data, customConfig) {
+      /** @type {import("axios").AxiosResponse} */
+      let response;
+      try {
+        response = await this.axiosInstance.request({ method, url, data, ...customConfig })
+      }
+      catch (/** @type {import("axios").AxiosError<any, any>} */ error) {
+        if (error.response) {
+          response = error.response;
+        }
+      }
+      return response;
+    }
+
   /**
    * GET request
    * @param {string} url 
@@ -24,7 +46,7 @@ class BaseApiService {
    * @returns 
    */
   static async get(url, config) {
-    return this.axiosInstance.get(url, config);
+    return this.requestProcessor("get", url, null, config);
   }
 
   /**
@@ -35,7 +57,7 @@ class BaseApiService {
    * @returns 
    */
   static async post(url, data, config) {
-    return this.axiosInstance.post(url, data, config);
+    return this.requestProcessor("post", url, data, config);
   }
 
   /**
@@ -46,7 +68,7 @@ class BaseApiService {
    * @returns 
    */
   static async put(url, data, config) {
-    return this.axiosInstance.put(url, data, config)
+    return this.requestProcessor("put", url, data, config)
   }
 
   /**
@@ -56,7 +78,7 @@ class BaseApiService {
    * @returns 
    */
   static async delete(url, config) {
-    return this.axiosInstance.delete(url, config);
+    return this.requestProcessor("delete", url, null, config);
   }
 }
 

@@ -9,6 +9,7 @@ export default function Register({ ...props }) {
   const [submissionError, setSubmissionError] = useState("");
   const router = useRouter();
 
+  /** @type {import("@/types").RegisterRequestBody} */
   const initialValues = {
     name: "",
     street: "",
@@ -33,7 +34,12 @@ export default function Register({ ...props }) {
       .required('Confirm Password is required')
   });
 
-  /** @type {React.FormEventHandler} */
+  /**
+   * @async
+   * @param {import("@/types").RegisterRequestBody} values 
+   * @param {import("formik").FormikHelpers} formikHelpers 
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (values = initialValues, { setSubmitting }) => {
     setSubmitting(true);
     try {
@@ -42,8 +48,8 @@ export default function Register({ ...props }) {
       router.push("/login");
     }
     catch (error) {
-      setSubmissionError(error.response.data.error);
-      console.log(error.response.data.error);
+      setSubmissionError(error.response.data.message);
+      console.log(error.response.data.message);
     }
   };
 

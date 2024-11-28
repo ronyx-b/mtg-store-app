@@ -11,17 +11,15 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Card, Col, Container, Image, Row, Spinner, Table } from "react-bootstrap";
+import { Button, Card, Col, Container, Image, Modal, Row, Spinner, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-
-/** @typedef {import("@/scryfall-api-types").CardIdentifiers} CardIdentifiers */
 
 export default function Checkout({ ...props }) {
   const router = useRouter();
   const cart = useSelector(selectCart);
   const token = useSelector(selectToken);
   const userProfile = useUserProfile(token);
-  /** @type {CardIdentifiers[]} */
+  /** @type {import("@/scryfall-api-types").CardIdentifiers[]} */
   const identifiers = cart.filter((item) => (item.type === "single")).map((item) => ({id: item.id}));
   const cards = useCardsFromCollection({ identifiers });
   const productIdList = cart.filter((item) => (item.type === "sealed")).map((item) => item.id);
@@ -39,6 +37,8 @@ export default function Checkout({ ...props }) {
   const [showChooseAddressModal, setShowChooseAddressModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shipping, setShipping] = useState(0);
+  /** @type {[string, React.Dispatch<React.SetStateAction<string>>]} */
+  const [submissionError, setSubmissionError] = useState(null);
   const dispatch = useDispatch();
   const SHIPPING_OPTIONS_FACTORS = {
     NO_TRACKING: 0.02,
@@ -89,10 +89,9 @@ export default function Checkout({ ...props }) {
       dispatch(emptyCart());
       router.push(`/account?view=orders`);
     } else {
-      console.log(response.data?.message);
+      setSubmissionError(response.data?.message);
       setIsSubmitting(false);
     }
-    /* ********** TODO: implement error message handling for checkout error ********** */
   };
 
   useEffect(() => {
@@ -298,6 +297,19 @@ export default function Checkout({ ...props }) {
           handleModalClose={() => {setShowChooseAddressModal(false)}}
         />
       </>}
+
+      <Modal show={submissionError !== null} onHide={() => {setSubmissionError(null)}}>
+        <Modal.Header closeButton>
+          <Modal.Title>Error Processing Order</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{submissionError}</Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => {setSubmissionError(null)}}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   </div>);
 }
