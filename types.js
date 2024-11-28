@@ -76,6 +76,17 @@
  * @property {string} [message]
  */
 /**
+ * @typedef {Object} RegisterRequestBody
+ * @property {string} name
+ * @property {string} street
+ * @property {string} city
+ * @property {string} province
+ * @property {string} postal
+ * @property {string} email
+ * @property {string} password
+ * @property {string} password2
+ */
+/**
  * @typedef {Object} LoginRequest
  * @property {string} email
  * @property {string} password

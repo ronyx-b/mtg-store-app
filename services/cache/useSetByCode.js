@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import SetsApiService from "../apis/setsApiService";
 
+/** @param {string} code */
 const getSetByCode = async (code) => {
   const response = await SetsApiService.getSetByCode(code);
   const setDetails = response.status === 200 ? response.data?.set : null;

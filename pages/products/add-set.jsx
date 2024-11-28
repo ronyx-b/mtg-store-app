@@ -4,7 +4,7 @@ import useAllFeaturedSets from "@/services/cache/useAllFeaturedSets";
 import { selectToken } from "@/services/store/tokenSlice";
 import useAdminAccess from "@/services/useAdminAccess";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 /** @typedef {import("@/types").FeaturedSet} FeaturedSet */
 
 export default function AddFeaturedSet({ ...props }) {
-  /** @type {[string[], React.Dispatch<React.SetStateAction<string[]>>]} */
+  /** @type {[CardSet[], React.Dispatch<React.SetStateAction<CardSet[]>>]} */
   const [unlistedCardSets, setUnlistedCardSets] = useState([]);
   /** @type {[FeaturedSet, React.Dispatch<React.SetStateAction<FeaturedSet>>]} */
   const [formFields, setFormFields] = useState({name: "", code: "", released_at: "", scryfall_id: "", featured: false});
@@ -29,6 +29,7 @@ export default function AddFeaturedSet({ ...props }) {
     router.push('/dashboard');
   }, [router]);
 
+  /** @type {React.ChangeEventHandler<HTMLInputElement>} */
   const setCardSet = (e) => {
     let scryfall_id = e.target.value;
     let set = unlistedCardSets.find((set) => set.id === scryfall_id);
@@ -37,7 +38,7 @@ export default function AddFeaturedSet({ ...props }) {
     });
   };
 
-  /** @type {import("react").FormEventHandler} */
+  /** @type {React.ChangeEventHandler<HTMLInputElement>} */
   const handleChange = (e) => {
     let name = e.target.name;
     let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -46,7 +47,7 @@ export default function AddFeaturedSet({ ...props }) {
     });
   };
 
-  /** @type {import("react").FormEventHandler} */
+  /** @type {React.FormEventHandler<HTMLFormElement>} */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
