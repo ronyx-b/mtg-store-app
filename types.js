@@ -103,6 +103,9 @@
  * 
  * @typedef {BaseDataProcessingResponse & { addressId: string }} ManageAddressResponse
  */
+/**
+ * @typedef {PaginatedResult & { productList: Product[] }} ProductListResponse
+ */
 /** ********** Miscellaneous portal types  ********** */
 /**
  * @typedef {Object} NavLink
