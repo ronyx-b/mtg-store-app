@@ -5,8 +5,8 @@ import ProductsApiService from "../apis/productsApiService"
 
 const getAllProducts = async (pagination = { pageSize: 10, pageNum: 1 }) => {
   const response = await ProductsApiService.getAllProducts(pagination)
-  const productList = response.status === 200 ? response.data : [];
-  return productList;
+  const products = response.status === 200 ? response.data : null;
+  return products;
 }
 
 /** @param {Pagination} pagination */

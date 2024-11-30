@@ -1,3 +1,4 @@
+import PaginatedNavigation from "@/components/PaginatedNavigation";
 import { ProductCard } from "@/components/Products/ProductCard";
 import useAllProducts from "@/services/cache/useAllProducts";
 import useProductsBySet from "@/services/cache/useProductsBySet";
@@ -8,7 +9,9 @@ import { Button, Container, Image, Row, Spinner } from "react-bootstrap";
 
 export default function Products({ ...props }) {
   const router = useRouter();
-  const { set, pageSize = 12, pageNum = 1 } = router.query;
+  const { set, page } = router.query;
+  const pageNum = page ? Number(page) : 1;
+  const pageSize = set ? 4 : 20;
   const setDetails = useSetByCode(set);
   const productsBySet = useProductsBySet(setDetails.data?.name);
   const allProducts = useAllProducts({pageSize, pageNum});
@@ -38,6 +41,10 @@ export default function Products({ ...props }) {
             <ProductCard key={product._id} product={product} />
           )}
         </Row>
+
+        {!productsData.isLoading &&
+          <PaginatedNavigation totalCount={productsData.data?.count} pageSize={pageSize} />
+        }
       </>}
     </Container>
   </div>);

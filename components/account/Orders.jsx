@@ -2,9 +2,10 @@ import useUserOrders from "@/services/cache/useUserOrders";
 import { selectToken } from "@/services/store/tokenSlice";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Button, Modal, Pagination, Spinner, Table } from "react-bootstrap";
+import { Button, Modal, Spinner, Table } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import OrderDetails from "./OrderDetails";
+import PaginatedNavigation from "../PaginatedNavigation";
 
 export default function Orders({ ...props }) {
   const router = useRouter();
@@ -13,8 +14,6 @@ export default function Orders({ ...props }) {
   const pageSize = 10;
   const token = useSelector(selectToken);
   const orders = useUserOrders(token, { pageNum, pageSize });
-  const totalPages = orders.data ? Math.ceil(orders.data.count / pageSize) : 1;
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   const closeModal = () => {
     router.push({ 
@@ -26,7 +25,7 @@ export default function Orders({ ...props }) {
     });
   }
 
-  return (<div className="Orders">
+  return (<div className="Orders" {...props}>
     {orders.isLoading ? <>
       <Spinner animation="border" role="status" style={{ display: "block", margin: "5rem auto" }}>
         <span className="visually-hidden">Loading...</span>
@@ -55,54 +54,7 @@ export default function Orders({ ...props }) {
         </tbody>
       </Table>
 
-      <div className="d-block mx-auto" style={{width: "fit-content"}}>
-        <Pagination>
-          <Pagination.Prev 
-            onClick={() => { 
-              router.push({ pathname: router.pathname, query: { ...router.query, page: pageNum - 1 } }) 
-            }} 
-            disabled={pageNum === 1} 
-          />  
-          {pages.map((thisPage, i) => {
-            if (pages.length > 7) {
-              if (thisPage < pageNum - 1 && thisPage > 1) {
-                if (pageNum > 4) {
-                  if (thisPage === 2) {
-                    return (<Pagination.Ellipsis key={i} />);
-                  } else if (!(pageNum > pages.length - 4 && thisPage > pages.length - 5)) {
-                    return null;
-                  }
-                } 
-              } else if (thisPage > pageNum + 1 && thisPage < pages.length) {
-                if (pageNum < pages.length - 3) {
-                  if (thisPage === pages.length - 1) {
-                    return (<Pagination.Ellipsis key={i} />);
-                  } else if (!(pageNum < 5 && thisPage < 6)) {
-                    return null;
-                  }
-                } 
-              }
-            }
-            return (
-              <Pagination.Item 
-                key={i} 
-                active={thisPage === pageNum} 
-                onClick={() => { 
-                  router.push({ pathname: router.pathname, query: { ...router.query, page: thisPage } }) 
-                }}
-              >
-                {thisPage}
-              </Pagination.Item>
-            );
-          })}
-          <Pagination.Next 
-            onClick={() => { 
-              router.push({ pathname: router.pathname, query: { ...router.query, page: pageNum + 1 } }) 
-            }} 
-            disabled={pageNum === totalPages}
-          />
-        </Pagination>
-      </div>
+      <PaginatedNavigation totalCount={orders.data?.count} pageSize={pageSize} />
 
       <Modal 
         size="lg" 

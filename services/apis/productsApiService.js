@@ -1,7 +1,9 @@
 import BaseApiService from "./baseApiService";
 
 /** @typedef {import("@/types").Pagination} Pagination */
+/** @typedef {import("@/types").PaginatedResult} PaginatedResult */
 /** @typedef {import("@/types").Product} Product */
+/** @typedef {import("@/types").ProductListResponse} ProductListResponse */
 /** @typedef {import("@/types").BaseDataProcessingResponse} BaseDataProcessingResponse */
 
 class ProductsApiService extends BaseApiService {
@@ -10,7 +12,7 @@ class ProductsApiService extends BaseApiService {
    * Gets all products
    * @async
    * @param {Pagination} pagination 
-   * @returns {Promise<import("axios").AxiosResponse<Product[]>>}
+   * @returns {Promise<import("axios").AxiosResponse<ProductListResponse>>}
    */
   static async getAllProducts(pagination = { pageSize: 10, pageNum: 1 }) {
     const url = `/api/products?pageSize=${pagination.pageSize}&pageNum=${pagination.pageNum}`;
@@ -21,10 +23,14 @@ class ProductsApiService extends BaseApiService {
    * Gets all products from a given set
    * @async
    * @param {string} set set code
-   * @returns {Promise<import("axios").AxiosResponse<Product[]>>}
+   * @param {Pagination} [pagination]
+   * @returns {Promise<import("axios").AxiosResponse<ProductListResponse>>}
    */
-  static async getProductsBySet(set) {
-    const url = `/api/products/set/${set}`
+  static async getProductsBySet(set, pagination) {
+    let url = `/api/products/set/${set}`
+    if (pagination) {
+      url += `?pageNum=${pagination?.pageNum}&pageSize=${pagination?.pageSize}`;
+    }
     return this.get(url)
   }
 
