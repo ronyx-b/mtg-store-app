@@ -124,7 +124,7 @@ export default function Layout({ children, ...props }) {
         <Container>
           <Navbar.Brand as={Link} href="/">
             <Image src={cld.image("mtg-store/mtg-logo").toURL()} alt="MTG Store logo" height={30} style={{ marginRight: "0.5rem" }} />
-            MTG Store
+            <span style={{ fontFamily: "Beleren Bold" }}>MTG Store</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
