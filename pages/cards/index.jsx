@@ -2,8 +2,9 @@ import CardSearchRow from "@/components/CardSearch/CardSearchRow";
 import useCardsBySearchTerm from "@/services/cache/useCardsBySearchTerm";
 import useCardsBySet from "@/services/cache/useCardsBySet";
 import { useRouter } from "next/router";
+import { handleClientScriptLoad } from "next/script";
 import { useEffect, useState } from "react";
-import { Container, Pagination } from "react-bootstrap";
+import { Button, Card, Col, Container, Form, Pagination, Row } from "react-bootstrap";
 
 export default function CardSearch({ ...props }) {
   // const [cards, setCards] = useState([]);
@@ -59,37 +60,68 @@ export default function CardSearch({ ...props }) {
 
   return (<div className="CardSearch">
     <Container>
-      {page.pageCards && page.pageCards.map((card, i) => 
-        <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} />
-      )}
-      <div className="d-block mx-auto" style={{width: "fit-content"}}>
-        <Pagination>
-          <Pagination.Prev onClick={() => updatePage("-1")} disabled={page.num === 1} />  
-          {pages && pages.map((pageNum, i) => {
-            if (pages.length > 7) {
-              if (pageNum < page.num - 1 && pageNum > 1) {
-                if (page.num > 4) {
-                  if (pageNum === 2) {
-                    return (<Pagination.Ellipsis key={i} />);
-                  } else if (!(page.num > pages.length - 4 && pageNum > pages.length - 5)) {
-                    return null;
-                  }
-                } 
-              } else if (pageNum > page.num + 1 && pageNum < pages.length) {
-                if (page.num < pages.length - 3) {
-                  if (pageNum === pages.length - 1) {
-                    return (<Pagination.Ellipsis key={i} />);
-                  } else if (!(page.num < 5 && pageNum < 6)) {
-                    return null;
-                  }
-                } 
+      {!search && !set ? <>
+        <Row className="my-3">
+          <Col>
+            <Card className="shadow">
+              <Card.Body style={{}}>
+                <p>Search for a card by its name on the search bar below.</p>
+                <Form onSubmit={() => {}}>
+                  <Row>
+                    <Col lg={10} md={10} sm={10} xs={10}>
+                      <Form.Control type="text" placeholder="Search" />
+                    </Col>
+                    <Col lg={2} md={2} sm={2} xs={2}>
+                      <Button type="submit" variant="primary">Search</Button>
+                    </Col>
+                  </Row>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row className="my-3">
+          <Col>
+            <Card className="shadow">
+              <Card.Body style={{}}>
+                <p>Or browse cards by set:</p>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </> : <>
+        {page.pageCards && page.pageCards.map((card, i) => 
+          <CardSearchRow key={card.id} index={i + 1 + (page.num - 1) * PER_PAGE} card={card} />
+        )}
+        <div className="d-block mx-auto" style={{width: "fit-content"}}>
+          <Pagination>
+            <Pagination.Prev onClick={() => updatePage("-1")} disabled={page.num === 1} />  
+            {pages && pages.map((pageNum, i) => {
+              if (pages.length > 7) {
+                if (pageNum < page.num - 1 && pageNum > 1) {
+                  if (page.num > 4) {
+                    if (pageNum === 2) {
+                      return (<Pagination.Ellipsis key={i} />);
+                    } else if (!(page.num > pages.length - 4 && pageNum > pages.length - 5)) {
+                      return null;
+                    }
+                  } 
+                } else if (pageNum > page.num + 1 && pageNum < pages.length) {
+                  if (page.num < pages.length - 3) {
+                    if (pageNum === pages.length - 1) {
+                      return (<Pagination.Ellipsis key={i} />);
+                    } else if (!(page.num < 5 && pageNum < 6)) {
+                      return null;
+                    }
+                  } 
+                }
               }
-            }
-            return (<Pagination.Item key={i} active={pageNum === page.num} onClick={() => updatePage(pageNum)}>{pageNum}</Pagination.Item>);
-          })}
-          <Pagination.Next onClick={() => updatePage("+1")} disabled={page.num === pages.length} />
-        </Pagination>
-      </div>
+              return (<Pagination.Item key={i} active={pageNum === page.num} onClick={() => updatePage(pageNum)}>{pageNum}</Pagination.Item>);
+            })}
+            <Pagination.Next onClick={() => updatePage("+1")} disabled={page.num === pages.length} />
+          </Pagination>
+        </div>
+      </>}
     </Container>
   </div>);
 }
