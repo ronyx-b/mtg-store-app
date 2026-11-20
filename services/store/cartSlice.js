@@ -8,15 +8,13 @@ import { createSlice } from "@reduxjs/toolkit";
  * @property {number} qty
  */
 
-const localStorageIsAvailable = typeof window !== "undefined";
-
 const initialState = {
   /** @type {CartItem[]} */
-  value: localStorageIsAvailable ? JSON.parse(localStorage.getItem('cart')) || [] : [],
+  value: [],
 };
 
 const saveCart = (cart) => {
-  if (localStorageIsAvailable) {
+  if (typeof window !== "undefined") {
     localStorage.setItem('cart', JSON.stringify(cart));
   }
 };
@@ -25,6 +23,17 @@ export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    hydrateCart: (state) => {
+      if (typeof window !== "undefined") {
+        try {
+          state.value = JSON.parse(localStorage.getItem('cart')) || [];
+        }
+        catch (err) {
+          state.value = [];
+        }
+      }
+    },
+
     addOrRemoveToCart: (state, action) => {
       let qty = parseInt(action.payload.qty);
       let item = action.payload.item;
@@ -78,7 +87,7 @@ export const cartSlice = createSlice({
     },
 
     emptyCart: (state) => {
-      if (localStorageIsAvailable) {
+      if (typeof window !== "undefined") {
         localStorage.removeItem('cart');
       }
       state.value = [];
@@ -86,7 +95,7 @@ export const cartSlice = createSlice({
   }
 });
 
-export const { addOrRemoveToCart, adjustCart, emptyCart } = cartSlice.actions;
+export const { addOrRemoveToCart, adjustCart, emptyCart, hydrateCart } = cartSlice.actions;
 
 /**
  * Selects the items in the cart

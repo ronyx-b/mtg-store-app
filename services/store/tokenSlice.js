@@ -10,33 +10,31 @@ import { jwtDecode } from 'jwt-decode';
  * @property {number} [exp]
  */
 
-const localStorageIsAvailable = typeof window !== "undefined";
-
-const getDecodedToken = () => {
-  /** @type {(DecodedToken | null)} */
-  let decodedToken = null;
-  try {
-    if (localStorageIsAvailable) {
-      decodedToken = jwtDecode(localStorage.getItem("access_token"));
-    }
-  }
-  catch (err) {
-    console.log(`couldn't decode local token: ${err}`)
-  }
-  return decodedToken;
-};
-
 const initialState = {
-  value: localStorageIsAvailable ? localStorage.getItem("access_token") : "",
-  decodedToken: getDecodedToken(),
+  value: "",
+  decodedToken: null,
 };
 
 export const tokenSlice = createSlice({
   name: "token",
   initialState,
   reducers: {
+    hydrateToken: (state) => {
+      if (typeof window !== "undefined") {
+        try {
+          const token = localStorage.getItem("access_token");
+          state.value = token || "";
+          state.decodedToken = token ? jwtDecode(token) : null;
+        }
+        catch (err) {
+          state.value = "";
+          state.decodedToken = null;
+        }
+      }
+    },
+
     setToken: (state, action) => {
-      if (localStorageIsAvailable) {
+      if (typeof window !== "undefined") {
         try {
           localStorage.setItem("access_token", action.payload);
           state.decodedToken = jwtDecode(action.payload);
@@ -49,7 +47,7 @@ export const tokenSlice = createSlice({
     },
 
     removeToken: (state) => {
-      if (localStorageIsAvailable) {
+      if (typeof window !== "undefined") {
         try {
           localStorage.removeItem("access_token");
         }
@@ -63,7 +61,7 @@ export const tokenSlice = createSlice({
   }
 });
 
-export const { setToken, removeToken } = tokenSlice.actions;
+export const { setToken, removeToken, hydrateToken } = tokenSlice.actions;
 
 /**
  * Selects the user's token
